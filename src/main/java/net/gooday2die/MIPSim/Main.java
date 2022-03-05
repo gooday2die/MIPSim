@@ -1,9 +1,13 @@
 package net.gooday2die.MIPSim;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
+import net.gooday2die.MIPSim.Parser.readFile;
 
+/**
+ * A main class and entry point for MIPSim
+ * @author Gooday2die (Isu Kim)
+ */
 public class Main {
     private static String[] mainArgs;
 
@@ -31,7 +35,10 @@ public class Main {
         } else{ // when at least one argument was provided
             switch (mainArgs[0]) {
                 case "--help" -> System.out.println("Tips: lololololololol");
-                case "-f", "-file" -> System.out.println("Loading file : " + mainArgs[1]);
+                case "-f", "-file" -> {
+                    System.out.println("Loading file : " + mainArgs[1]);
+                    readFile rf = new readFile(mainArgs[1]);
+                }
                 case "--dev" -> System.out.println("By Gooday2die @ https://github.com/gooday2die/MIPSim");
                 default -> {
                     System.out.println("Error: Unknown parameter.");
@@ -41,6 +48,10 @@ public class Main {
         }
     }
 
+    /**
+     * A main starting method for class Main
+     * @param args the String[] object of arguments.
+     */
     public static void main(String[] args){
         mainArgs = args;
         parseArgs();
