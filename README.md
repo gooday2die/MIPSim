@@ -15,7 +15,7 @@ There are two options of using this project in your own environment.
 
 ## Supported Instructions
 Following instructions of MIPS assembly are currently supported with `MIPSim`. `MIPSim` is still in development phase, so there might be bugs and lack some important features.
-Instruction NameOPCODEFUNCT
-------
-add 0x00 0x20  
-addi0x08NA
+|Instruction Name|OPCODE|FUNCT|
+|--|--|--|
+|add|0x00|0x20|  
+|addi0x08|NA|
