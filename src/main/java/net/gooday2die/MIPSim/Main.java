@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 import net.gooday2die.MIPSim.Engine.MIPSim;
-import net.gooday2die.MIPSim.Parser.readFile;
+import net.gooday2die.MIPSim.Engine.MachineCodes.MachineCode;
+import net.gooday2die.MIPSim.Engine.MachineCodes.MachineCodeSimulator;
 
 /**
  * A main class and entry point for MIPSim

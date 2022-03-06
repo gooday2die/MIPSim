@@ -6,16 +6,16 @@ package net.gooday2die.MIPSim.Engine;
  */
 public class Register {
     private int value; // the value stored in the Register
-    private final int index; // the index of this Register
+    private final String name; // the alias name of this Register
 
     /**
      * A constructor method for class Register
      * @param argValue the integer object to set default value as
-     * @param argIndex the integer object to set index of this register
+     * @param argName the String object to set as alias of this register
      */
-    public Register(int argValue, int argIndex){
+    public Register(int argValue, String argName){
         value = argValue;
-        index = argIndex;
+        name = argName;
     }
 
     /**
@@ -35,10 +35,10 @@ public class Register {
     }
 
     /**
-     * A getter method for attribute index
+     * A getter method for attribute name
      * @return returns integer type object that represents index of this register object.
      */
-    public int getIndex(){
-        return index;
+    public String getName(){
+        return name;
     }
 }

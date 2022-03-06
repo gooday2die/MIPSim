@@ -5,12 +5,12 @@ import java.util.Hashtable;
 
 /**
  * A Class for handing all registers
- * @author Gooday2die
+ * @author Gooday2die (Isu Kim)
  */
 public class RegisterHandler {
-    private Hashtable<String, Register> registerTable = new Hashtable<String, Register>();
+    private Hashtable<Integer, Register> registerTable = new Hashtable<Integer, Register>();
 
-    public class InvalidRegisterAlias extends Exception{
+    public static class InvalidRegisterAlias extends Exception{
         public InvalidRegisterAlias(String errorMessage){
             super(errorMessage);
         }
@@ -21,60 +21,61 @@ public class RegisterHandler {
      * This puts every register into Hashtable
      */
     public RegisterHandler(){
-       registerTable.put("zero", new Register(0, 0));
-       registerTable.put("at", new Register(0, 1));
-       registerTable.put("v0", new Register(0, 2));
-       registerTable.put("v1", new Register(0, 3));
-       registerTable.put("a0", new Register(0, 4));
-       registerTable.put("a1", new Register(0, 5));
-       registerTable.put("a2", new Register(0, 6));
-       registerTable.put("a3", new Register(0, 7));
-       registerTable.put("t0", new Register(0, 8));
-       registerTable.put("t1", new Register(0, 9));
-       registerTable.put("t2", new Register(0, 10));
-       registerTable.put("t3", new Register(0, 11));
-       registerTable.put("t4", new Register(0, 12));
-       registerTable.put("t5", new Register(0, 13));
-       registerTable.put("t6", new Register(0, 14));
-       registerTable.put("t7", new Register(0, 15));
-       registerTable.put("s0", new Register(0, 16));
-       registerTable.put("s1", new Register(0, 17));
-       registerTable.put("s2", new Register(0, 18));
-       registerTable.put("s3", new Register(0, 19));
-       registerTable.put("s4", new Register(0, 20));
-       registerTable.put("s5", new Register(0, 21));
-       registerTable.put("s6", new Register(0, 22));
-       registerTable.put("s7", new Register(0, 23));
-       registerTable.put("t8", new Register(0, 24));
-       registerTable.put("t9", new Register(0, 25));
-       registerTable.put("k0", new Register(0, 26));
-       registerTable.put("k1", new Register(0, 27));
-       registerTable.put("gp", new Register(0, 28));
-       registerTable.put("sp", new Register(0, 29));
-       registerTable.put("fp", new Register(0, 30));
-       registerTable.put("ra", new Register(0, 31));
+       registerTable.put(0, new Register(0, "zero"));
+       registerTable.put(1, new Register(0, "at"));
+       registerTable.put(2, new Register(0, "v0"));
+       registerTable.put(3, new Register(0, "v1"));
+       registerTable.put(4, new Register(0, "a0"));
+       registerTable.put(5, new Register(0, "a1"));
+       registerTable.put(6, new Register(0, "a2"));
+       registerTable.put(7, new Register(0, "a3"));
+       registerTable.put(8, new Register(0, "t0"));
+       registerTable.put(9, new Register(0, "t1"));
+       registerTable.put(10, new Register(0, "t2"));
+       registerTable.put(11, new Register(0, "t3"));
+       registerTable.put(12, new Register(0, "t4"));
+       registerTable.put(13, new Register(0, "t5"));
+       registerTable.put(14, new Register(0, "t6"));
+       registerTable.put(15, new Register(0, "t7"));
+       registerTable.put(16, new Register(0, "s0"));
+       registerTable.put(17, new Register(0, "s1"));
+       registerTable.put(18, new Register(0, "s2"));
+       registerTable.put(19, new Register(0, "s3"));
+       registerTable.put(20, new Register(0, "s4"));
+       registerTable.put(21, new Register(0, "s5"));
+       registerTable.put(22, new Register(0, "s6"));
+       registerTable.put(23, new Register(0, "s7"));
+       registerTable.put(24, new Register(0, "t8"));
+       registerTable.put(25, new Register(0, "t9"));
+       registerTable.put(26, new Register(0, "k0"));
+       registerTable.put(27, new Register(0, "k1"));
+       registerTable.put(28, new Register(0, "gp"));
+       registerTable.put(29, new Register(0, "sp"));
+       registerTable.put(30, new Register(0, "fp"));
+       registerTable.put(31, new Register(0, "ra"));
     }
 
     /**
-     * A getter method for attribute registerTable
-     * @param registerAlias the String object that represents alias of register
-     * @return returns Register object that corresponds to the register alias
+     * A method that retrieves specific Register object from total registers
+     * @param registerIndex the integer type object that represents the register's index
+     * @return returns Register object that corresponds to the register
+     * @throws InvalidRegisterAlias is thrown when the specified index of the register was not found.
      */
-    public Register getRegister(String registerAlias) throws InvalidRegisterAlias {
+    public Register getRegister(int registerIndex) throws InvalidRegisterAlias {
         try{
-            return registerTable.get(registerAlias);
+            return registerTable.get(registerIndex);
         } catch(NullPointerException e){
-            throw new InvalidRegisterAlias("Invalid register alias found : " + registerAlias);
+            throw new InvalidRegisterAlias("Invalid register alias found : " + registerIndex);
         }
     }
 
     /**
-     * A setter method for attribute registerTable
-     * @param registerAlias the String object that represents alias of register
+     * A method that sets specific Register object's value from total registers
+     * @param registerIndex the integer type object that represents the register's index
      * @param value the integer object to set register's value.
      */
-    public void setRegister(String registerAlias, int value){
-        Register r = registerTable.get(registerAlias);
+    public void setRegister(int registerIndex, int value){
+        Register r = registerTable.get(registerIndex);
         r.setValue(value);
     }
 
@@ -82,7 +83,7 @@ public class RegisterHandler {
      * A getter attribute for retrieving all registers
      * @return an Hashtable object that represents all registers
      */
-    public Hashtable<String, Register> getAllRegisters(){
+    public Hashtable<Integer, Register> getAllRegisters(){
         return registerTable;
     }
 }

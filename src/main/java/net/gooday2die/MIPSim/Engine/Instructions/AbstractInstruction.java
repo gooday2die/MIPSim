@@ -1,11 +1,13 @@
-package net.gooday2die.MIPSim.Engine;
+package net.gooday2die.MIPSim.Engine.Instructions;
 
+
+import net.gooday2die.MIPSim.Engine.Register;
 
 /**
  * A class for abstract instructions
  * @author Gooday2die (Isu Kim)
  */
-public class abstractInstruction{
+public class AbstractInstruction {
     /**
      * An abstract class for R Type instructions.
      * This should be extended by real Instructions.

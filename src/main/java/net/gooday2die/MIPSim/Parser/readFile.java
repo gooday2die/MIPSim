@@ -15,14 +15,14 @@ import static java.lang.System.exit;
  * A class for reading file line by line
  * @author Gooday2die (Isu Kim)
  */
-public class readFile {
+public class ReadFile {
     private List<String> lineList = new ArrayList<String>();
     /**
      * A constructor method for class readFile.
      * This method can read files in relative path as well as absolute path.
      * @param fileName the String object that represents the file's directory
      */
-    public readFile(String fileName){
+    public ReadFile(String fileName){
         try { // Try loading the file with absolute path
             FileReader fr = new FileReader(fileName);
             BufferedReader br = new BufferedReader(fr);
