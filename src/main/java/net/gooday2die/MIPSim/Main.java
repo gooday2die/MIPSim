@@ -36,7 +36,6 @@ public class Main {
             switch (mainArgs[0]) {
                 case "--help" -> System.out.println("Tips: lololololololol");
                 case "-f", "-file" -> {
-                    System.out.println("Loading file : " + mainArgs[1]);
                     readFile rf = new readFile(mainArgs[1]);
                 }
                 case "--dev" -> System.out.println("By Gooday2die @ https://github.com/gooday2die/MIPSim");
