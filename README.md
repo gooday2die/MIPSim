@@ -18,4 +18,4 @@ Following instructions of MIPS assembly are currently supported with `MIPSim`. `
 |Instruction Name|OPCODE|FUNCT|
 |--|--|--|
 |add|0x00|0x20|  
-|addi0x08|NA|
+|addi|0x08|NA|
