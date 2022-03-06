@@ -2,6 +2,8 @@ package net.gooday2die.MIPSim;
 
 import java.io.IOException;
 import java.util.Properties;
+
+import net.gooday2die.MIPSim.Engine.MIPSim;
 import net.gooday2die.MIPSim.Parser.readFile;
 
 /**
@@ -36,7 +38,7 @@ public class Main {
             switch (mainArgs[0]) {
                 case "--help" -> System.out.println("Tips: lololololololol");
                 case "-f", "-file" -> {
-                    readFile rf = new readFile(mainArgs[1]);
+                    MIPSim ms = new MIPSim(mainArgs[1]);
                 }
                 case "--dev" -> System.out.println("By Gooday2die @ https://github.com/gooday2die/MIPSim");
                 default -> {

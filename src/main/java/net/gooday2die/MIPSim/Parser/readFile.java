@@ -6,6 +6,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.System.exit;
 
@@ -14,24 +16,26 @@ import static java.lang.System.exit;
  * @author Gooday2die (Isu Kim)
  */
 public class readFile {
+    private List<String> lineList = new ArrayList<String>();
     /**
-     * A constructor method for class readFile
+     * A constructor method for class readFile.
+     * This method can read files in relative path as well as absolute path.
      * @param fileName the String object that represents the file's directory
      */
     public readFile(String fileName){
-        try { // Try loading the file
+        try { // Try loading the file with absolute path
             FileReader fr = new FileReader(fileName);
             BufferedReader br = new BufferedReader(fr);
             System.out.println("Loading file : " + fileName);
 
             String line;
             while((line = br.readLine()) != null){
-                System.out.println(line);
+                lineList.add(line);
             }
 
         } catch(IOException e1){ // When it cannot be found, use relative path
-            Path currentPath = Paths.get(System.getProperty("user.dir"));
-            Path filePath = Paths.get(currentPath.toString(), fileName);
+            Path currentPath = Paths.get(System.getProperty("user.dir")); // get current directory
+            Path filePath = Paths.get(currentPath.toString(), fileName); // concatenate path
             System.out.println("Loading file : " + filePath);
             try { // try using relative path
                 FileReader fr = new FileReader(System.getProperty(filePath.toString()));
@@ -39,7 +43,7 @@ public class readFile {
 
                 String line;
                 while((line = br.readLine()) != null){
-                    System.out.println(line);
+                    lineList.add(line);
                 }
 
             } catch(IOException | NullPointerException e) { // if that cannot be found as well, exit with status 1
@@ -47,5 +51,13 @@ public class readFile {
                 exit(1); // exit with exit status 1
             }
         }
+    }
+
+    /**
+     * A getter for attribute lineList
+     * @return returns List<String> object that contains each line of file in list.
+     */
+    public List<String> getLineList(){
+        return lineList;
     }
 }
