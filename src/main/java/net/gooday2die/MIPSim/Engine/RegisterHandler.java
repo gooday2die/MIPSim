@@ -10,8 +10,8 @@ import java.util.Hashtable;
 public class RegisterHandler {
     private Hashtable<Integer, Register> registerTable = new Hashtable<Integer, Register>();
 
-    public static class InvalidRegisterAlias extends Exception{
-        public InvalidRegisterAlias(String errorMessage){
+    public static class InvalidRegisterIndex extends Exception{
+        public InvalidRegisterIndex(String errorMessage){
             super(errorMessage);
         }
     }
@@ -59,13 +59,13 @@ public class RegisterHandler {
      * A method that retrieves specific Register object from total registers
      * @param registerIndex the integer type object that represents the register's index
      * @return returns Register object that corresponds to the register
-     * @throws InvalidRegisterAlias is thrown when the specified index of the register was not found.
+     * @throws InvalidRegisterIndex is thrown when the specified index of the register was not found.
      */
-    public Register getRegister(int registerIndex) throws InvalidRegisterAlias {
+    public Register getRegister(int registerIndex) throws InvalidRegisterIndex {
         try{
             return registerTable.get(registerIndex);
         } catch(NullPointerException e){
-            throw new InvalidRegisterAlias("Invalid register alias found : " + registerIndex);
+            throw new InvalidRegisterIndex("Invalid register alias found : " + registerIndex);
         }
     }
 

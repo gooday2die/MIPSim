@@ -1,6 +1,8 @@
 package net.gooday2die.MIPSim.Engine;
 
 import net.gooday2die.MIPSim.Engine.Instructions.InstructionActor;
+import net.gooday2die.MIPSim.Engine.MachineCodes.MachineCode;
+import net.gooday2die.MIPSim.Engine.MachineCodes.MachineCodeSimulator;
 import net.gooday2die.MIPSim.Parser.Expression;
 import net.gooday2die.MIPSim.Parser.ReadFile;
 
@@ -17,6 +19,7 @@ public class MIPSim {
     private List<Expression> expressionList = new ArrayList<Expression>();
     private ReadFile rf;
     private List<String> expressionStrings;
+    MachineCodeSimulator mcs;
     /**
      * A method for translating all expressionStrings into expressionList
      */
@@ -36,28 +39,32 @@ public class MIPSim {
         rf = new ReadFile(fileName);
         expressionStrings = rf.getLineList();
         generateAllExpressions();
+
         rh = new RegisterHandler(); // generate register handler for future use
+        mcs = new MachineCodeSimulator(rh); // generate MachineCode Simulator
 
         // testing here
         try {
-            System.out.println("s0 : " + rh.getRegister(0).getValue());
-            System.out.println("s1 : " + rh.getRegister(1).getValue());
-            System.out.println("s2 : " + rh.getRegister(2).getValue());
+            System.out.println("$0 : " + rh.getRegister(0).getValue());
+            System.out.println("$1 : " + rh.getRegister(1).getValue());
+            System.out.println("$2 : " + rh.getRegister(2).getValue());
 
-            InstructionActor.addi.execute(rh.getRegister(0), rh.getRegister(0), 10);
-            InstructionActor.addi.execute(rh.getRegister(1), rh.getRegister(1), 15);
-            InstructionActor.add.execute(rh.getRegister(0), rh.getRegister(1), rh.getRegister(2));
+            MachineCode m1 = new MachineCode(0b00100000000000000000000000001010 ,2);
+            // set register 0 as 10
+            MachineCode m2 = new MachineCode(0b00100000001000010000000000001111 ,2);
+            // set register 1 as 15
+            MachineCode m3 = new MachineCode(0b00000000000000010001000000100000 ,1);
+            // add $r0, $r1, $r3
 
-            System.out.println("s0 : " + rh.getRegister(0).getValue());
-            System.out.println("s1 : " + rh.getRegister(1).getValue());
-            System.out.println("s2 : " + rh.getRegister(2).getValue());
+            mcs.executeCode(m1);
+            mcs.executeCode(m2);
+            mcs.executeCode(m3);
 
+            System.out.println("$0 : " + rh.getRegister(0).getValue());
+            System.out.println("$1 : " + rh.getRegister(1).getValue());
+            System.out.println("$2 : " + rh.getRegister(2).getValue());
 
-            System.out.println("s0 : " + rh.getRegister(0).getValue());
-            System.out.println("s1 : " + rh.getRegister(1).getValue());
-            System.out.println("s2 : " + rh.getRegister(2).getValue());
-
-        } catch (RegisterHandler.InvalidRegisterAlias e){
+        } catch (RegisterHandler.InvalidRegisterIndex | MachineCodeSimulator.InvalidInstruction e){
             System.out.println(e.getMessage());
         }
     }

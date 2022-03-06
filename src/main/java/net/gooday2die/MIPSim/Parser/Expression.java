@@ -40,6 +40,7 @@ public class Expression {
      * A method that prints the expression and it's stored address.
      */
     public void printExpression(){
-        System.out.println("Address : " + String.format("0x%08X", storedAddress) + "\nExpression : " + storedExpression);
+        //System.out.println("Address : " + String.format("0x%08X", storedAddress) + "\nExpression : " + storedExpression);
+        ;
     }
 }
