@@ -5,7 +5,7 @@ package net.gooday2die.MIPSim.Engine;
  * @author Gooday2die (Isu Kim)
  */
 public class Register {
-    private int value; // the value stored in the Register
+    private long value; // the value stored in the Register
     private final String name; // the alias name of this Register
 
     /**
@@ -13,7 +13,7 @@ public class Register {
      * @param argValue the integer object to set default value as
      * @param argName the String object to set as alias of this register
      */
-    public Register(int argValue, String argName){
+    public Register(long argValue, String argName){
         value = argValue;
         name = argName;
     }
@@ -22,7 +22,7 @@ public class Register {
      * A getter method for attribute value
      * @return returns integer type object that represents stored value in this register object
      */
-    public int getValue(){
+    public long getValue(){
         return value;
     }
 
@@ -30,7 +30,7 @@ public class Register {
      * A setter method for attribute value
      * @param argValue integer type object that represents the value to set
      */
-    public void setValue(int argValue){
+    public void setValue(long argValue){
         value = argValue;
     }
 

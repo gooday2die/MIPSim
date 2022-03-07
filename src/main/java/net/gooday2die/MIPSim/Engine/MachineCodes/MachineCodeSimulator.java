@@ -37,7 +37,7 @@ public class MachineCodeSimulator {
      * @throws RegisterHandler.InvalidRegisterIndex is thrown when the register index was invalid (would not happen)
      */
     public boolean executeCode(MachineCode code) throws RegisterHandler.InvalidRegisterIndex, InvalidInstruction,
-            InstructionActor.add.OverflowException {
+            InstructionActor.OverflowException {
         int curCode = code.getCode();
         int codeType = code.getCodeType();
 

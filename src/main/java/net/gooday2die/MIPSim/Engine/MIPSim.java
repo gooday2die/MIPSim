@@ -85,7 +85,7 @@ public class MIPSim {
             System.out.println("$3 : " + rh.getRegister(3).getValue());
             System.out.println("$4 : " + rh.getRegister(4).getValue());
 
-            rh.getRegister(4).setValue(0xffffffff);
+            rh.getRegister(4).setValue(0xffffffffL);
             MachineCode m6 = new MachineCode(0b00100100101001010000000000000001, 2);
             try {
                 mcs.executeCode(m6);
@@ -96,7 +96,7 @@ public class MIPSim {
             System.out.println("$5 : " + (String.format("0x%08X", rh.getRegister(5).getValue())));
             System.out.println("$6 : " + (String.format("0x%08X", rh.getRegister(6).getValue())));
 
-            MachineCode m7 = new MachineCode(0b00000000100001010011000000100001, 1);
+            MachineCode m7 = new MachineCode(0b00000000100001010011000000100000, 1);
 
             try {
                 mcs.executeCode(m7);
@@ -108,7 +108,15 @@ public class MIPSim {
             System.out.println("$5 : " + (String.format("0x%08X", rh.getRegister(5).getValue())));
             System.out.println("$6 : " + (String.format("0x%08X", rh.getRegister(6).getValue())));
 
+            MachineCode m8 = new MachineCode(0b00100100100001000000000000000001, 2);
 
+            try {
+                mcs.executeCode(m8);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+            System.out.println("$4 : " + (String.format("0x%08X", rh.getRegister(4).getValue())));
 
 
         } catch (RegisterHandler.InvalidRegisterIndex e){

@@ -8,6 +8,15 @@ import net.gooday2die.MIPSim.Engine.Register;
  */
 public class InstructionActor {
     /**
+     * A class for overflow exception when add operation had an overflow.
+     */
+    public static class OverflowException extends Exception{
+        public OverflowException(String errorMessage){
+            super(errorMessage);
+        }
+    }
+
+    /**
      * A class for add instruction
      * MIPS add instruction raises exception when the instruction had overflow in the result.
      * This exception is implemented as OverflowException
@@ -16,24 +25,14 @@ public class InstructionActor {
         public static void execute(Register rs, Register rt, Register rd) throws OverflowException {
             long rsValue = rs.getValue();
             long rtValue = rt.getValue();
-            long rdValue = rsValue + rtValue;
+            long rdValue =  rsValue + rtValue;
 
-            if (rdValue > Long.parseLong("ffffffff", 16))
-                // Java works super dumb. It does not recognize 0xFFFFFFFF as unsigned value at all.
-                // This recognize as -1 which is signed integer by default.
-                // The way of going around this would be parsing ffffffff
+            if (rdValue > 0xFFFFFFFL)
+                // Using just 0xFFFFFFFF will recognize as -1
+                // Need to use L expression in order for it to recognize as unsigned
                 throw new OverflowException("result overflowed");
             else { // if it was normal case
                 rd.setValue((int)rdValue);
-            }
-        }
-
-        /**
-         * A class for overflow exception when add operation had an overflow.
-         */
-        public static class OverflowException extends Exception{
-            public OverflowException(String errorMessage){
-                super(errorMessage);
             }
         }
     }
@@ -47,29 +46,38 @@ public class InstructionActor {
             long rsValue = rs.getValue();
             long rtValue = rt.getValue();
             long rdValue = rsValue + rtValue;
-            rd.setValue((int)rdValue);
+            rd.setValue(rdValue);
         }
     }
 
     /**
      * A class for addi instruction
+     * addi has an overflow detection thus this throws OverflowException
      */
     public static class addi extends AbstractInstruction.IType{
-        public static void execute(Register rs, Register rt, int immediate) {
-            int rsValue = rs.getValue();
-            int rtValue = rsValue + (short) immediate; // need type casting since it is signed short (16bits)
-            rt.setValue(rtValue);
+        public static void execute(Register rs, Register rt, int immediate) throws OverflowException{
+            long rsValue = rs.getValue();
+            long rtValue = rsValue + (short) immediate; // need type casting since it is signed short (16bits)
+
+            if (rtValue > 0xFFFFFFFL)
+                // Using just 0xFFFFFFFF will recognize as -1
+                // Need to use L expression in order for it to recognize as unsigned
+                throw new OverflowException("result overflowed");
+            else { // if it was normal case
+                rt.setValue((int)rtValue);
+            }
         }
     }
 
     /**
      * A class for addiu instruction
+     * addiu does not have a overflow detection
      */
     public static class addiu extends AbstractInstruction.IType{
         public static void execute(Register rs, Register rt, int immediate) {
-            int rsValue = rs.getValue();
-            int rtValue = rsValue + Short.toUnsignedInt((short) immediate); // since immediate is unsigned
-            rt.setValue(rtValue);
+            long rsValue = rs.getValue();
+            long rtValue = rsValue + Short.toUnsignedInt((short) immediate); // since immediate is unsigned
+            rt.setValue((int)rtValue);
         }
     }
 }
