@@ -36,7 +36,8 @@ public class MachineCodeSimulator {
      * @return returns true if successful, false if not
      * @throws RegisterHandler.InvalidRegisterIndex is thrown when the register index was invalid (would not happen)
      */
-    public boolean executeCode(MachineCode code) throws RegisterHandler.InvalidRegisterIndex, InvalidInstruction {
+    public boolean executeCode(MachineCode code) throws RegisterHandler.InvalidRegisterIndex, InvalidInstruction,
+            InstructionActor.add.OverflowException {
         int curCode = code.getCode();
         int codeType = code.getCodeType();
 
@@ -54,9 +55,10 @@ public class MachineCodeSimulator {
                 switch(opcode & 0x3F){
                     case 0x00 -> {
                         switch (funct & 0x3F) {
-                            case 0x20 -> { // opcode 0x00 and funct 0x20 = add instruction
+                            case 0x20 ->  // opcode 0x00 and funct 0x20 = add instruction
                                 InstructionActor.add.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
-                            }
+                            case 0x21 -> // opcode 0x00 and funct 0x21 = addu instruction
+                                InstructionActor.addu.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
                             default -> throw new InvalidInstruction("Invalid OPCODE : " + opcode + " and FUNCT : " + funct);
                         }
                     }

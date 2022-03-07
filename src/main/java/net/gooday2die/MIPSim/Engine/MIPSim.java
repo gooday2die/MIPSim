@@ -56,9 +56,13 @@ public class MIPSim {
             MachineCode m3 = new MachineCode(0b00000000000000010001000000100000 ,1);
             // add $r0, $r1, $r3
 
-            mcs.executeCode(m1);
-            mcs.executeCode(m2);
-            mcs.executeCode(m3);
+            try {
+                mcs.executeCode(m1);
+                mcs.executeCode(m2);
+                mcs.executeCode(m3);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
 
             System.out.println("$0 : " + rh.getRegister(0).getValue());
             System.out.println("$1 : " + rh.getRegister(1).getValue());
@@ -66,20 +70,48 @@ public class MIPSim {
 
             System.out.println("$3 : " + rh.getRegister(3).getValue());
             System.out.println("$4 : " + rh.getRegister(4).getValue());
+
             MachineCode m4 = new MachineCode(0b00100000011000111111111111111111 ,2);
             // set register 0 as 10
             MachineCode m5 = new MachineCode(0b00100100100001001111111111111111 ,2);
             // set register 1 as 15
 
-            mcs.executeCode(m4);
-            mcs.executeCode(m5);
+            try {
+                mcs.executeCode(m4);
+                mcs.executeCode(m5);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
             System.out.println("$3 : " + rh.getRegister(3).getValue());
             System.out.println("$4 : " + rh.getRegister(4).getValue());
 
+            rh.getRegister(4).setValue(0xffffffff);
+            MachineCode m6 = new MachineCode(0b00100100101001010000000000000001, 2);
+            try {
+                mcs.executeCode(m6);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+            System.out.println("=============\n$4 : " + (String.format("0x%08X", rh.getRegister(4).getValue())));
+            System.out.println("$5 : " + (String.format("0x%08X", rh.getRegister(5).getValue())));
+            System.out.println("$6 : " + (String.format("0x%08X", rh.getRegister(6).getValue())));
+
+            MachineCode m7 = new MachineCode(0b00000000100001010011000000100001, 1);
+
+            try {
+                mcs.executeCode(m7);
+            } catch (Exception e){
+                System.out.println(e.getMessage());
+            }
+
+            System.out.println("$4 : " + (String.format("0x%08X", rh.getRegister(4).getValue())));
+            System.out.println("$5 : " + (String.format("0x%08X", rh.getRegister(5).getValue())));
+            System.out.println("$6 : " + (String.format("0x%08X", rh.getRegister(6).getValue())));
 
 
 
-        } catch (RegisterHandler.InvalidRegisterIndex | MachineCodeSimulator.InvalidInstruction e){
+
+        } catch (RegisterHandler.InvalidRegisterIndex e){
             System.out.println(e.getMessage());
         }
     }

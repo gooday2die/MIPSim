@@ -55,6 +55,17 @@ public class Main {
      * @param args the String[] object of arguments.
      */
     public static void main(String[] args){
+        int a = 0xFFFFFFFF;
+        System.out.println(a);
+
+        long b = a;
+        System.out.println(b & 0xFFFFFFFF);
+
+        int c = 0xFFFFFFFF + 0x00000001;
+        System.out.println(c);
+
+        System.out.println(0 > 0xFFFFFFFF);
+
         mainArgs = args;
         parseArgs();
     }

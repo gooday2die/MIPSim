@@ -19,7 +19,7 @@ public class AbstractInstruction {
          * @param rt int object that represents index of rt register
          * @param rd int object that represents index of rd register
          */
-        static void execute(Register rs, Register rt, Register rd){}
+        static void execute(Register rs, Register rt, Register rd) throws InstructionActor.add.OverflowException {}
     }
 
     /**
