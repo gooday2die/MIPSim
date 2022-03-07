@@ -29,6 +29,6 @@ Register* RegisterHandler::getAllRegisters() {
 void RegisterHandler::printAllRegisters() {
     printf("Registers:\n");
     for(uint8_t i = 0 ; i < 32 ; i++){
-        printf("$%d : %d\n", i, this->registers[i].getValue());
+        printf("$%2d : hex : 0x%08x / signed int : %d\n", i, this->registers[i].getValue(), this->registers[i].getValue());
     }
 }

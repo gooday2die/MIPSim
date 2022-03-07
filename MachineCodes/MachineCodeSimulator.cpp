@@ -33,6 +33,12 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
                         case 0x20: // add instruction
                             Instructions::RType::_add(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
                             break;
+                        case 0x21: // addu instruction
+                            Instructions::RType::_addu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
+                        case 0x24: // and instruction
+                            Instructions::RType::_and(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
                         default:
                             throw std::range_error("Unknown Operation");
                     }
@@ -52,6 +58,12 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
             switch(opcode){
                 case 0x08:
                     Instructions::IType::_addi(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                case 0x09:
+                    Instructions::IType::_addiu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                case 0x0C:
+                    Instructions::IType::_andi(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 default:
                     throw std::range_error("Unknown Operation");

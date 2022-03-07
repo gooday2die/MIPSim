@@ -16,6 +16,8 @@ private:
     Simulator s = Simulator();
 public:
     void test_add_addi();
+    void test_addu_addiu();
+    void test_and_andi();
 };
 
 
