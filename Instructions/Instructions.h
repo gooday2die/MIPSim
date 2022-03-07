@@ -10,13 +10,21 @@
 #pragma once
 
 #include <stdexcept>
-#include "AbstractInstructions.h"
-
+#include <cstdint>
+#include "../Register/Register.h"
 
 class Instructions {
 public:
-    class _add : public RType{
-        static void execute(Register, Register, Register);
+    class RType{
+    public:
+        static void _add(Register*, Register*, Register*);
+    };
+    class IType{
+    public:
+        static void _addi(Register*, Register*, uint16_t);
+    };
+    class JType{
+    public:
     };
 };
 

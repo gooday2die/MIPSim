@@ -11,7 +11,7 @@ MachineCodeSimulator::MachineCodeSimulator(RegisterHandler argRegisterHandler) {
     this->registerHandler = argRegisterHandler;
 }
 
-int MachineCodeSimulator::executeCode(MachineCode code) {
+void MachineCodeSimulator::executeCode(MachineCode code) {
     int curCode = code.getcode();
     uint8_t codeType = code.getCodeType();
 
@@ -26,20 +26,38 @@ int MachineCodeSimulator::executeCode(MachineCode code) {
             uint8_t shamt = (curCode >> 6) & 0x1F; // shamt length = 5bit < 8bit
             uint8_t funct = curCode & 0x3F; // funct length 6 bit < 8bit
 
+            //printf("R TYPE : rs : %d / rt : %d / rd : %d / shamt : %d / funct : %d\n", rs, rt, rd, shamt, funct);
             switch(opcode){
                 case 0x00: {
                     switch(funct){
-                        case 0x20:{ // add instruction
-                        }
+                        case 0x20: // add instruction
+                            Instructions::RType::_add(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
+                        default:
+                            throw std::range_error("Unknown Operation");
                     }
                 }
-
+                break;
+                default:
+                    throw std::range_error("Unknown Operation");
             }
             break;
         }
-        case 2: // I Type
-            ;
+        case 2:{
+            // I Type
+            uint8_t rs = (curCode >> 21) & 0x1F; // rs length = 5bit < 8bit
+            uint8_t rt = (curCode >> 16) & 0x1F; // rt length = 5bit < 8bit
+            uint16_t imm = curCode & 0xFFFF; // imm length = 16 bit
+            //printf("I TYPE : rs : %d / rt : %d / imm : %d\n", rs, rt, imm);
+            switch(opcode){
+                case 0x08:
+                    Instructions::IType::_addi(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                default:
+                    throw std::range_error("Unknown Operation");
+            }
             break;
+        }
         case 3: // J type
             ;
             break;

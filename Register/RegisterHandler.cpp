@@ -10,10 +10,12 @@
 RegisterHandler::RegisterHandler() {
     this->registers = (Register*)malloc(sizeof(Register) * 32);
     this->pc = Register(0);
+
+    for(uint8_t i = 0 ; i < 32 ; i++) this->registers[i] = 0;
 }
 
-Register RegisterHandler::getRegister(int registerIndex) {
-    return this->registers[registerIndex];
+Register* RegisterHandler::getRegister(int registerIndex) {
+    return this->registers + registerIndex;
 }
 
 Register RegisterHandler::getPC(){
@@ -25,7 +27,8 @@ Register* RegisterHandler::getAllRegisters() {
 }
 
 void RegisterHandler::printAllRegisters() {
+    printf("Registers:\n");
     for(uint8_t i = 0 ; i < 32 ; i++){
-        printf("$%d : %d", i, this->registers[i].getValue());
+        printf("$%d : %d\n", i, this->registers[i].getValue());
     }
 }

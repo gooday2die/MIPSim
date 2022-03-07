@@ -7,7 +7,6 @@
 
 #ifndef MIPSIM_REGISTERHANDLER_H
 #define MIPSIM_REGISTERHANDLER_H
-
 #pragma once
 
 #include <cstdlib>
@@ -59,7 +58,7 @@ private:
 
 public:
     RegisterHandler();
-    Register getRegister(int);
+    Register* getRegister(int);
     Register getPC();
     Register* getAllRegisters();
     void printAllRegisters();

@@ -7,6 +7,22 @@
 
 #include "Simulator.h"
 
+void Simulator::tester() {
+    this->registerHandler.printAllRegisters();
+    MachineCode a = MachineCode(0b00100000000000000000000000001010, 2);
+    MachineCode b = MachineCode(0b00100000001000010000000000001111, 2);
+    MachineCode c = MachineCode(0b00000000000000010001000000100000, 1);
+
+    this->machineCodeSimulator.executeCode(a);
+
+    this->machineCodeSimulator.executeCode(b);
+
+    this->machineCodeSimulator.executeCode(c);
+
+    this->registerHandler.printAllRegisters();
+}
+
 Simulator::Simulator() {
-    this->registerHandler = RegisterHandler();
+    std::cout << "===== MIPSim Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
+    this->tester();
 }

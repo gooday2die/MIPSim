@@ -19,7 +19,7 @@ private:
     RegisterHandler registerHandler;
 public:
     MachineCodeSimulator(RegisterHandler);
-    int executeCode(MachineCode);
+    void executeCode(MachineCode);
 };
 
 

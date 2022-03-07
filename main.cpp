@@ -1,6 +1,5 @@
-#include <iostream>
+#include "Simulator/Simulator.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    return 0;
+    Simulator s = Simulator();
 }

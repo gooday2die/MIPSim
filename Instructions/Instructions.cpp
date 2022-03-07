@@ -9,15 +9,28 @@
 
 /**
  * A member function for instruction "add"
- * @param rs the rs register
- * @param rt the rt register
- * @param rd the rd register
+ * @param rs the pointer address rs register's Register Object
+ * @param rt the pointer address rt register's Register Object
+ * @param rd the pointer address rd register's Register Object
  */
-void Instructions::_add::execute(Register rs, Register rt, Register rd) {
-    int rsVal = rs.getValue();
-    int rtVal = rt.getValue();
+void Instructions::RType::_add(Register* rs, Register* rt, Register* rd) {
+    int rsVal = rs->getValue();
+    int rtVal = rt->getValue();
     long rdVal = rsVal + rtVal;
-
     if (rdVal > 0xFFFFFFFF) throw std::overflow_error("Integer Overflow with operation add");
-    else rd.setValue(rdVal);
+    else rd->setValue(rdVal);
+}
+
+/**
+ * A member function for instruction _addi
+ * @param rs the pointer address rs register's Register Object
+ * @param rt the pointer address rt register's Register Object
+ * @param imm the uint16_t type of immediate value
+ */
+void Instructions::IType::_addi(Register* rs, Register* rt, uint16_t imm) {
+    int rsVal = rs->getValue();
+    long rtVal = rsVal + imm;
+
+    if (rtVal > 0xFFFFFFFF) throw std::overflow_error("Integer Overflow with operation addi");
+    else rt->setValue(rtVal);
 }

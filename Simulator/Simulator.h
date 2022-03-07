@@ -9,12 +9,17 @@
 #define MIPSIM_SIMULATOR_H
 #pragma once
 
-#include "../Register/RegisterHandler.h"
+#include <iostream>
 
+#include "../defines.h"
+#include "../Register/RegisterHandler.h"
+#include "../MachineCodes/MachineCodeSimulator.h"
 
 class Simulator {
 private:
-    RegisterHandler registerHandler;
+    RegisterHandler registerHandler = RegisterHandler();
+    MachineCodeSimulator machineCodeSimulator = MachineCodeSimulator(registerHandler);
+    void tester();
 public:
     Simulator();
 };
