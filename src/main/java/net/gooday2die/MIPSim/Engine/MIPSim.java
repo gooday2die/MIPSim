@@ -64,6 +64,21 @@ public class MIPSim {
             System.out.println("$1 : " + rh.getRegister(1).getValue());
             System.out.println("$2 : " + rh.getRegister(2).getValue());
 
+            System.out.println("$3 : " + rh.getRegister(3).getValue());
+            System.out.println("$4 : " + rh.getRegister(4).getValue());
+            MachineCode m4 = new MachineCode(0b00100000011000111111111111111111 ,2);
+            // set register 0 as 10
+            MachineCode m5 = new MachineCode(0b00100100100001001111111111111111 ,2);
+            // set register 1 as 15
+
+            mcs.executeCode(m4);
+            mcs.executeCode(m5);
+            System.out.println("$3 : " + rh.getRegister(3).getValue());
+            System.out.println("$4 : " + rh.getRegister(4).getValue());
+
+
+
+
         } catch (RegisterHandler.InvalidRegisterIndex | MachineCodeSimulator.InvalidInstruction e){
             System.out.println(e.getMessage());
         }

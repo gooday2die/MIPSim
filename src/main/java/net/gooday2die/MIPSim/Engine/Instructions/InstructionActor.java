@@ -25,7 +25,18 @@ public class InstructionActor {
     public static class addi extends AbstractInstruction.IType{
         public static void execute(Register rs, Register rt, int immediate) {
             int rsValue = rs.getValue();
-            int rtValue = rsValue + immediate;
+            int rtValue = rsValue + (short) immediate; // need type casting since it is signed short (16bits)
+            rt.setValue(rtValue);
+        }
+    }
+
+    /**
+     * A class for addiu instruction
+     */
+    public static class addiu extends AbstractInstruction.IType{
+        public static void execute(Register rs, Register rt, int immediate) {
+            int rsValue = rs.getValue();
+            int rtValue = rsValue + Short.toUnsignedInt((short) immediate); // since immediate is unsigned
             rt.setValue(rtValue);
         }
     }

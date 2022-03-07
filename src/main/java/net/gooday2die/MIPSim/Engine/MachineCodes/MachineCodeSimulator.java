@@ -71,7 +71,9 @@ public class MachineCodeSimulator {
                 //System.out.println("OPCODE : " + opcode + " rs : " + rs + " rt : " + rt + " imm : " + imm);
                 switch (opcode & 0x3F) {
                     case 0x08 -> InstructionActor.addi.execute(rh.getRegister(rs), rh.getRegister(rt), imm);
+                    case 0x09 -> InstructionActor.addiu.execute(rh.getRegister(rs), rh.getRegister(rt), imm);
                     default -> throw new InvalidInstruction("Invalid OPCODE : " + opcode);
+
                 }
             }
             case 3 -> { // for J types
