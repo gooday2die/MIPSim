@@ -18,13 +18,10 @@ public class InstructionActor {
             long rtValue = rt.getValue();
             long rdValue = rsValue + rtValue;
 
-            Math.toIntExact(rdValue);
-
-            System.out.println("RDVAL : " + rdValue);
-            System.out.println("RDVAL & 0xFFFFFFFF : " + (rdValue & 0xFFFFFFFF));
-            System.out.println("RDVAL & 0xFFFFFFFF > ? : " + (rdValue > 0xFFFFFFFF));
-
-            if ((rdValue & 0xFFFFFFFF) > 0xFFFFFFFF) // when the result had overflow
+            if (rdValue > Long.parseLong("ffffffff", 16))
+                // Java works super dumb. It does not recognize 0xFFFFFFFF as unsigned value at all.
+                // This recognize as -1 which is signed integer by default.
+                // The way of going around this would be parsing ffffffff
                 throw new OverflowException("result overflowed");
             else { // if it was normal case
                 rd.setValue((int)rdValue);
