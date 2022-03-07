@@ -18,10 +18,12 @@ public:
     class RType{
     public:
         static void _add(Register*, Register*, Register*);
+        static void _addu(Register*, Register*, Register*);
     };
     class IType{
     public:
         static void _addi(Register*, Register*, uint16_t);
+        static void _addiu(Register*, Register*, uint16_t);
     };
     class JType{
     public:

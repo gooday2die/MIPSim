@@ -1,5 +1,6 @@
-#include "Simulator/Simulator.h"
+#include "Simulator/SimulatorTests.h"
 
 int main() {
-    Simulator s = Simulator();
+    SimulatorTests st = SimulatorTests();
+    st.test_add_addi();
 }
