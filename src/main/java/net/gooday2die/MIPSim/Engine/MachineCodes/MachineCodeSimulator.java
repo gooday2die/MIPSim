@@ -56,9 +56,11 @@ public class MachineCodeSimulator {
                     case 0x00 -> {
                         switch (funct & 0x3F) {
                             case 0x20 ->  // opcode 0x00 and funct 0x20 = add instruction
-                                InstructionActor.add.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
+                                    InstructionActor.add.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
                             case 0x21 -> // opcode 0x00 and funct 0x21 = addu instruction
-                                InstructionActor.addu.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
+                                    InstructionActor.addu.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
+                            case 0x24 -> // opcode 0x00 and funct 0x24 = and instruction
+                                    InstructionActor.and.execute(rh.getRegister(rs), rh.getRegister(rt), rh.getRegister(rd));
                             default -> throw new InvalidInstruction("Invalid OPCODE : " + opcode + " and FUNCT : " + funct);
                         }
                     }
@@ -72,8 +74,9 @@ public class MachineCodeSimulator {
                 int imm = curCode & 0xFFFF; // doing & with 0xFFFF will get imm value
                 //System.out.println("OPCODE : " + opcode + " rs : " + rs + " rt : " + rt + " imm : " + imm);
                 switch (opcode & 0x3F) {
-                    case 0x08 -> InstructionActor.addi.execute(rh.getRegister(rs), rh.getRegister(rt), imm);
-                    case 0x09 -> InstructionActor.addiu.execute(rh.getRegister(rs), rh.getRegister(rt), imm);
+                    case 0x08 -> InstructionActor.addi.execute(rh.getRegister(rs), rh.getRegister(rt), imm); // addi
+                    case 0x09 -> InstructionActor.addiu.execute(rh.getRegister(rs), rh.getRegister(rt), imm); // addiu
+                    case 0x0C -> InstructionActor.andi.execute(rh.getRegister(rs), rh.getRegister(rt), imm); // andi
                     default -> throw new InvalidInstruction("Invalid OPCODE : " + opcode);
 
                 }

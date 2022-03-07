@@ -51,6 +51,18 @@ public class InstructionActor {
     }
 
     /**
+     * A class for and instruction
+     */
+    public static class and extends AbstractInstruction.RType{
+        public static void execute(Register rs, Register rt, Register rd) {
+            long rsValue = rs.getValue();
+            long rtValue = rt.getValue();
+            long rdValue = rsValue & rtValue;
+            rd.setValue(rdValue);
+        }
+    }
+
+    /**
      * A class for addi instruction
      * addi has an overflow detection thus this throws OverflowException
      */
@@ -77,6 +89,17 @@ public class InstructionActor {
         public static void execute(Register rs, Register rt, int immediate) {
             long rsValue = rs.getValue();
             long rtValue = rsValue + Short.toUnsignedInt((short) immediate); // since immediate is unsigned
+            rt.setValue((int)rtValue);
+        }
+    }
+
+    /**
+     * A class for andi instruction
+     */
+    public static class andi extends AbstractInstruction.IType{
+        public static void execute(Register rs, Register rt, int immediate) {
+            long rsValue = rs.getValue();
+            long rtValue = rsValue & ((short) immediate); // since immediate is unsigned
             rt.setValue((int)rtValue);
         }
     }
