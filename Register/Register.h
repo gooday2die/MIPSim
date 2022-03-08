@@ -9,13 +9,15 @@
 #define MIPSIM_REGISTER_H
 #pragma once
 
+#include <cstdint>
+
 
 /**
  * A class for a single register
  */
 class Register {
 private:
-    int value; // the 32 bit value stored in a register
+    uint32_t value; // the 32 bit value stored in a register
 public:
     Register(int);
     int getValue();

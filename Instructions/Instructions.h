@@ -25,6 +25,9 @@ public:
         static void _or(Register*, Register*, Register*);
         static void _slt(Register*, Register*, Register*);
         static void _sltu(Register*, Register*, Register*);
+        static void _sub(Register*, Register*, Register*);
+        static void _subu(Register*, Register*, Register*);
+        static void _jr(Register*, Register*);
     };
     class IType{
     public:
@@ -37,6 +40,8 @@ public:
     };
     class JType{
     public:
+        static void _j(Register*, uint32_t);
+        static void _jal(Register*, Register*, uint32_t);
     };
 };
 

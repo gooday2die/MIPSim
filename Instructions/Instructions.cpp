@@ -161,3 +161,60 @@ void Instructions::RType::_sltu(Register* rs, Register* rt, Register* rd) {
     int rtVal = rt->getValue();
     rd->setValue((unsigned int) rsVal < (unsigned int)rtVal);
 }
+
+/**
+ * A member function for instruction 'sub'
+ * As MIPS's instruction raises exception when integer overflow happens, this throws overflow_error
+ * For example, when rs was positive, rt was negative this works just like rs + rt. This might be overflowed
+ * @param rs the pointer address rs register's Register Object
+ * @param rt the pointer address rt register's Register Object
+ * @param rd the pointer address rd register's Register Object
+ */
+void Instructions::RType::_sub(Register* rs, Register* rt, Register* rd) {
+    long rsVal = rs->getValue();
+    long rtVal = rt->getValue();
+    if ((rsVal < 0) && (rtVal > INT_MAX - rsVal))
+        throw std::overflow_error("Integer Overflow with operation sub");
+    else rd->setValue(rsVal - rtVal);
+}
+
+/**
+ * A member function for instruction subu'
+ * @param rs the pointer address rs register's Register Object
+ * @param rt the pointer address rt register's Register Object
+ * @param rd the pointer address rd register's Register Object
+ */
+void Instructions::RType::_subu(Register* rs, Register* rt, Register* rd) {
+    int rsVal = rs->getValue();
+    int rtVal = rt->getValue();
+    rd->setValue(rsVal - rtVal);
+}
+
+/**
+ * A member function for instruction j
+ * @param pc PC Register's pointer
+ * @param address the address
+ */
+void Instructions::JType::_j(Register* pc, uint32_t address) {
+    pc->setValue(address);
+}
+
+/**
+ * A member function for instruction jal
+ * @param pc PC Register's pointer
+ * @param ra $31 Register($ra)'s address
+ * @param address the address
+ */
+ void Instructions::JType::_jal(Register* pc, Register* ra, uint32_t address){
+    ra->setValue(pc->getValue() + 8);
+    pc->setValue(address);
+}
+
+/**
+ * A member function for instruction jr
+ * @param pc PC Register's pointer
+ * @param rs $rs Register's pointer
+ */
+void Instructions::RType::_jr(Register* pc, Register* rs){
+    pc->setValue(rs->getValue());
+}

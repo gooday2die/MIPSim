@@ -113,3 +113,28 @@ void SimulatorTests::test_and_andi() {
     this->s.printAllRegisters();
 
 }
+
+/**
+ * A member function for class SimulatorTests for testing or and nor instruction
+ */
+void SimulatorTests::test_or_nor() {
+    this->s.printAllRegisters();
+    this->s.getRegister(0)->setValue(0x000000FF);
+    this->s.getRegister(1)->setValue(0x00000011);
+
+    MachineCode a = MachineCode(0b00000000000000010001000000100111, 1);
+    // nor $0 $1 $2
+
+    this->s.executeMachineCode(a);
+    this->s.printAllRegisters();
+
+    this->s.printAllRegisters();
+    this->s.getRegister(0)->setValue(0x000000FF);
+    this->s.getRegister(1)->setValue(0x00000011);
+
+    MachineCode b = MachineCode(0b00000000000000010001000000100101, 1);
+    // 0or $0 $1 $2
+
+    this->s.executeMachineCode(b);
+    this->s.printAllRegisters();
+}
