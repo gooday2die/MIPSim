@@ -9,8 +9,7 @@
 #define MIPSIM_MACHINECODESIMULATOR_H
 #pragma once
 
-#include "MachineCode.h"
-#include "../Register/RegisterHandler.h"
+#include "../Simulator/RegisterHandler.h"
 #include "../Instructions/Instructions.h"
 
 
@@ -19,7 +18,7 @@ private:
     RegisterHandler registerHandler;
 public:
     MachineCodeSimulator(RegisterHandler);
-    void executeCode(MachineCode);
+    void executeCode(uint32_t);
 };
 
 

@@ -12,17 +12,17 @@
 #include <iostream>
 
 #include "../defines.h"
-#include "../Register/RegisterHandler.h"
+#include "RegisterHandler.h"
 #include "../MachineCodes/MachineCodeSimulator.h"
 
 class Simulator {
-private: // this will be later switched to private
+private:
     RegisterHandler registerHandler = RegisterHandler();
     MachineCodeSimulator machineCodeSimulator = MachineCodeSimulator(registerHandler);
 public:
     Simulator();
-    Register* getRegister(int);
-    void executeMachineCode(MachineCode);
+    uint32_t* getRegister(int);
+    void executeMachineCode(uint32_t);
     void printAllRegisters();
 };
 

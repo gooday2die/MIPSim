@@ -10,184 +10,164 @@
 /**
  * A member function for instruction 'add'
  * As MIPS's instruction raises exception when integer overflow happens, this throws overflow_error
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_add(Register* rs, Register* rt, Register* rd) {
-    long rsVal = (signed int) rs->getValue();
-    long rtVal = (signed int) rt->getValue();
-    if ((rsVal > 0) && (rtVal > INT_MAX - rsVal))
-        throw std::overflow_error("Integer Overflow with operation add");
-    else rd->setValue(rsVal + rtVal);
+void Instructions::RType::_add(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    if ((rs > 0) && (rt > INT_MAX - rs))
+        throw std::overflow_error("Integer Overflow with instruction add");
+    else *rd = rs + rt;
 }
 
 /**
- * A member function for instruction addu'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * A member function for instruction 'addu'
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_addu(Register* rs, Register* rt, Register* rd) {
-    int rsVal = (int)rs->getValue();
-    int rtVal = (int)rt->getValue();
-    rd->setValue(rsVal + rtVal);
+void Instructions::RType::_addu(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = rs + rt;
 }
 
 /**
  * A member function for instruction 'and'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_and(Register* rs, Register* rt, Register* rd) {
-    uint32_t rsVal = rs->getValue();
-    uint32_t rtVal = rt->getValue();
-    rd->setValue(rsVal & rtVal);
+void Instructions::RType::_and(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = rs & rt;
 }
 
 /**
  * A member function for instruction 'addi'
  * As MIPS's instruction raises exception when integer overflow happens, this throws overflow_error
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param imm the uint16_t type of immediate value
  */
-void Instructions::IType::_addi(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = (signed int) rs->getValue();
-    if ((rsVal > 0) && (imm > INT_MAX - rsVal)) throw std::overflow_error("Integer Overflow with operation addi");
-    else rt->setValue(rsVal + imm);
+void Instructions::IType::_addi(uint32_t rs, uint32_t* rt, uint16_t imm) {
+    if ((rs > 0) && (imm > INT_MAX - rs))
+        throw std::overflow_error("Integer Overflow with instruction add");
+    else *rt = rs + imm;
 }
 
 /**
  * A member function for instruction 'addiu'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt the pointer address rt register's value
  * @param imm the uint16_t type of immediate value
  */
-void Instructions::IType::_addiu(Register* rs, Register* rt, uint16_t imm) {
-    unsigned int rsVal = (int)rs->getValue();
-    rt->setValue(rsVal + imm);
+void Instructions::IType::_addiu(uint32_t rs, uint32_t* rt, uint16_t imm) {
+    *rt = rs + imm;
 }
 
 /**
  * A member function for instruction 'andi'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt the pointer address rt register's value
  * @param imm the uint16_t type of immediate value
  */
-void Instructions::IType::_andi(Register* rs, Register* rt, uint16_t imm) {
-    uint32_t rsVal = rs->getValue();
-    rt->setValue(rsVal & imm);
+void Instructions::IType::_andi(uint32_t rs, uint32_t* rt, uint16_t imm) {
+    uint32_t rsVal = rs;
+    *rt = rs & imm;
 }
 
 /**
  * A member function for instruction 'nor'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_nor(Register* rs, Register* rt, Register* rd) {
-    uint32_t rsVal = rs->getValue();
-    uint32_t rtVal = rt->getValue();
-    rd->setValue(~(rsVal | rtVal));
+void Instructions::RType::_nor(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = ~(rs | rt);
 }
 
 /**
  * A member function for instruction 'or'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_or(Register* rs, Register* rt, Register* rd) {
-    uint32_t rsVal = rs->getValue();
-    uint32_t rtVal = rt->getValue();
-    rd->setValue(rsVal | rtVal);
+void Instructions::RType::_or(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = (rs | rt);
 }
 
 /**
  * A member function for instruction 'ori'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt the pointer address rt register's value
  * @param imm the uint16_t type of immediate value
  */
-void Instructions::IType::_ori(Register* rs, Register* rt, uint16_t imm) {
-    uint32_t rsVal = rs->getValue();
-    rt->setValue(rsVal | imm);
+void Instructions::IType::_ori(uint32_t rs, uint32_t* rt, uint16_t imm) {
+    *rt = rs | imm;
 }
 
 /**
  * A member function for instruction 'slt'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_slt(Register* rs, Register* rt, Register* rd) {
-    int rsVal = (int)rs->getValue();
-    int rtVal = (int)rt->getValue();
-    rd->setValue(rsVal < rtVal);
+void Instructions::RType::_slt(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = (signed int)rs < (signed int)rt;
 }
 
 /**
  * A member function for instruction 'slti'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt the pointer address rt register's value
  * @param imm the uint16_t type of immediate value
  */
-void Instructions::IType::_slti(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = (int)rs->getValue();
-    rt->setValue(rsVal < (signed int) imm);
+void Instructions::IType::_slti(uint32_t rs, uint32_t* rt, uint16_t imm) {
+    *rt = (signed int)rs < (signed int) imm;
 }
 
 /**
  * A member function for instruction 'sltiu'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt the pointer address rt register's value
  * @param imm the uint16_t type of immediate value
  */
-void Instructions::IType::_sltiu(Register* rs, Register* rt, uint16_t imm) {
-    uint32_t rsVal = rs->getValue();
-    rt->setValue((unsigned int)rsVal < imm);
+void Instructions::IType::_sltiu(uint32_t rs, uint32_t* rt, uint16_t imm) {
+    *rt = rs < imm;
 }
 
 /**
  * A member function for instruction 'sltu'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_sltu(Register* rs, Register* rt, Register* rd) {
-    uint32_t rsVal = rs->getValue();
-    uint32_t rtVal = rt->getValue();
-    rd->setValue((unsigned int) rsVal < (unsigned int)rtVal);
+void Instructions::RType::_sltu(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = rs < rt;
 }
 
 /**
  * A member function for instruction 'sub'
  * As MIPS's instruction raises exception when integer overflow happens, this throws overflow_error
  * For example, when rs was positive, rt was negative this works just like rs + rt. This might be overflowed
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_sub(Register* rs, Register* rt, Register* rd) {
-    long rsVal = (int)rs->getValue();
-    long rtVal = (int)rt->getValue();
-    if ((rsVal < 0) && (rtVal > INT_MAX - rsVal))
+void Instructions::RType::_sub(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    long rsVal = (signed int)rs;
+    long rtVal = (signed int)rt;
+    if ((rtVal < 0) && (rsVal > INT_MAX - rtVal))
         throw std::overflow_error("Integer Overflow with operation sub");
-    else rd->setValue(rsVal - rtVal);
+    else *rd = rs - rt;
 }
 
 /**
  * A member function for instruction subu'
- * @param rs the pointer address rs register's Register Object
- * @param rt the pointer address rt register's Register Object
+ * @param rs integer value of rs register
+ * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
  */
-void Instructions::RType::_subu(Register* rs, Register* rt, Register* rd) {
-    uint32_t rsVal = rs->getValue();
-    uint32_t rtVal = rt->getValue();
-    rd->setValue(rsVal - rtVal);
+void Instructions::RType::_subu(uint32_t rs, uint32_t rt, uint32_t* rd) {
+    *rd = rs - rt;
 }
 
 /**
@@ -195,8 +175,8 @@ void Instructions::RType::_subu(Register* rs, Register* rt, Register* rd) {
  * @param pc PC Register's pointer
  * @param address the address
  */
-void Instructions::JType::_j(Register* pc, uint32_t address) {
-    pc->setValue(address);
+void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
+    *pc = address;
 }
 
 /**
@@ -205,9 +185,9 @@ void Instructions::JType::_j(Register* pc, uint32_t address) {
  * @param ra $31 Register($ra)'s address
  * @param address the address
  */
- void Instructions::JType::_jal(Register* pc, Register* ra, uint32_t address){
-    ra->setValue(pc->getValue() + 8);
-    pc->setValue(address);
+ void Instructions::JType::_jal(uint32_t* pc, uint32_t* ra, uint32_t address){
+    *ra = *pc + 8;
+    *pc = address;
 }
 
 /**
@@ -215,6 +195,6 @@ void Instructions::JType::_j(Register* pc, uint32_t address) {
  * @param pc PC Register's pointer
  * @param rs $rs Register's pointer
  */
-void Instructions::RType::_jr(Register* pc, Register* rs){
-    pc->setValue(rs->getValue());
+void Instructions::RType::_jr(uint32_t* pc, uint32_t rs){
+    *pc = rs;
 }

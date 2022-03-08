@@ -20,7 +20,7 @@ Simulator::Simulator() {
  * @param index the index of the register
  * @return returns Register's pointer
  */
-Register* Simulator::getRegister(int index) {
+uint32_t* Simulator::getRegister(int index) {
     return this->registerHandler.getRegister(index);
 }
 
@@ -28,7 +28,7 @@ Register* Simulator::getRegister(int index) {
  * A member function that executes specific MachineCode
  * @param machineCode the machineCode object to execute
  */
-void Simulator::executeMachineCode(MachineCode machineCode) {
+void Simulator::executeMachineCode(uint32_t machineCode) {
     this->machineCodeSimulator.executeCode(machineCode);
 }
 

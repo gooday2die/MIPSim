@@ -13,8 +13,6 @@
 #include <cstdint>
 #include <cstdio>
 
-#include "Register.h"
-
 
 enum RegisterNames{
      zero = 0,
@@ -53,14 +51,14 @@ enum RegisterNames{
 
 class RegisterHandler {
 private:
-    Register* registers;
-    Register pc = NULL;
+    uint32_t* registers;
+    uint32_t pc;
 
 public:
     RegisterHandler();
-    Register* getRegister(int);
-    Register* getPC();
-    Register* getAllRegisters();
+    uint32_t* getRegister(int);
+    uint32_t* getPC();
+    uint32_t* getAllRegisters();
     void printAllRegisters();
 };
 

@@ -12,36 +12,36 @@
 #include <stdexcept>
 #include <cstdint>
 #include <climits>
-#include "../Register/Register.h"
+
 
 class Instructions {
 public:
     class RType{
     public:
-        static void _add(Register*, Register*, Register*);
-        static void _addu(Register*, Register*, Register*);
-        static void _and(Register*, Register*, Register*);
-        static void _nor(Register*, Register*, Register*);
-        static void _or(Register*, Register*, Register*);
-        static void _slt(Register*, Register*, Register*);
-        static void _sltu(Register*, Register*, Register*);
-        static void _sub(Register*, Register*, Register*);
-        static void _subu(Register*, Register*, Register*);
-        static void _jr(Register*, Register*);
+        static void _add(uint32_t, uint32_t, uint32_t*);
+        static void _addu(uint32_t, uint32_t, uint32_t*);
+        static void _and(uint32_t, uint32_t, uint32_t*);
+        static void _nor(uint32_t, uint32_t, uint32_t*);
+        static void _or(uint32_t, uint32_t, uint32_t*);
+        static void _slt(uint32_t, uint32_t, uint32_t*);
+        static void _sltu(uint32_t, uint32_t, uint32_t*);
+        static void _sub(uint32_t, uint32_t, uint32_t*);
+        static void _subu(uint32_t, uint32_t, uint32_t*);
+        static void _jr(uint32_t*, uint32_t);
     };
     class IType{
     public:
-        static void _addi(Register*, Register*, uint16_t);
-        static void _addiu(Register*, Register*, uint16_t);
-        static void _andi(Register*, Register*, uint16_t);
-        static void _ori(Register*, Register*, uint16_t);
-        static void _slti(Register*, Register*, uint16_t);
-        static void _sltiu(Register*, Register*, uint16_t);
+        static void _addi(uint32_t, uint32_t*, uint16_t);
+        static void _addiu(uint32_t, uint32_t*, uint16_t);
+        static void _andi(uint32_t, uint32_t*, uint16_t);
+        static void _ori(uint32_t, uint32_t*, uint16_t);
+        static void _slti(uint32_t, uint32_t*, uint16_t);
+        static void _sltiu(uint32_t, uint32_t*, uint16_t);
     };
     class JType{
     public:
-        static void _j(Register*, uint32_t);
-        static void _jal(Register*, Register*, uint32_t);
+        static void _j(uint32_t*, uint32_t);
+        static void _jal(uint32_t*, uint32_t*, uint32_t);
     };
 };
 

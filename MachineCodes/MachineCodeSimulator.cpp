@@ -11,11 +11,22 @@ MachineCodeSimulator::MachineCodeSimulator(RegisterHandler argRegisterHandler) {
     this->registerHandler = argRegisterHandler;
 }
 
-void MachineCodeSimulator::executeCode(MachineCode code) {
-    int curCode = code.getcode();
-    uint8_t codeType = code.getCodeType();
-
+void MachineCodeSimulator::executeCode(uint32_t curCode) {
     uint8_t opcode = curCode >> 26; // OPCode's length = 6bit < 8bit
+    uint8_t codeType;
+
+    switch(opcode){ // parse CodeType
+        case 0x00:
+        case 0x10:
+            codeType = 1; // R Type
+            break;
+        case 0x02:
+        case 0x03:
+            codeType = 3; // J Type
+            break;
+        default:
+            codeType = 2; // I Type
+    }
 
     switch(codeType) {
         case 1: {
@@ -31,43 +42,43 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
                 case 0x00: {
                     switch (funct) {
                         case 0x20: // add instruction
-                            Instructions::RType::_add(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_add(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                       registerHandler.getRegister(rd));
                             break;
                         case 0x21: // addu instruction
-                            Instructions::RType::_addu(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_addu(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                        registerHandler.getRegister(rd));
                             break;
                         case 0x22: // sub instruction
-                            Instructions::RType::_sub(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_sub(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                       registerHandler.getRegister(rd));
                             break;
                         case 0x23: // subu instruction
-                            Instructions::RType::_subu(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_subu(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                        registerHandler.getRegister(rd));
                             break;
                         case 0x24: // addu instruction
-                            Instructions::RType::_and(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_and(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                       registerHandler.getRegister(rd));
                             break;
                         case 0x27: // nor instruction
-                            Instructions::RType::_nor(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_nor(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                       registerHandler.getRegister(rd));
                             break;
                         case 0x25: // or instruction
-                            Instructions::RType::_or(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_or(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                      registerHandler.getRegister(rd));
                             break;
                         case 0x2a: // slt instruction
-                            Instructions::RType::_slt(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_slt(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                       registerHandler.getRegister(rd));
                             break;
                         case 0x2b: // sltu instruction
-                            Instructions::RType::_sltu(registerHandler.getRegister(rs), registerHandler.getRegister(rt),
+                            Instructions::RType::_sltu(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
                                                        registerHandler.getRegister(rd));
                             break;
                         case 0x08: // jr instruction
-                            Instructions::RType::_jr(registerHandler.getPC(), registerHandler.getRegister(rs));
+                            Instructions::RType::_jr(registerHandler.getPC(), *registerHandler.getRegister(rs));
                             break;
                         default:
                             throw std::range_error("Unknown Operation");
@@ -87,22 +98,22 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
             //printf("I TYPE : rs : %d / rt : %d / imm : %d\n", rs, rt, imm);
             switch (opcode) {
                 case 0x08: // addi
-                    Instructions::IType::_addi(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    Instructions::IType::_addi(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 case 0x09: // addiu
-                    Instructions::IType::_addiu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    Instructions::IType::_addiu(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 case 0x0C: // andi
-                    Instructions::IType::_andi(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    Instructions::IType::_andi(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 case 0x0D: // ori
-                    Instructions::IType::_ori(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    Instructions::IType::_ori(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 case 0x0A: // stli
-                    Instructions::IType::_slti(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    Instructions::IType::_slti(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 case 0x0B: // stliu
-                    Instructions::IType::_sltiu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    Instructions::IType::_sltiu(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 default:
                     throw std::range_error("Unknown Operation");
@@ -119,8 +130,12 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
                 case 0x03: // jal instruction
                     Instructions::JType::_jal(registerHandler.getPC(), registerHandler.getRegister(31), address);
                     break;
+                default:
+                    throw std::range_error("Unknown Operation");
             }
             break;
         }
+        default:
+            break;
     }
 }
