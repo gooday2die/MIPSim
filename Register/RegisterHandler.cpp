@@ -18,8 +18,8 @@ Register* RegisterHandler::getRegister(int registerIndex) {
     return this->registers + registerIndex;
 }
 
-Register RegisterHandler::getPC(){
-    return this->pc;
+Register* RegisterHandler::getPC(){
+    return &this->pc;
 }
 
 Register* RegisterHandler::getAllRegisters() {

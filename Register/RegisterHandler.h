@@ -59,7 +59,7 @@ private:
 public:
     RegisterHandler();
     Register* getRegister(int);
-    Register getPC();
+    Register* getPC();
     Register* getAllRegisters();
     void printAllRegisters();
 };

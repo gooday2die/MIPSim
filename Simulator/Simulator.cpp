@@ -8,7 +8,33 @@
 #include "Simulator.h"
 
 
-
+/**
+ * A constructor member function for class Simulator
+ */
 Simulator::Simulator() {
     std::cout << "===== MIPSim Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
+}
+
+/**
+ * A member function that gets specific Register's pointer by index
+ * @param index the index of the register
+ * @return returns Register's pointer
+ */
+Register* Simulator::getRegister(int index) {
+    return this->registerHandler.getRegister(index);
+}
+
+/**
+ * A member function that executes specific MachineCode
+ * @param machineCode the machineCode object to execute
+ */
+void Simulator::executeMachineCode(MachineCode machineCode) {
+    this->machineCodeSimulator.executeCode(machineCode);
+}
+
+/**
+ * A member function that prints out all registers
+ */
+void Simulator::printAllRegisters() {
+    this->registerHandler.printAllRegisters();
 }

@@ -16,11 +16,14 @@
 #include "../MachineCodes/MachineCodeSimulator.h"
 
 class Simulator {
-public: // this will be later switched to private
+private: // this will be later switched to private
     RegisterHandler registerHandler = RegisterHandler();
     MachineCodeSimulator machineCodeSimulator = MachineCodeSimulator(registerHandler);
 public:
     Simulator();
+    Register* getRegister(int);
+    void executeMachineCode(MachineCode);
+    void printAllRegisters();
 };
 
 
