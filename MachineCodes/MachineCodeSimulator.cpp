@@ -36,8 +36,20 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
                         case 0x21: // addu instruction
                             Instructions::RType::_addu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
                             break;
-                        case 0x24: // and instruction
+                        case 0x24: // addu instruction
                             Instructions::RType::_and(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
+                        case 0x27: // nor instruction
+                            Instructions::RType::_nor(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
+                        case 0x25: // or instruction
+                            Instructions::RType::_or(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
+                        case 0x2a: // slt instruction
+                            Instructions::RType::_slt(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
+                            break;
+                        case 0x2b: // sltu instruction
+                            Instructions::RType::_sltu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), registerHandler.getRegister(rd));
                             break;
                         default:
                             throw std::range_error("Unknown Operation");
@@ -64,6 +76,15 @@ void MachineCodeSimulator::executeCode(MachineCode code) {
                     break;
                 case 0x0C:
                     Instructions::IType::_andi(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                case 0x0D:
+                    Instructions::IType::_ori(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                case 0x0A:
+                    Instructions::IType::_slti(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                case 0x0B:
+                    Instructions::IType::_sltiu(registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
                 default:
                     throw std::range_error("Unknown Operation");

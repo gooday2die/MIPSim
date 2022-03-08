@@ -21,12 +21,19 @@ public:
         static void _add(Register*, Register*, Register*);
         static void _addu(Register*, Register*, Register*);
         static void _and(Register*, Register*, Register*);
+        static void _nor(Register*, Register*, Register*);
+        static void _or(Register*, Register*, Register*);
+        static void _slt(Register*, Register*, Register*);
+        static void _sltu(Register*, Register*, Register*);
     };
     class IType{
     public:
         static void _addi(Register*, Register*, uint16_t);
         static void _addiu(Register*, Register*, uint16_t);
         static void _andi(Register*, Register*, uint16_t);
+        static void _ori(Register*, Register*, uint16_t);
+        static void _slti(Register*, Register*, uint16_t);
+        static void _sltiu(Register*, Register*, uint16_t);
     };
     class JType{
     public:
