@@ -15,8 +15,8 @@
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_add(Register* rs, Register* rt, Register* rd) {
-    long rsVal = rs->getValue();
-    long rtVal = rt->getValue();
+    long rsVal = (signed int) rs->getValue();
+    long rtVal = (signed int) rt->getValue();
     if ((rsVal > 0) && (rtVal > INT_MAX - rsVal))
         throw std::overflow_error("Integer Overflow with operation add");
     else rd->setValue(rsVal + rtVal);
@@ -29,8 +29,8 @@ void Instructions::RType::_add(Register* rs, Register* rt, Register* rd) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_addu(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    int rsVal = (int)rs->getValue();
+    int rtVal = (int)rt->getValue();
     rd->setValue(rsVal + rtVal);
 }
 
@@ -41,8 +41,8 @@ void Instructions::RType::_addu(Register* rs, Register* rt, Register* rd) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_and(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    uint32_t rsVal = rs->getValue();
+    uint32_t rtVal = rt->getValue();
     rd->setValue(rsVal & rtVal);
 }
 
@@ -54,7 +54,7 @@ void Instructions::RType::_and(Register* rs, Register* rt, Register* rd) {
  * @param imm the uint16_t type of immediate value
  */
 void Instructions::IType::_addi(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = rs->getValue();
+    int rsVal = (signed int) rs->getValue();
     if ((rsVal > 0) && (imm > INT_MAX - rsVal)) throw std::overflow_error("Integer Overflow with operation addi");
     else rt->setValue(rsVal + imm);
 }
@@ -66,7 +66,7 @@ void Instructions::IType::_addi(Register* rs, Register* rt, uint16_t imm) {
  * @param imm the uint16_t type of immediate value
  */
 void Instructions::IType::_addiu(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = rs->getValue();
+    unsigned int rsVal = (int)rs->getValue();
     rt->setValue(rsVal + imm);
 }
 
@@ -77,7 +77,7 @@ void Instructions::IType::_addiu(Register* rs, Register* rt, uint16_t imm) {
  * @param imm the uint16_t type of immediate value
  */
 void Instructions::IType::_andi(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = rs->getValue();
+    uint32_t rsVal = rs->getValue();
     rt->setValue(rsVal & imm);
 }
 
@@ -88,8 +88,8 @@ void Instructions::IType::_andi(Register* rs, Register* rt, uint16_t imm) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_nor(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    uint32_t rsVal = rs->getValue();
+    uint32_t rtVal = rt->getValue();
     rd->setValue(~(rsVal | rtVal));
 }
 
@@ -100,8 +100,8 @@ void Instructions::RType::_nor(Register* rs, Register* rt, Register* rd) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_or(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    uint32_t rsVal = rs->getValue();
+    uint32_t rtVal = rt->getValue();
     rd->setValue(rsVal | rtVal);
 }
 
@@ -112,7 +112,7 @@ void Instructions::RType::_or(Register* rs, Register* rt, Register* rd) {
  * @param imm the uint16_t type of immediate value
  */
 void Instructions::IType::_ori(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = rs->getValue();
+    uint32_t rsVal = rs->getValue();
     rt->setValue(rsVal | imm);
 }
 
@@ -123,8 +123,8 @@ void Instructions::IType::_ori(Register* rs, Register* rt, uint16_t imm) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_slt(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    int rsVal = (int)rs->getValue();
+    int rtVal = (int)rt->getValue();
     rd->setValue(rsVal < rtVal);
 }
 
@@ -135,7 +135,7 @@ void Instructions::RType::_slt(Register* rs, Register* rt, Register* rd) {
  * @param imm the uint16_t type of immediate value
  */
 void Instructions::IType::_slti(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = rs->getValue();
+    int rsVal = (int)rs->getValue();
     rt->setValue(rsVal < (signed int) imm);
 }
 
@@ -146,7 +146,7 @@ void Instructions::IType::_slti(Register* rs, Register* rt, uint16_t imm) {
  * @param imm the uint16_t type of immediate value
  */
 void Instructions::IType::_sltiu(Register* rs, Register* rt, uint16_t imm) {
-    int rsVal = rs->getValue();
+    uint32_t rsVal = rs->getValue();
     rt->setValue((unsigned int)rsVal < imm);
 }
 
@@ -157,8 +157,8 @@ void Instructions::IType::_sltiu(Register* rs, Register* rt, uint16_t imm) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_sltu(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    uint32_t rsVal = rs->getValue();
+    uint32_t rtVal = rt->getValue();
     rd->setValue((unsigned int) rsVal < (unsigned int)rtVal);
 }
 
@@ -171,8 +171,8 @@ void Instructions::RType::_sltu(Register* rs, Register* rt, Register* rd) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_sub(Register* rs, Register* rt, Register* rd) {
-    long rsVal = rs->getValue();
-    long rtVal = rt->getValue();
+    long rsVal = (int)rs->getValue();
+    long rtVal = (int)rt->getValue();
     if ((rsVal < 0) && (rtVal > INT_MAX - rsVal))
         throw std::overflow_error("Integer Overflow with operation sub");
     else rd->setValue(rsVal - rtVal);
@@ -185,8 +185,8 @@ void Instructions::RType::_sub(Register* rs, Register* rt, Register* rd) {
  * @param rd the pointer address rd register's Register Object
  */
 void Instructions::RType::_subu(Register* rs, Register* rt, Register* rd) {
-    int rsVal = rs->getValue();
-    int rtVal = rt->getValue();
+    uint32_t rsVal = rs->getValue();
+    uint32_t rtVal = rt->getValue();
     rd->setValue(rsVal - rtVal);
 }
 

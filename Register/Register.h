@@ -19,9 +19,9 @@ class Register {
 private:
     uint32_t value; // the 32 bit value stored in a register
 public:
-    Register(int);
-    int getValue();
-    void setValue(int);
+    Register(uint32_t);
+    uint32_t getValue();
+    void setValue(uint32_t);
 };
 
 
