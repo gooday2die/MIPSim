@@ -28,6 +28,9 @@ public:
         static void _sub(uint32_t, uint32_t, uint32_t*);
         static void _subu(uint32_t, uint32_t, uint32_t*);
         static void _jr(uint32_t*, uint32_t);
+        static void _sll(uint32_t, uint32_t*, uint8_t);
+        static void _srl(uint32_t, uint32_t*, uint8_t);
+
     };
     class IType{
     public:

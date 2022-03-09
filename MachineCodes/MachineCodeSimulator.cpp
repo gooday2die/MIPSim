@@ -80,6 +80,12 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
                         case 0x08: // jr instruction
                             Instructions::RType::_jr(registerHandler.getPC(), *registerHandler.getRegister(rs));
                             break;
+                        case 0x00: // sll instruction
+                            Instructions::RType::_sll(*registerHandler.getRegister(rt), registerHandler.getRegister(rd), shamt);
+                            break;
+                        case 0x02: // srl instruction
+                            Instructions::RType::_srl(*registerHandler.getRegister(rt), registerHandler.getRegister(rd), shamt);
+                            break;
                         default:
                             throw std::range_error("Unknown Operation");
                     }

@@ -198,3 +198,22 @@ void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
 void Instructions::RType::_jr(uint32_t* pc, uint32_t rs){
     *pc = rs;
 }
+
+/**
+ * A member function for instruction jr
+ * @param pc PC Register's pointer
+ * @param rs $rs Register's pointer
+ */
+void Instructions::RType::_sll(uint32_t rt, uint32_t* rd, uint8_t shamt){
+    *rd = rt << shamt;
+}
+
+/**
+ * A member function for instruction jr
+ * @param pc PC Register's pointer
+ * @param rs $rs Register's pointer
+ */
+void Instructions::RType::_srl(uint32_t rt, uint32_t* rd, uint8_t shamt){
+    *rd = rt >> shamt;
+}
+
