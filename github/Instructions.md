@@ -8,8 +8,8 @@ Following instructions of MIPS assembly are currently supported with `MIPSim`. `
 |addu|0x00|0x21| R | Overflow Detection
 |and|0x00|0x24| R 
 |andi|0x0C|NA| I
-|beq|0x04|NA| I | Limitations (here)
-|bne|0x05|NA| I | Limitations (here)
+|beq|0x04|NA| I | Limitations ([here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Limitations.md))
+|bne|0x05|NA| I | Limitations ([here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Limitations.md))
 |j|0x02|NA| J
 |jal|0x03|NA| J
 |jr|0x00|0x08| R

@@ -13,7 +13,7 @@ This project uses [CMake](https://cmake.org/).
 4. `make`
 
 ## Supported Instructions
-Check **Here** for more information.
+Check **[Here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Instructions.md)** for more information.
 
 ## Limitations to Implementations
-Check **Here** for more information.
+Check **[Here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Limitations.md)** for more information.
