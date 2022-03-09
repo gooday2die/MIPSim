@@ -18,7 +18,7 @@
 /**
      * A enumeration that sets all mnemonics into machine code.
      * Each machine code is just an example of those mnemonics and they will have all parameters as 0x00
-     * For example, enum add will be having just 0b00000000000000000000000000100000 as its value.
+     * For example, enum add will be having just 0x00000020 as its value.
      */
 enum Mnemonic{
     _add = 0x00000020,

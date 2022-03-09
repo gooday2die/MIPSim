@@ -10,14 +10,13 @@
 #pragma once
 
 #include "Simulator.h"
+#include "../Parser/Assembler.h"
 
 class SimulatorTests {
 private:
 public:
     SimulatorTests(){};
-    void test_add_addi();
-    //void test_slt_slti();
-    //void test_sltu_sltiu();
+    void test1();
 };
 
 

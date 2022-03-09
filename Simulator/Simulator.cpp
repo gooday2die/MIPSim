@@ -42,6 +42,9 @@ void Simulator::printAllRegisters() {
     this->registerHandler.printAllRegisters();
 }
 
+/**
+ * A member function that runs the codes in the memory.
+ */
 void Simulator::run() {
     clock_t begin = clock();
     printf("Starting Job...\n");
