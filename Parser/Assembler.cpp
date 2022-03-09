@@ -29,7 +29,7 @@ uint32_t Assembler::generateMachineCode(const char* expression) {
             codeType = 3;
             break;
         default:
-            throw std::exception("Unknown instruction type");
+            throw std::range_error("Unknown instruction type");
     }
 
     std::string space_delimiter = " ";
