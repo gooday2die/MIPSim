@@ -13,14 +13,9 @@
 
 class SimulatorTests {
 private:
-    uint32_t test[1] = {0xFFFFFFFF};
-    Simulator s = Simulator(test);
 public:
-    SimulatorTests();
+    SimulatorTests(){};
     void test_add_addi();
-    void test_addu_addiu();
-    void test_and_andi();
-    void test_or_nor();
     //void test_slt_slti();
     //void test_sltu_sltiu();
 };

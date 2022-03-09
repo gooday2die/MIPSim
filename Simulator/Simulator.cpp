@@ -11,9 +11,10 @@
 /**
  * A constructor member function for class Simulator
  */
-Simulator::Simulator(uint32_t *argBranches){
+Simulator::Simulator(uint32_t *argBranches, uint32_t* argMemory){
     this->branches = argBranches;
     this->machineCodeSimulator.setBranches(this->branches);
+    this->memory = argMemory;
     std::cout << "===== MIPSim Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
 }
 
@@ -39,4 +40,24 @@ void Simulator::executeMachineCode(uint32_t machineCode) {
  */
 void Simulator::printAllRegisters() {
     this->registerHandler.printAllRegisters();
+}
+
+void Simulator::run() {
+    clock_t begin = clock();
+    printf("Starting Job...\n");
+
+    while (true){
+        uint32_t curMachineCode = this->memory[*this->registerHandler.getPC()];
+        if (curMachineCode == 0xF0F0F0F0) break;
+        printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", *this->registerHandler.getPC(), curMachineCode);
+        try {
+            this->executeMachineCode(curMachineCode);
+        } catch(std::exception e) {
+            std::cout << "Exception : " << e.what() << std::endl;
+        }
+        *this->registerHandler.getPC() = *this->registerHandler.getPC() + 1;
+    }
+    clock_t end = clock();
+
+    printf("Finished in %f \n", (double)(end - begin) / CLOCKS_PER_SEC);
 }

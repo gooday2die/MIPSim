@@ -20,11 +20,13 @@ private:
     RegisterHandler registerHandler = RegisterHandler();
     MachineCodeSimulator machineCodeSimulator = MachineCodeSimulator(registerHandler);
     uint32_t* branches;
+    uint32_t* memory;
 public:
-    Simulator(uint32_t *argBranches);
+    Simulator(uint32_t*, uint32_t*);
     uint32_t* getRegister(int);
     void executeMachineCode(uint32_t);
     void printAllRegisters();
+    void run();
 };
 
 

@@ -7,15 +7,27 @@
 
 #include "MachineCodeSimulator.h"
 
+/**
+ * A constructor member function for MachineCodeSimulator
+ * @param argRegisterHandler the RegisterHandler object for this machine code simulator
+ */
 MachineCodeSimulator::MachineCodeSimulator(RegisterHandler argRegisterHandler) {
     this->registerHandler = argRegisterHandler;
 }
 
-void MachineCodeSimulator::setBranches(uint32_t * branches) {
-    this->branches = branches;
+/**
+ * A member function that sets branches to the machine code simulator
+ * @param branches the total branches's pointer
+ */
+void MachineCodeSimulator::setBranches(uint32_t* argBranches) {
+    this->branches = argBranches;
     this->branchCount = this->getBranchCount();
 }
 
+/**
+ * A member function for class MachineCodeSimulator for executing a single machine code
+ * @param curCode the uint32_t type machine code.
+ */
 void MachineCodeSimulator::executeCode(uint32_t curCode) {
     uint8_t opcode = curCode >> 26; // OPCode's length = 6bit < 8bit
     uint8_t codeType;
