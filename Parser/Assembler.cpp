@@ -66,7 +66,7 @@ uint32_t Assembler::generateMachineCode(const char* expression) {
             uint32_t rd = std::stoi(rdString); // store rd
 
             if ((rs > 31) || (rt > 31) || (rd > 31)) {
-                throw std::exception("Invalid Register");
+                throw std::range_error("Invalid register");
             } else { // all R type instructions. However, sll and srl is moved into I type instruction.
                 if (instructionString == "add") totalInstruction = Mnemonic::_add;
                 else if (instructionString == "addu") totalInstruction = Mnemonic::_addu;
@@ -106,7 +106,7 @@ uint32_t Assembler::generateMachineCode(const char* expression) {
             uint16_t imm = std::stoi(words[3]); // store imm
 
             if ((rs > 31) || (rt > 31)) { // not going to detect imm is overflowing or not
-                throw std::exception("Invalid Register");
+                throw std::range_error("Invalid register");
             } else{ // all I type instructions
                 /**
                  * Since we count registers when parsing instruction type, sll and srl instructions are kind of meh.
@@ -169,5 +169,5 @@ uint32_t Assembler::generateMachineCode(const char* expression) {
             return totalInstruction;
         }
     }
-    throw std::exception("Invalid instruction type");
+    throw std::range_error("Unknown Instruction Type");
 }
