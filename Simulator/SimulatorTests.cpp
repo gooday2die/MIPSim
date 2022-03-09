@@ -7,6 +7,10 @@
 
 #include "SimulatorTests.h"
 
+SimulatorTests::SimulatorTests() {
+    ;
+}
+
 /**
  * A member function for class SimulatorTests for testing addi and add instruction
  */

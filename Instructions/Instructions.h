@@ -40,6 +40,8 @@ public:
         static void _ori(uint32_t, uint32_t*, uint16_t);
         static void _slti(uint32_t, uint32_t*, uint16_t);
         static void _sltiu(uint32_t, uint32_t*, uint16_t);
+        static void _beq(uint32_t, uint32_t, uint32_t, uint32_t*);
+        static void _bne(uint32_t, uint32_t, uint32_t, uint32_t*);
     };
     class JType{
     public:

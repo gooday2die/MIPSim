@@ -19,8 +19,9 @@ class Simulator {
 private:
     RegisterHandler registerHandler = RegisterHandler();
     MachineCodeSimulator machineCodeSimulator = MachineCodeSimulator(registerHandler);
+    uint32_t* branches;
 public:
-    Simulator();
+    Simulator(uint32_t *argBranches);
     uint32_t* getRegister(int);
     void executeMachineCode(uint32_t);
     void printAllRegisters();

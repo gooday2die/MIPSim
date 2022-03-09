@@ -11,6 +11,11 @@ MachineCodeSimulator::MachineCodeSimulator(RegisterHandler argRegisterHandler) {
     this->registerHandler = argRegisterHandler;
 }
 
+void MachineCodeSimulator::setBranches(uint32_t * branches) {
+    this->branches = branches;
+    this->branchCount = this->getBranchCount();
+}
+
 void MachineCodeSimulator::executeCode(uint32_t curCode) {
     uint8_t opcode = curCode >> 26; // OPCode's length = 6bit < 8bit
     uint8_t codeType;
@@ -103,23 +108,33 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
             uint16_t imm = curCode & 0xFFFF; // imm length = 16 bit
             //printf("I TYPE : rs : %d / rt : %d / imm : %d\n", rs, rt, imm);
             switch (opcode) {
-                case 0x08: // addi
+                case 0x08: // addi instruction
                     Instructions::IType::_addi(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
-                case 0x09: // addiu
+                case 0x09: // addiu instruction
                     Instructions::IType::_addiu(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
-                case 0x0C: // andi
+                case 0x0C: // andi instruction
                     Instructions::IType::_andi(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
-                case 0x0D: // ori
+                case 0x0D: // ori instruction
                     Instructions::IType::_ori(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
-                case 0x0A: // stli
+                case 0x0A: // stli instruction
                     Instructions::IType::_slti(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
                     break;
-                case 0x0B: // stliu
+                case 0x0B: // stliu instruction
                     Instructions::IType::_sltiu(*registerHandler.getRegister(rs), registerHandler.getRegister(rt), imm);
+                    break;
+                case 0x04: //beq instruction
+                    if (imm > this->branchCount) throw std::range_error("Unknown Branch");
+                    else Instructions::IType::_beq(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
+                                              branches[imm], registerHandler.getPC());
+                    break;
+                case 0x05: //bne instruction
+                    if (imm > this->branchCount) throw std::range_error("Unknown Branch");
+                    else Instructions::IType::_bne(*registerHandler.getRegister(rs), *registerHandler.getRegister(rt),
+                                                   branches[imm], registerHandler.getPC());
                     break;
                 default:
                     throw std::range_error("Unknown Operation");
@@ -144,4 +159,17 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
         default:
             break;
     }
+}
+
+/**
+ * A member function that counts total branches.
+ * The last branch MUST contain 0xFFFFFFFF as it's value so that the branches are over.
+ * @return total Count of Branches.
+ */
+uint16_t MachineCodeSimulator::getBranchCount() {
+    uint16_t totalBranches = 0;
+    while (this->branches[totalBranches] != 0xFFFFFFFF){
+        totalBranches++;
+    }
+    return totalBranches;
 }

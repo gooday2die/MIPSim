@@ -13,8 +13,10 @@
 
 class SimulatorTests {
 private:
-    Simulator s = Simulator();
+    uint32_t test[1] = {0xFFFFFFFF};
+    Simulator s = Simulator(test);
 public:
+    SimulatorTests();
     void test_add_addi();
     void test_addu_addiu();
     void test_and_andi();

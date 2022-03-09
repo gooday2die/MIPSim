@@ -161,7 +161,7 @@ void Instructions::RType::_sub(uint32_t rs, uint32_t rt, uint32_t* rd) {
 }
 
 /**
- * A member function for instruction subu'
+ * A member function for instruction 'subu'
  * @param rs integer value of rs register
  * @param rt integer value of rt register
  * @param rd the pointer address rd register's Register Object
@@ -171,7 +171,7 @@ void Instructions::RType::_subu(uint32_t rs, uint32_t rt, uint32_t* rd) {
 }
 
 /**
- * A member function for instruction j
+ * A member function for instruction 'j'
  * @param pc PC Register's pointer
  * @param address the address
  */
@@ -180,7 +180,7 @@ void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
 }
 
 /**
- * A member function for instruction jal
+ * A member function for instruction 'jal'
  * @param pc PC Register's pointer
  * @param ra $31 Register($ra)'s address
  * @param address the address
@@ -191,7 +191,7 @@ void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
 }
 
 /**
- * A member function for instruction jr
+ * A member function for instruction 'jr'
  * @param pc PC Register's pointer
  * @param rs $rs Register's pointer
  */
@@ -200,7 +200,7 @@ void Instructions::RType::_jr(uint32_t* pc, uint32_t rs){
 }
 
 /**
- * A member function for instruction jr
+ * A member function for instruction 'sll'
  * @param pc PC Register's pointer
  * @param rs $rs Register's pointer
  */
@@ -209,7 +209,7 @@ void Instructions::RType::_sll(uint32_t rt, uint32_t* rd, uint8_t shamt){
 }
 
 /**
- * A member function for instruction jr
+ * A member function for instruction 'srl'
  * @param pc PC Register's pointer
  * @param rs $rs Register's pointer
  */
@@ -217,3 +217,24 @@ void Instructions::RType::_srl(uint32_t rt, uint32_t* rd, uint8_t shamt){
     *rd = rt >> shamt;
 }
 
+/**
+ * A member function for instruction 'beq'
+ * @param rs the rs register value
+ * @param rt the rt register value
+ * @param branchAddr the branch address to set pc
+ * @param pc the pointer of pc
+ */
+void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
+    if (rs == rt) *pc = branchAddr;
+}
+
+/**
+ * A member function for instruction 'beq'
+ * @param rs the rs register value
+ * @param rt the rt register value
+ * @param branchAddr the branch address to set pc
+ * @param pc the pointer of pc
+ */
+void Instructions::IType::_bne(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
+    if (rs != rt) *pc = branchAddr;
+}

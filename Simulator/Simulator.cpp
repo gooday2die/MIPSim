@@ -11,7 +11,9 @@
 /**
  * A constructor member function for class Simulator
  */
-Simulator::Simulator() {
+Simulator::Simulator(uint32_t *argBranches){
+    this->branches = argBranches;
+    this->machineCodeSimulator.setBranches(this->branches);
     std::cout << "===== MIPSim Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
 }
 
