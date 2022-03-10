@@ -7,7 +7,7 @@
 
 #ifndef MIPSIM_FILEREADER_H
 #define MIPSIM_FILEREADER_H
-
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -15,7 +15,10 @@
 #include <queue>
 
 class FileReader {
-
+private:
+    std::queue<std::string> allExpressions;
+public:
+    FileReader(const char*);
 };
 
 

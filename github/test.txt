@@ -1,0 +1,14 @@
+start:
+        andi $1, $1, 0 # 0
+        andi $2, $2, 0 # 4
+        andi $5, $5, 0 # 8
+        addi $5, $5, 4 # C
+loop:
+        addi $2, $2, 1 # 10
+        beq $2, $5, exit #14
+        j loop #18
+exit:
+        addi $10, $10, 100 # 1c
+
+pc = 10
+        
