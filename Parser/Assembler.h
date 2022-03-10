@@ -2,7 +2,7 @@
 // @file : Assembler.
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
+// @brief : A file that defines all attributes and member functions for class Assembler
 // @date: 2022-03-09
 
 #ifndef MIPSIM_ASSEMBLER_H
