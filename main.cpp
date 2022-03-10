@@ -2,7 +2,7 @@
 
 int main(int argc, char**argv){
     //argHandler(argc, argv);
-    FileReader fr = FileReader(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
+    Assembler as = Assembler(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
     return 0;
 }
 
@@ -23,7 +23,8 @@ void argHandler(int argc, char** argv) {
                 break;
             case runFile: {
                 std::cout << "Running file : " << std::endl;
-                FileReader fr = FileReader(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
+                //FileReader fr = FileReader(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
+                Assembler as = Assembler(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
                 break;
             }
             case dev:

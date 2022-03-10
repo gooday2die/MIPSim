@@ -9,10 +9,7 @@
 #define MIPSIM_MAIN_H
 #pragma once
 
-#include "Simulator/SimulatorTests.h"
-#include "Parser/Assembler.h"
-#include "Simulator/Simulator.h"
-#include "Parser/FileReader.h"
+#include "./Parser/Assembler.h"
 
 #include <iostream>
 #include <queue>

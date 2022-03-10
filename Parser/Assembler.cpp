@@ -1,173 +1,99 @@
 //
-// @file : Assembler.
+// @file : Assembler.cpp
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that implements all member functions for class Assembler
-// @date: 2022-03-09
+// @date: 2022-03-10
 
 #include "Assembler.h"
 
 /**
- * A member function for class Assembler that translates into machine code from const char* expression.
- * @param expression the const char* expression to translate into machine code
- * @return uint32_t type machine code that was parsed from expression.
+ * A constructor member function for class Assembler.
+ * This does the following things.
+ * 1. Read file
+ * 2. Preprocess the expressions and instructions
+ * 3. Manage branches and all necessary things
+ * 4. Translate into Machine code
+ * 5. Execute machine code using Simulator
+ * @param fileName
  */
-uint32_t Assembler::generateMachineCode(const char* expression) {
-    std::string s = expression;
-    uint8_t registerCount = std::count(s.begin(), s.end(), '$'); // count how many $ exists.
-    uint8_t codeType;
-    uint32_t totalInstruction = 0;
+Assembler::Assembler(const char* fileName) {
+    FileReader fileReader = FileReader(fileName); // Read file
+    this->allExpressions = fileReader.getAllExpressions(); // get all expressions
+    this->allBranches = fileReader.getAllBranches(); // get all branches
+    this->allMachineCodes = (uint32_t *) malloc(sizeof(uint32_t) * (this->allExpressions.size() + 1));
+    // we also need 0xF0F0F0F0, so we need size + 1
+    this->allMachineCodes[this->allExpressions.size()] = 0xF0F0F0F0; // let our program know it was last instruction
+    uint32_t* branches = (uint32_t*) malloc(sizeof(uint32_t) * (this->allBranches.size() + 1));
+    // all branches in one uint32_t array. Also, 0xFFFFFFFF denotes the last of the branch, so we need size + 1
 
-    switch (registerCount) { // count registers
-        case 3: // R type
-            codeType = 1;
-            break;
-        case 2: // I type
-            codeType = 2;
-            break;
-        case 0: // J type
-            codeType = 3;
-            break;
-        default:
-            throw std::range_error("Unknown instruction type");
+    translateAll(); // translate all assembly code into machine code instructions.
+
+    for(uint32_t i = 0 ; i < this->allExpressions.size() ; i++) // Just print all Instructions and all machine codes
+        printf("CurCode Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
+
+    uint32_t branchCount = 0; // dump all branches
+    for (auto const& y : this->allBranches){  // get all branches
+        branches[branchCount] = y.second;
+        branchCount++;
     }
 
-    std::string space_delimiter = " ";
-    std::vector<std::string> words{};
+    Simulator simulator = Simulator(branches, this->allMachineCodes); // intialize
+    simulator.printAllRegisters(); // print registers
+    simulator.run(); // then run
+    simulator.printAllRegisters(); // print registers
+}
 
-    size_t pos = 0;
-    /**
-     * A bit of bug here. If the expression string does not have whitespace in the end of expression, it does not
-     * recognize 3rd parameter as its value. Thus put a whitespace in every expressions.
-     */
-    while ((pos = s.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
-        words.push_back(s.substr(0, pos));
-        s.erase(0, pos + space_delimiter.length());
+/**
+ * A member function that replaces branch string into the instruction address
+ * @param curExpression the string object of expression to change branch into instruction address
+ * @return returns string object that contains the instruction instead of branch string
+ */
+std::string Assembler::replaceBranches(std::string curExpression) {
+    for (auto const& y : this->allBranches){  // get all branches
+        std::string branchString = y.first;
+        replaceString(curExpression, branchString, std::to_string(y.second - 1));
     }
+    return curExpression;
+}
 
-    std::string instructionString = words[0]; // store instruction
+/**
+ * A member function that replaces substring to another in a string
+ * @param str the original string
+ * @param from the string to be changed
+ * @param to the string to change into
+ * @return returns true if there were any changes, false if not
+ */
+bool Assembler::replaceString(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
 
-    switch(codeType){
-        case 1: { // R Type instructions
-            //std::cout << "R TYPE " << std::endl;
+/**
+ * A member function that translates a single line into a machine code
+ * @param curLine the current line to translate into
+ * @return returns uint32_t type machine code that was translated from original
+ */
+uint32_t Assembler::translateLine(std::string curLine) {
+    std::string curTranslated = replaceBranches(curLine);
+    uint32_t result = Translator::generateMachineCode(curTranslated.c_str());
+    return result;
+}
 
-            std::string rsString = words[1];
-            std::string rtString = words[2];
-            std::string rdString = words[3];
-
-            rsString.erase(std::remove(rsString.begin(), rsString.end(), '$'), rsString.end());
-            rsString.erase(std::remove(rsString.begin(), rsString.end(), ','), rsString.end());
-            rtString.erase(std::remove(rtString.begin(), rtString.end(), '$'), rtString.end());
-            rtString.erase(std::remove(rtString.begin(), rtString.end(), ','), rtString.end());
-            rdString.erase(std::remove(rdString.begin(), rdString.end(), '$'), rdString.end());
-
-            uint32_t rs = std::stoi(rsString); // store rs
-            uint32_t rt = std::stoi(rtString); // store rt
-            uint32_t rd = std::stoi(rdString); // store rd
-
-            if ((rs > 31) || (rt > 31) || (rd > 31)) {
-                throw std::range_error("Invalid register");
-            } else { // all R type instructions. However, sll and srl is moved into I type instruction.
-                if (instructionString == "add") totalInstruction = Mnemonic::_add;
-                else if (instructionString == "addu") totalInstruction = Mnemonic::_addu;
-                else if (instructionString == "and") totalInstruction = Mnemonic::_and;
-                else if (instructionString == "nor") totalInstruction = Mnemonic::_nor;
-                else if (instructionString == "or") totalInstruction = Mnemonic::_or;
-                else if (instructionString == "slt") totalInstruction = Mnemonic::_slt;
-                else if (instructionString == "sltu") totalInstruction = Mnemonic::_sltu;
-                else if (instructionString == "sub") totalInstruction = Mnemonic::_sub;
-                else if (instructionString == "subu") totalInstruction = Mnemonic::_subu;
-                else if (instructionString == "jr") totalInstruction = Mnemonic::_jr;
-            }
-
-            rs = rs << 21;
-            rt = rt << 16;
-            rd = rd << 11;
-
-            totalInstruction = totalInstruction | rs;
-            totalInstruction = totalInstruction | rt;
-            totalInstruction = totalInstruction | rd;
-
-            return totalInstruction;
-        }
-        case 2:{
-            //std::cout << "I TYPE " << std::endl;
-
-            std::string rsString = words[1];
-            std::string rtString = words[2];
-
-            rsString.erase(std::remove(rsString.begin(), rsString.end(), '$'), rsString.end());
-            rsString.erase(std::remove(rsString.begin(), rsString.end(), ','), rsString.end());
-            rtString.erase(std::remove(rtString.begin(), rtString.end(), '$'), rtString.end());
-            rtString.erase(std::remove(rtString.begin(), rtString.end(), ','), rtString.end());
-
-            uint32_t rs = std::stoi(rsString); // store rs
-            uint32_t rt = std::stoi(rtString); // store rt
-            uint16_t imm = std::stoi(words[3]); // store imm
-
-            if ((rs > 31) || (rt > 31)) { // not going to detect imm is overflowing or not
-                throw std::range_error("Invalid register");
-            } else{ // all I type instructions
-                /**
-                 * Since we count registers when parsing instruction type, sll and srl instructions are kind of meh.
-                 * sll and srl instructions use only rd and rt register which is similar to I type instruction rather
-                 * than the R type instructions. Thus in this assembler sll and srl is implemented as I type instruction
-                 * instead of R type instructions.
-                 */
-                if (instructionString == "addi") totalInstruction = Mnemonic::_addi;
-                else if (instructionString == "addiu") totalInstruction = Mnemonic::_addiu;
-                else if (instructionString == "andi") totalInstruction = Mnemonic::_andi;
-                else if (instructionString == "ori") totalInstruction = Mnemonic::_ori;
-                else if (instructionString == "slti") totalInstruction = Mnemonic::_slti;
-                else if (instructionString == "sltiu") totalInstruction = Mnemonic::_sltiu;
-                else if (instructionString == "beq") totalInstruction = Mnemonic::_beq;
-                else if (instructionString == "bne") totalInstruction = Mnemonic::_bne;
-                else if (instructionString == "sll"){
-                    totalInstruction = Mnemonic::_sll; // was R type
-                    rs = rs << 16;
-                    rt = rt << 11;
-                    uint32_t shamt = imm << 6;
-
-                    totalInstruction = totalInstruction | rs;
-                    totalInstruction = totalInstruction | rt;
-                    totalInstruction = totalInstruction | shamt;
-
-                    return totalInstruction;
-                }
-                else if (instructionString == "srl"){
-                    totalInstruction = Mnemonic::_srl; // was R type
-
-                    rs = rs << 16;
-                    rt = rt << 11;
-                    uint32_t shamt = imm << 6;
-
-                    totalInstruction = totalInstruction | rs;
-                    totalInstruction = totalInstruction | rt;
-                    totalInstruction = totalInstruction | shamt;
-
-                    return totalInstruction;
-                }
-            }
-
-            rs = rs << 21;
-            rt = rt << 16;
-
-            totalInstruction = totalInstruction | rs;
-            totalInstruction = totalInstruction | rt;
-            totalInstruction = totalInstruction | imm;
-
-            return totalInstruction;
-        }
-        case 3:{ // j type
-            //std::cout << "J TYPE " << std::endl;
-
-            uint32_t address = std::stoi(words[1]); // store address
-            if (instructionString == "j") totalInstruction = Mnemonic::_j;
-            else if (instructionString == "jal") totalInstruction = Mnemonic::_jal;
-            totalInstruction = totalInstruction | address;
-
-            return totalInstruction;
-        }
+/**
+ * A member function that translates all expressions into machine code.
+ * This saves all machine codes into the allMachineCodes variable.
+ */
+void Assembler::translateAll(){
+    uint32_t curIndex = 0;
+    for (auto const& y : this->allExpressions){  // get all expressions
+        std::string curExpression = y.second;
+        curExpression = replaceBranches(curExpression);
+        uint32_t curMachineCode = translateLine(curExpression);
+        this->allMachineCodes[curIndex] = curMachineCode;
+        curIndex++;
     }
-    throw std::range_error("Unknown Instruction Type");
 }

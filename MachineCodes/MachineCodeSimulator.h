@@ -15,14 +15,15 @@
 
 class MachineCodeSimulator {
 private:
-    RegisterHandler registerHandler;
+    RegisterHandler* registerHandler;
     uint32_t* branches;
     uint16_t branchCount;
 public:
-    MachineCodeSimulator(RegisterHandler);
+    MachineCodeSimulator(RegisterHandler*);
     void executeCode(uint32_t);
     uint16_t getBranchCount();
     void setBranches(uint32_t*);
+    uint32_t getPC();
 };
 
 

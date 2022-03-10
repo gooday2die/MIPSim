@@ -11,7 +11,7 @@
  * A member function for class SimulatorTests for testing addi, add, sub, srl, sll
  */
 void SimulatorTests::test1(){
-    Assembler a = Assembler();
+    Translator a = Translator();
     uint32_t r1 = a.generateMachineCode("addi $1, $1, 10 ");
     uint32_t r2 = a.generateMachineCode("addi $2, $2, 15 ");
     uint32_t r3 = a.generateMachineCode("add $1, $2, $3 ");

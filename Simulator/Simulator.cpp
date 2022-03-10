@@ -24,7 +24,7 @@ Simulator::Simulator(uint32_t *argBranches, uint32_t* argMemory){
  * @return returns Register's pointer
  */
 uint32_t* Simulator::getRegister(int index) {
-    return this->registerHandler.getRegister(index);
+    return this->registerHandler->getRegister(index);
 }
 
 /**
@@ -39,7 +39,7 @@ void Simulator::executeMachineCode(uint32_t machineCode) {
  * A member function that prints out all registers
  */
 void Simulator::printAllRegisters() {
-    this->registerHandler.printAllRegisters();
+    this->registerHandler->printAllRegisters();
 }
 
 /**
@@ -50,15 +50,16 @@ void Simulator::run() {
     printf("Starting Job...\n");
 
     while (true){
-        uint32_t curMachineCode = this->memory[*this->registerHandler.getPC()];
-        if (curMachineCode == 0xF0F0F0F0) break;
-        printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", *this->registerHandler.getPC(), curMachineCode);
+        uint32_t curMachineCode = this->memory[*this->registerHandler->getPC()];
+        printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", *this->registerHandler->getPC(), curMachineCode);
         try {
             this->executeMachineCode(curMachineCode);
         } catch(std::exception e) {
             std::cout << "Exception : " << e.what() << std::endl;
         }
-        *this->registerHandler.getPC() = *this->registerHandler.getPC() + 1;
+        *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;
+        if (this->memory[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
+
     }
     clock_t end = clock();
 

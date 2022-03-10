@@ -10,7 +10,7 @@
 #pragma once
 
 #include "Simulator.h"
-#include "../Parser/Assembler.h"
+#include "../Parser/Translator.h"
 
 class SimulatorTests {
 private:

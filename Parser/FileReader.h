@@ -12,17 +12,21 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <queue>
+#include <map>
 
 class FileReader {
 private:
-    std::queue<std::string> allExpressions;
+    std::map<uint32_t, std::string> allExpressions;
+    std::map<std::string, uint32_t> allBranches;
 public:
     FileReader(const char*);
     static std::string removeComments(std::string);
     static std::string removeTabsSpaces(std::string);
     static std::string removeTabsTabs(std::string);
     static std::string removeTabs(std::string);
+    static std::string getBranch(std::string);
+    std::map<std::string, uint32_t> getAllBranches();
+    std::map<uint32_t, std::string> getAllExpressions();
 };
 
 

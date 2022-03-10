@@ -10,11 +10,12 @@
 
 /**
  * A constructor member function for FileReader
- * This stores all expressions as string object in a queue
+ * This stores all expressions as string object in a queue, as well as making a map for branches
  * @param fileName the file directory to load file.
  */
 FileReader::FileReader(const char* fileName) {
     std::ifstream fileObject = std::ifstream(fileName);
+    uint32_t curLineCount = 0;
     if (!fileObject){
         std::cout << "Error: Cannot locate file: " << fileName << std::endl;
         exit(1);
@@ -22,10 +23,17 @@ FileReader::FileReader(const char* fileName) {
         while(!fileObject.eof()){
             std::string curLine;
             std::getline(fileObject, curLine, '\n');
-            curLine = removeComments(curLine);
-            curLine = removeTabs(curLine);
-            std::cout << curLine << std::endl;
-            this->allExpressions.push(curLine);
+            if (!curLine.empty()) { // remove unnecessary new lines
+                curLine = removeComments(curLine); // remove comments from code
+                curLine = removeTabs(curLine); // remove tabs before code
+                std::string curBranchName = FileReader::getBranch(curLine); // get branch name
+                if (!curBranchName.empty()) {  // if current line is a declaration of branch, add it to the map
+                    this->allBranches.insert(std::pair<std::string, int>(curBranchName, curLineCount));
+                } else{ // if this was not a branch declaration, just add it to the allExpressions map
+                    this->allExpressions.insert(std::pair<uint32_t, std::string>(curLineCount, curLine));
+                    curLineCount++;
+                }
+            }
         }
     }
 }
@@ -79,4 +87,27 @@ std::string FileReader::removeTabsTabs(std::string curLine) {
     uint16_t curPos = 0;
     while (line[curPos] == 9) curPos++;
     return curLine.substr(curPos, curLine.size());
+}
+
+/**
+ * A member function that gets all branch's names
+ * @param curLine the current line to check if there is a branch
+ * @return returns string object that contains current branch's name. Empty string if there is no branch in this line.
+ */
+std::string FileReader::getBranch(std::string curLine) {
+    const char* line = curLine.c_str();
+    uint16_t curPos = 0;
+    while(line[curPos] != '\0'){
+        if(line[curPos] == ':') return curLine.substr(0, curPos);
+        else curPos++;
+    }
+    return "";
+}
+
+std::map<std::string, uint32_t> FileReader::getAllBranches() {
+    return this->allBranches;
+}
+
+std::map<uint32_t, std::string> FileReader::getAllExpressions() {
+    return this->allExpressions;
 }
