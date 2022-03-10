@@ -7,6 +7,12 @@
 
 #include "FileReader.h"
 
+
+/**
+ * A constructor member function for FileReader
+ * This stores all expressions as string object in a queue
+ * @param fileName the file directory to load file.
+ */
 FileReader::FileReader(const char* fileName) {
     std::ifstream fileObject = std::ifstream(fileName);
     if (!fileObject){
