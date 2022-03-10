@@ -19,6 +19,10 @@ private:
     std::queue<std::string> allExpressions;
 public:
     FileReader(const char*);
+    static std::string removeComments(std::string);
+    static std::string removeTabsSpaces(std::string);
+    static std::string removeTabsTabs(std::string);
+    static std::string removeTabs(std::string);
 };
 
 

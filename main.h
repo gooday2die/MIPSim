@@ -1,8 +1,8 @@
 //
-// @file : main.
+// @file : main.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
+// @brief : a Header file for main.cpp
 // @date: 2022-03-10
 
 #ifndef MIPSIM_MAIN_H

@@ -1,7 +1,9 @@
 #include "main.h"
 
 int main(int argc, char**argv){
-    argHandler(argc, argv);
+    //argHandler(argc, argv);
+    FileReader fr = FileReader(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
+    return 0;
 }
 
 
@@ -19,11 +21,13 @@ void argHandler(int argc, char** argv) {
             case help:
                 std::cout << "Check manual for more information!" << std::endl;
                 break;
-            case runFile:
+            case runFile: {
                 std::cout << "Running file : " << std::endl;
+                FileReader fr = FileReader(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
                 break;
+            }
             case dev:
-                std::cout << "By Gooday2die :)" << std::endl;
+                std::cout << "" << std::endl;
                 break;
         }
     }

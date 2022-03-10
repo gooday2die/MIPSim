@@ -9,6 +9,6 @@ loop:
         j loop #18
 exit:
         addi $10, $10, 100 # 1c
+	awd
 
 pc = 10
-        
