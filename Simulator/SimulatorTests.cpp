@@ -22,7 +22,7 @@ void SimulatorTests::test1(){
     uint32_t branches[1] = {0xFFFFFFFF};
     uint32_t codes[7] = {r1,r2,r3, r4, r5, r6,0xF0F0F0F0};
 
-    Simulator s = Simulator(branches, codes);
+    Simulator s = Simulator(codes);
     s.printAllRegisters();
     s.run();
     s.printAllRegisters();

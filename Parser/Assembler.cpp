@@ -38,7 +38,7 @@ Assembler::Assembler(const char* fileName) {
         branchCount++;
     }
 
-    Simulator simulator = Simulator(branches, this->allMachineCodes); // intialize
+    Simulator simulator = Simulator(this->allMachineCodes); // intialize
     simulator.printAllRegisters(); // print registers
     simulator.run(); // then run
     simulator.printAllRegisters(); // print registers

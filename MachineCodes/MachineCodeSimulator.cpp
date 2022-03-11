@@ -16,15 +16,6 @@ MachineCodeSimulator::MachineCodeSimulator(RegisterHandler* argRegisterHandler) 
 }
 
 /**
- * A member function that sets branches to the machine code simulator
- * @param branches the total branches's pointer
- */
-void MachineCodeSimulator::setBranches(uint32_t* argBranches) {
-    this->branches = argBranches;
-    this->branchCount = this->getBranchCount();
-}
-
-/**
  * A member function for class MachineCodeSimulator for executing a single machine code
  * @param curCode the uint32_t type machine code.
  */
@@ -169,21 +160,4 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
         default:
             break;
     }
-}
-
-/**
- * A member function that counts total branches.
- * The last branch MUST contain 0xFFFFFFFF as it's value so that the branches are over.
- * @return total Count of Branches.
- */
-uint16_t MachineCodeSimulator::getBranchCount() {
-    uint16_t totalBranches = 0;
-    while (this->branches[totalBranches] != 0xFFFFFFFF){
-        totalBranches++;
-    }
-    return totalBranches;
-}
-
-uint32_t MachineCodeSimulator::getPC(){
-    return *this->registerHandler->getPC();
 }
