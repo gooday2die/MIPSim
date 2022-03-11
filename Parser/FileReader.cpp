@@ -14,28 +14,42 @@
  * @param fileName the file directory to load file.
  */
 FileReader::FileReader(const char* fileName) {
-    std::ifstream fileObject = std::ifstream(fileName);
+    std::ifstream fileObject = std::ifstream(fileName); // try loading it with absolute path
     uint32_t curLineCount = 0;
-    if (!fileObject){
-        std::cout << "Error: Cannot locate file: " << fileName << std::endl;
-        exit(1);
-    }else{
-        while(!fileObject.eof()){
-            std::string curLine;
-            std::getline(fileObject, curLine, '\n');
-            if (!curLine.empty()) { // remove unnecessary new lines
-                curLine = removeComments(curLine); // remove comments from code
-                curLine = removeTabs(curLine); // remove tabs before code
-                std::string curBranchName = FileReader::getBranch(curLine); // get branch name
-                if (!curBranchName.empty()) {  // if current line is a declaration of branch, add it to the map
-                    this->allBranches.insert(std::pair<std::string, int>(curBranchName, curLineCount));
-                } else{ // if this was not a branch declaration, just add it to the allExpressions map
-                    this->allExpressions.insert(std::pair<uint32_t, std::string>(curLineCount, curLine));
-                    curLineCount++;
-                }
+    if (!fileObject){ // if we could not load it, try relative path
+        std::ifstream fileObject = std::ifstream(FileReader::getCurrentDirectory(fileName) + "/" + fileName);
+        if (!fileObject) { // if relative path failed, just exit
+            std::cout << "Error: Cannot locate file: " << fileName << std::endl;
+            exit(1);
+        }
+    }
+
+    while(!fileObject.eof()){
+        std::string curLine;
+        std::getline(fileObject, curLine, '\n');
+        if (!curLine.empty()) { // remove unnecessary new lines
+            curLine = removeComments(curLine); // remove comments from code
+            curLine = removeTabs(curLine); // remove tabs before code
+            std::string curBranchName = FileReader::getBranch(curLine); // get branch name
+            if (!curBranchName.empty()) {  // if current line is a declaration of branch, add it to the map
+                this->allBranches.insert(std::pair<std::string, int>(curBranchName, curLineCount));
+            } else{ // if this was not a branch declaration, just add it to the allExpressions map
+                this->allExpressions.insert(std::pair<uint32_t, std::string>(curLineCount, curLine));
+                curLineCount++;
             }
         }
     }
+    for(const auto& elem : this->allExpressions)
+    {
+        std::cout << elem.first << ":" << elem.second << std::endl;
+    }
+
+    for(const auto& elem : this->allBranches)
+    {
+        std::cout << elem.first << ":" << elem.second << std::endl;
+    }
+
+
 }
 
 /**
@@ -110,4 +124,14 @@ std::map<std::string, uint32_t> FileReader::getAllBranches() {
 
 std::map<uint32_t, std::string> FileReader::getAllExpressions() {
     return this->allExpressions;
+}
+
+std::string FileReader::getCurrentDirectory(std::string curFile){
+
+    for(uint32_t curPos = curFile.size() ; curPos >= 0 ; curPos--){
+        if ((curFile.c_str()[curPos] == '/') || (curFile.c_str()[curPos] == '\\')){
+            return curFile.substr(0, curPos);
+        }
+    }
+    return "";
 }

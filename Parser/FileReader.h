@@ -10,6 +10,7 @@
 #pragma once
 
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <map>
@@ -27,6 +28,7 @@ public:
     static std::string getBranch(std::string);
     std::map<std::string, uint32_t> getAllBranches();
     std::map<uint32_t, std::string> getAllExpressions();
+    static std::string getCurrentDirectory(std::string);
 };
 
 

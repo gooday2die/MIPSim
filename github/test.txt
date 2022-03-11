@@ -1,11 +1,11 @@
 start:
-        andi $1, $1, 0 # 0
-        andi $2, $2, 0 # 4
-        andi $5, $5, 0 # 8
-        addi $5, $5, 4 # C
+        andi $1, $1, 0 # a = 0;
+        andi $2, $2, 0 # b = 0;
+        andi $5, $5, 0 # c = 0;
+        addi $5, $5, 4 # c = c + 4;
 loop:
-        addi $2, $2, 1 # 10
-        beq $2, $5, exit #14
-        j loop #18
+        addi $2, $2, 1 # b = b + 1;
+        beq $2, $5, exit # break loop
+        j loop ## BUG FOUND
 exit:
-        addi $10, $10, 100 # 1c
+        addi $10, $10, 100 # a = 100;

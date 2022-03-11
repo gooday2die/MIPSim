@@ -19,7 +19,8 @@
 enum commands{
     help = 1,
     runFile = 2,
-    dev = 3
+    dev = 3,
+    unknown = 4
 };
 void argHandler(int argc, char** argv);
 commands getCommandType(std::string);
