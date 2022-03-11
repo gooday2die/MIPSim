@@ -29,6 +29,7 @@ public:
     std::map<std::string, uint32_t> getAllBranches();
     std::map<uint32_t, std::string> getAllExpressions();
     static std::string getCurrentDirectory(std::string);
+    static std::string addWhiteSpace(std::string);
 };
 
 

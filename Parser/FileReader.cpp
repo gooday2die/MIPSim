@@ -34,6 +34,7 @@ FileReader::FileReader(const char* fileName) {
             if (!curBranchName.empty()) {  // if current line is a declaration of branch, add it to the map
                 this->allBranches.insert(std::pair<std::string, int>(curBranchName, curLineCount));
             } else{ // if this was not a branch declaration, just add it to the allExpressions map
+                curLine = addWhiteSpace(curLine); // add whitespace to the last character
                 this->allExpressions.insert(std::pair<uint32_t, std::string>(curLineCount, curLine));
                 curLineCount++;
             }
@@ -107,20 +108,51 @@ std::string FileReader::getBranch(std::string curLine) {
     return "";
 }
 
+/**
+ * A getter member function for attribute allBranches
+ * @return returns allBranches in map object
+ */
 std::map<std::string, uint32_t> FileReader::getAllBranches() {
     return this->allBranches;
 }
 
+/**
+ * A getter member function for attribute allExpressions
+ * @return returns allExpressioins in map object
+ */
 std::map<uint32_t, std::string> FileReader::getAllExpressions() {
     return this->allExpressions;
 }
 
+/**
+ * A member function for class FileReader that retrieves current working directory
+ * This looks for the last / or \ that separates directories and return all the string before / or \ as working directory.
+ * @param curFile the current executable file in full directory
+ * @return current working directory
+ */
 std::string FileReader::getCurrentDirectory(std::string curFile){
-
     for(uint32_t curPos = curFile.size() ; curPos >= 0 ; curPos--){
         if ((curFile.c_str()[curPos] == '/') || (curFile.c_str()[curPos] == '\\')){
             return curFile.substr(0, curPos);
         }
     }
     return "";
+}
+
+/**
+ * A member function that inserts a whitespace to end of expression
+ * @param curLine the current line to look for
+ * @return returns expression with whitespace
+ */
+std::string FileReader::addWhiteSpace(std::string curLine) {
+    const char* line = curLine.c_str();
+    if (line[curLine.size() - 1] != 32){
+        char* result = (char*)malloc(sizeof(char) * (curLine.size() + 1));
+        for (uint32_t i = 0; i < curLine.size() ; i++) result[i] = line[i];
+        result[curLine.size()] = 32;
+        result[curLine.size() + 1] = '\0';
+        std::string returnString = std::string(result);
+        return returnString;
+    }
+    return curLine;
 }
