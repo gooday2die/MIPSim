@@ -28,7 +28,7 @@ void argHandler(int argc, char** argv) {
                     std::cout << "Error: Missing filename" << std::endl;
                     exit(1);
                 }else if (argc == 3) {
-                    std::cout << "Running file : " << std::endl;
+                    std::cout << "Running file : " << argv[2] << std::endl;
                     Assembler as = Assembler(argv[2]);
                 }else{
                     std::cout << "Error: Too many filenames" << std::endl;

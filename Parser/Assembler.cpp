@@ -29,14 +29,19 @@ Assembler::Assembler(const char* fileName) {
 
     translateAll(); // translate all assembly code into machine code instructions.
 
-    for(uint32_t i = 0 ; i < this->allExpressions.size() ; i++) // Just print all Instructions and all machine codes
-        printf("CurCode Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
+    //for(uint32_t i = 0 ; i < this->allExpressions.size() ; i++) // Just print all Instructions and all machine codes
+    //    printf("CurCode Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
 
     uint32_t branchCount = 0; // dump all branches
     for (auto const& y : this->allBranches){  // get all branches
         branches[branchCount] = y.second;
         branchCount++;
     }
+
+    std::cout << "Assembler Successfully Finished!" << std::endl;
+    std::cout << "- Generated Expressions : " << this->allExpressions.size() << std::endl;
+    std::cout << "- Generated Branches : " << this->allBranches.size() << std::endl;
+
 
     Simulator simulator = Simulator(this->allMachineCodes); // intialize
     simulator.printAllRegisters(); // print registers

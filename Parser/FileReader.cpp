@@ -39,17 +39,6 @@ FileReader::FileReader(const char* fileName) {
             }
         }
     }
-    for(const auto& elem : this->allExpressions)
-    {
-        std::cout << elem.first << ":" << elem.second << std::endl;
-    }
-
-    for(const auto& elem : this->allBranches)
-    {
-        std::cout << elem.first << ":" << elem.second << std::endl;
-    }
-
-
 }
 
 /**
