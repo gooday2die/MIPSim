@@ -18,6 +18,7 @@
  * @param fileName
  */
 Assembler::Assembler(const char* fileName) {
+    std::cout << "===== MIPSim Assembler Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
     FileReader fileReader = FileReader(fileName); // Read file
     this->allExpressions = fileReader.getAllExpressions(); // get all expressions
     this->allBranches = fileReader.getAllBranches(); // get all branches

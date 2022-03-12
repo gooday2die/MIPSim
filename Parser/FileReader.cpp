@@ -28,56 +28,47 @@ FileReader::FileReader(const char* fileName) {
 
     uint32_t totalLineCount = 0;
     std::cout << "Assembling... " << std::endl;
-    while(!fileObject.eof()){
+    while(!fileObject.eof()) {
         std::string curLine;
         std::getline(fileObject, curLine, '\n');
-        Expression expression = Expression(curLine);
         totalLineCount++;
 
-        if(expression.isBranchExpression()) { // if current expression is branch expression
-            std::string branchName = expression.getBranchName();
-            if (isDuplicateBranchName(branchName)) { // if this branch name was defined earlier
-                std::cout << "Found duplicate branch name ";
-                if(OS)
-                    std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
-                else
-                    std::cout << "@ln " << totalLineCount << " -> " << "\x1B[31m" << curLine << "\033[0m" << std::endl;
-                errorCount++;
-                exit(1);
+        if (!curLine.empty()) { // if current line is empty, just skip
+            Expression expression = Expression(curLine);
+            if (expression.isBranchExpression()) { // if current expression is branch expression
+                std::string branchName = expression.getBranchName();
+                if (isDuplicateBranchName(branchName)) { // if this branch name was defined earlier
+                    std::cout << ERROR_TAG << " Found duplicate branch name ";
+                    std::cout << "@ln " << totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    errorCount++;
+                } else if (branchName.empty()) { // if the branch name was empty. Ex) :
+                    std::cout << ERROR_TAG << " Branch name cannot be empty ";
+                    std::cout << "@ln " << totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    errorCount++;
+                } else if (branchName.find(32) !=
+                           std::string::npos) { // if the branch name had a whitespace. Ex) branch name:
+                    std::cout << ERROR_TAG << " Branch name has a whitespace ";
+                    std::cout << "@ln " << totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    errorCount++;
+                } else { // if this branch name was new, then add the branch to the map
+                    this->allBranches.insert(std::pair<std::string, int>(branchName, expressionCount));
+                }
+            } else { // if current expression was not a branch expression
+                expression.preprocess();
+                this->allExpressions.insert(
+                        std::pair<uint32_t, std::string>(expressionCount, expression.getResultString()));
+                expressionCount++;
             }
-            else if(branchName.empty()){ // if the branch name was empty. Ex) :
-                std::cout << "Branch name cannot be empty " ;
-                if(OS)
-                    std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
-                else
-                    std::cout << "@ln " << totalLineCount << " -> " << "\x1B[31m" << curLine << "\033[0m" << std::endl;
-                errorCount++;
-                exit(1);
-            } else if(branchName.find(32) != std::string::npos){ // if the branch name had a whitespace. Ex) branch name:
-                std::cout << "Branch name has a whitespace ";
-                if(OS)
-                    std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
-                else
-                    std::cout << "@ln " << totalLineCount << " -> " << "\x1B[31m" << curLine << "\033[0m" << std::endl;
-                errorCount++;
-                exit(1);
-            }
-            else { // if this branch name was new, then add the branch to the map
-                this->allBranches.insert(std::pair<std::string, int>(branchName, expressionCount));
-            }
-        }else{ // if current expression was not a branch expression
-            expression.preprocess();
-            this->allExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, expression.getResultString()));
-            expressionCount++;
         }
     }
 
+    std::cout << "\nResult : " << std::endl;
     if(errorCount > 0){
-        std::cout << "Failed to Assemble" << std::endl;
-        std::cout << "Found " << errorCount << " errors" << std::endl;
+        std::cout << ASSEMBLE_FAILED << std::endl;
+        std::cout << "Found " << errorCount << " error(s)" << std::endl;
         exit(1);
     }else{
-        std::cout << "Successfully Assembled" << std::endl;
+        std::cout << ASSEMBLE_SUCCESS << std::endl;
     }
 }
 
