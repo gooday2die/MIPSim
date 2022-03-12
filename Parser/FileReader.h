@@ -30,6 +30,7 @@ public:
     std::map<uint32_t, std::string> getAllExpressions();
     static std::string getCurrentDirectory(std::string);
     static std::string addWhiteSpace(std::string);
+    static std::string makeOneWhiteSpace(std::string);
 };
 
 

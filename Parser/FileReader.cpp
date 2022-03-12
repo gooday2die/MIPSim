@@ -5,6 +5,7 @@
 // @brief : A file that implements all member functions for class FileReader
 // @date: 2022-03-10
 
+#include <algorithm>
 #include "FileReader.h"
 
 
@@ -23,7 +24,6 @@ FileReader::FileReader(const char* fileName) {
             exit(1);
         }
     }
-
     while(!fileObject.eof()){
         std::string curLine;
         std::getline(fileObject, curLine, '\n');
@@ -35,6 +35,7 @@ FileReader::FileReader(const char* fileName) {
                 this->allBranches.insert(std::pair<std::string, int>(curBranchName, curLineCount));
             } else{ // if this was not a branch declaration, just add it to the allExpressions map
                 curLine = addWhiteSpace(curLine); // add whitespace to the last character
+                curLine = makeOneWhiteSpace(curLine); // remove two or more consecutive whitespaces
                 this->allExpressions.insert(std::pair<uint32_t, std::string>(curLineCount, curLine));
                 curLineCount++;
             }
@@ -146,13 +147,26 @@ std::string FileReader::getCurrentDirectory(std::string curFile){
  */
 std::string FileReader::addWhiteSpace(std::string curLine) {
     const char* line = curLine.c_str();
-    if (line[curLine.size() - 1] != 32){
-        char* result = (char*)malloc(sizeof(char) * (curLine.size() + 1));
+    if (line[curLine.size() - 1] != 32){ // string's size just returns \0's index. So this is total len - 1
+        // check if last character was a space, if it was not add one
+        char* result = (char*)malloc(sizeof(char) * (curLine.size() + 1)); // copy all
         for (uint32_t i = 0; i < curLine.size() ; i++) result[i] = line[i];
-        result[curLine.size()] = 32;
-        result[curLine.size() + 1] = '\0';
+        result[curLine.size()] = 32; // add space
+        result[curLine.size() + 1] = '\0'; // add a \0
         std::string returnString = std::string(result);
-        return returnString;
+        return returnString; // return edited
     }
+    return curLine; // return original
+}
+
+/**
+ * A member function that makes two or more consecutive whitespaces into one whitespace
+ * Main idea came from https://stackoverflow.com/questions/8362094/replace-multiple-spaces-with-one-space-in-a-string
+ * @param curLine the current line to look for
+ * @return returns expression with one whitespaces without to or more consecutive whitespaces
+ */
+std::string FileReader::makeOneWhiteSpace(std::string curLine) {
+    std::string::iterator new_end = std::unique(curLine.begin(), curLine.end(), [](char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); });
+    curLine.erase(new_end, curLine.end());
     return curLine;
 }
