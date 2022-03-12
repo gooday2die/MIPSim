@@ -53,13 +53,13 @@ class RegisterHandler {
 private:
     uint32_t* registers;
     uint32_t pc;
-
 public:
     RegisterHandler();
     uint32_t* getRegister(int);
     uint32_t* getPC();
     uint32_t* getAllRegisters();
     void printAllRegisters();
+    void resetZero();
 };
 
 

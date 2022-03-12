@@ -24,7 +24,7 @@ public:
     bool isBranchExpression();
     std::string getBranchName();
     void preprocess();
-    std::string getResultString();
+    std::string getString() const;
 };
 
 

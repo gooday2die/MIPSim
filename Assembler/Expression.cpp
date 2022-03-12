@@ -120,10 +120,11 @@ void Expression::makeOneWhiteSpace() {
     this->expressionString.erase(new_end, this->expressionString.end());
 }
 
+
 /**
  * A getter member function for getting the result string.
  * @return returns the result string object that represents preprocessed expression.
  */
-std::string Expression::getResultString() {
+std::string Expression::getString() const {
     return this->expressionString;
 }

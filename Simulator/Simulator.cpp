@@ -56,6 +56,7 @@ void Simulator::run() {
             std::cout << "Exception : " << e.what() << std::endl;
         }
         *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;
+        this->registerHandler->resetZero();
         if (this->memory[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
 
     }

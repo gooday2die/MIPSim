@@ -23,7 +23,7 @@ RegisterHandler::RegisterHandler() {
  * @return returns register's pointer
  */
 uint32_t* RegisterHandler::getRegister(int registerIndex) {
-    return this->registers + registerIndex;
+   return this->registers + registerIndex;
 }
 
 /**
@@ -50,4 +50,11 @@ void RegisterHandler::printAllRegisters() {
     for(uint8_t i = 0 ; i < 32 ; i++){
         printf("$%2d : hex : 0x%08x / signed int : %d\n", i, this->registers[i], this->registers[i]);
     }
+}
+
+/**
+ * A member function for setting register $zero ($0) as hard wired 0 always.
+ */
+void RegisterHandler::resetZero(){
+    this->registers[0] = 0;
 }

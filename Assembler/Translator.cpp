@@ -66,7 +66,7 @@ uint32_t Translator::generateMachineCode(const char* expression) {
             uint32_t rd = std::stoi(rdString); // store rd
 
             if ((rs > 31) || (rt > 31) || (rd > 31)) {
-                throw std::range_error("Invalid register");
+                throw ExpressionExceptions::unknownRegisterException();
             } else { // all R type instructions. However, sll and srl is moved into I type instruction.
                 if (instructionString == "add") totalInstruction = Mnemonic::_add;
                 else if (instructionString == "addu") totalInstruction = Mnemonic::_addu;
@@ -89,6 +89,7 @@ uint32_t Translator::generateMachineCode(const char* expression) {
             totalInstruction = totalInstruction | rd;
 
             return totalInstruction;
+
         }
         case 2:{
             //std::cout << "I TYPE " << std::endl;
@@ -105,9 +106,9 @@ uint32_t Translator::generateMachineCode(const char* expression) {
             uint32_t rt = std::stoi(rtString); // store rt
             uint16_t imm = std::stoi(words[3]); // store imm
 
-            if ((rs > 31) || (rt > 31)) { // not going to detect imm is overflowing or not
-                throw std::range_error("Invalid register");
-            } else{ // all I type instructions
+            if ((rs > 31) || (rt > 31)) {
+                throw ExpressionExceptions::unknownRegisterException();
+            } else { // all I type instructions
                 /**
                  * Since we count registers when parsing instruction type, sll and srl instructions are kind of meh.
                  * sll and srl instructions use only rd and rt register which is similar to I type instruction rather
@@ -122,7 +123,7 @@ uint32_t Translator::generateMachineCode(const char* expression) {
                 else if (instructionString == "sltiu") totalInstruction = Mnemonic::_sltiu;
                 else if (instructionString == "beq") totalInstruction = Mnemonic::_beq;
                 else if (instructionString == "bne") totalInstruction = Mnemonic::_bne;
-                else if (instructionString == "sll"){
+                else if (instructionString == "sll") {
                     totalInstruction = Mnemonic::_sll; // was R type
                     rs = rs << 16;
                     rt = rt << 11;
@@ -133,8 +134,7 @@ uint32_t Translator::generateMachineCode(const char* expression) {
                     totalInstruction = totalInstruction | shamt;
 
                     return totalInstruction;
-                }
-                else if (instructionString == "srl"){
+                } else if (instructionString == "srl") {
                     totalInstruction = Mnemonic::_srl; // was R type
 
                     rs = rs << 16;
@@ -148,7 +148,6 @@ uint32_t Translator::generateMachineCode(const char* expression) {
                     return totalInstruction;
                 }
             }
-
             rs = rs << 21;
             rt = rt << 16;
 
@@ -157,15 +156,14 @@ uint32_t Translator::generateMachineCode(const char* expression) {
             totalInstruction = totalInstruction | imm;
 
             return totalInstruction;
+
         }
         case 3:{ // j type
             //std::cout << "J TYPE " << std::endl;
-
             uint32_t address = std::stoi(words[1]); // store address
             if (instructionString == "j") totalInstruction = Mnemonic::_j;
             else if (instructionString == "jal") totalInstruction = Mnemonic::_jal;
             totalInstruction = totalInstruction | address;
-
             return totalInstruction;
         }
     }
