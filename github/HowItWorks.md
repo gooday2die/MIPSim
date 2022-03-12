@@ -29,9 +29,11 @@ exit:
 ```
 
 ## Step 1. Preprocessing
-This program does two steps in preprocessing
+This program does 4 steps in preprocessing
 1. Removing all comments
 2. Removing tabs before code
+3. Adds a whitespace to the end of the expression
+4. Makes two or more consecutive whitespaces into one whitespace
 
 After preprocessing, our code will look like this:
 ```

@@ -25,25 +25,7 @@ FileReader::FileReader(const char* fileName) {
             exit(1);
         }
     }
-    /**
-    while(!fileObject.eof()){
-        std::string curLine;
-        std::getline(fileObject, curLine, '\n');
-        if (!curLine.empty()) { // remove unnecessary new lines
-            curLine = removeComments(curLine); // remove comments from code
-            curLine = removeTabs(curLine); // remove tabs before code
-            std::string curBranchName = FileReader::getBranch(curLine); // get branch name
-            if (!curBranchName.empty()) {  // if current line is a declaration of branch, add it to the map
-                this->allBranches.insert(std::pair<std::string, int>(curBranchName, curLineCount));
-            } else{ // if this was not a branch declaration, just add it to the allExpressions map
-                curLine = addWhiteSpace(curLine); // add whitespace to the last character
-                curLine = makeOneWhiteSpace(curLine); // remove two or more consecutive whitespaces
-                this->allExpressions.insert(std::pair<uint32_t, std::string>(curLineCount, curLine));
-                curLineCount++;
-            }
-        }
-    }
-     */
+
     uint32_t totalLineCount = 0;
     std::cout << "Assembling... " << std::endl;
     while(!fileObject.eof()){
@@ -56,18 +38,27 @@ FileReader::FileReader(const char* fileName) {
             std::string branchName = expression.getBranchName();
             if (isDuplicateBranchName(branchName)) { // if this branch name was defined earlier
                 std::cout << "Found duplicate branch name ";
-                std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                if(OS)
+                    std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                else
+                    std::cout << "@ln " << totalLineCount << " -> " << "\x1B[31m" << curLine << "\033[0m" << std::endl;
                 errorCount++;
                 exit(1);
             }
             else if(branchName.empty()){ // if the branch name was empty. Ex) :
                 std::cout << "Branch name cannot be empty " ;
-                std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                if(OS)
+                    std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                else
+                    std::cout << "@ln " << totalLineCount << " -> " << "\x1B[31m" << curLine << "\033[0m" << std::endl;
                 errorCount++;
                 exit(1);
             } else if(branchName.find(32) != std::string::npos){ // if the branch name had a whitespace. Ex) branch name:
                 std::cout << "Branch name has a whitespace ";
-                std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                if(OS)
+                    std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                else
+                    std::cout << "@ln " << totalLineCount << " -> " << "\x1B[31m" << curLine << "\033[0m" << std::endl;
                 errorCount++;
                 exit(1);
             }

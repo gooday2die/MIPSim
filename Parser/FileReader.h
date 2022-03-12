@@ -9,6 +9,14 @@
 #define MIPSIM_FILEREADER_H
 #pragma once
 
+#ifdef _WIN32
+#define OS 1
+#endif
+
+#ifdef linux
+#define OS 0
+#endif
+
 #include <iostream>
 #include <filesystem>
 #include <fstream>
