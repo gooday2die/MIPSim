@@ -13,7 +13,7 @@
 
 #include "../defines.h"
 #include "RegisterHandler.h"
-#include "../MachineCodes/MachineCodeSimulator.h"
+#include "MachineCodeSimulator.h"
 
 class Simulator {
 private:

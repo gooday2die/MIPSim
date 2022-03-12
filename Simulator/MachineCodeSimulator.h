@@ -9,8 +9,8 @@
 #define MIPSIM_MACHINECODESIMULATOR_H
 #pragma once
 
-#include "../Simulator/RegisterHandler.h"
-#include "../Instructions/Instructions.h"
+#include "RegisterHandler.h"
+#include "Instructions.h"
 
 
 class MachineCodeSimulator {

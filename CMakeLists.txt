@@ -3,4 +3,4 @@ project(MIPSim)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(MIPSim main.cpp Simulator/RegisterHandler.cpp Simulator/RegisterHandler.h Instructions/Instructions.cpp Instructions/Instructions.h Simulator/Simulator.cpp Simulator/Simulator.h MachineCodes/MachineCodeSimulator.cpp MachineCodes/MachineCodeSimulator.cpp MachineCodes/MachineCodeSimulator.h defines.h Simulator/SimulatorTests.cpp Simulator/SimulatorTests.h Parser/Translator.cpp Parser/Translator.h Parser/FileReader.cpp Parser/FileReader.h main.h Parser/Assembler.cpp Parser/Assembler.h)
+add_executable(MIPSim main.cpp Simulator/RegisterHandler.cpp Simulator/RegisterHandler.h Simulator/Instructions.cpp Simulator/Instructions.h Simulator/Simulator.cpp Simulator/Simulator.h Simulator/MachineCodeSimulator.cpp Simulator/MachineCodeSimulator.cpp Simulator/MachineCodeSimulator.h defines.h Parser/Translator.cpp Parser/Translator.h Parser/FileReader.cpp Parser/FileReader.h main.h Parser/Assembler.cpp Parser/Assembler.h Parser/GrammarChecker.cpp Parser/GrammarChecker.h Parser/Expression.cpp Parser/Expression.h)

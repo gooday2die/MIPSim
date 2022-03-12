@@ -15,22 +15,19 @@
 #include <string>
 #include <map>
 
+#include "Expression.h"
+
 class FileReader {
 private:
     std::map<uint32_t, std::string> allExpressions;
     std::map<std::string, uint32_t> allBranches;
+    bool isDuplicateBranchName(std::string);
 public:
     FileReader(const char*);
-    static std::string removeComments(std::string);
-    static std::string removeTabsSpaces(std::string);
-    static std::string removeTabsTabs(std::string);
-    static std::string removeTabs(std::string);
     static std::string getBranch(std::string);
     std::map<std::string, uint32_t> getAllBranches();
     std::map<uint32_t, std::string> getAllExpressions();
     static std::string getCurrentDirectory(std::string);
-    static std::string addWhiteSpace(std::string);
-    static std::string makeOneWhiteSpace(std::string);
 };
 
 

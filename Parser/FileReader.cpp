@@ -16,7 +16,8 @@
  */
 FileReader::FileReader(const char* fileName) {
     std::ifstream fileObject = std::ifstream(fileName); // try loading it with absolute path
-    uint32_t curLineCount = 0;
+    uint32_t expressionCount = 0;
+    uint32_t errorCount = 0;
     if (!fileObject){ // if we could not load it, try relative path
         std::ifstream fileObject = std::ifstream(FileReader::getCurrentDirectory(fileName) + "/" + fileName);
         if (!fileObject) { // if relative path failed, just exit
@@ -24,6 +25,7 @@ FileReader::FileReader(const char* fileName) {
             exit(1);
         }
     }
+    /**
     while(!fileObject.eof()){
         std::string curLine;
         std::getline(fileObject, curLine, '\n');
@@ -41,57 +43,51 @@ FileReader::FileReader(const char* fileName) {
             }
         }
     }
-}
+     */
+    uint32_t totalLineCount = 0;
+    std::cout << "Assembling... " << std::endl;
+    while(!fileObject.eof()){
+        std::string curLine;
+        std::getline(fileObject, curLine, '\n');
+        Expression expression = Expression(curLine);
+        totalLineCount++;
 
-/**
- * A member function for FileReader that removes comments from codes
- * @param curLine the current line to check if there are comments
- * @return returns string object that contains code without comments.
- */
-std::string FileReader::removeComments(std::string curLine) {
-    char* line = (char*)curLine.c_str();
-    uint16_t curPos = 0;
-    while(line[curPos] != '\0'){
-        if(line[curPos] == '#'){
-            line[curPos] = '\0';
-            break;
+        if(expression.isBranchExpression()) { // if current expression is branch expression
+            std::string branchName = expression.getBranchName();
+            if (isDuplicateBranchName(branchName)) { // if this branch name was defined earlier
+                std::cout << "Found duplicate branch name ";
+                std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                errorCount++;
+                exit(1);
+            }
+            else if(branchName.empty()){ // if the branch name was empty. Ex) :
+                std::cout << "Branch name cannot be empty " ;
+                std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                errorCount++;
+                exit(1);
+            } else if(branchName.find(32) != std::string::npos){ // if the branch name had a whitespace. Ex) branch name:
+                std::cout << "Branch name has a whitespace ";
+                std::cout << "@ln " << totalLineCount << " -> " << curLine << std::endl;
+                errorCount++;
+                exit(1);
+            }
+            else { // if this branch name was new, then add the branch to the map
+                this->allBranches.insert(std::pair<std::string, int>(branchName, expressionCount));
+            }
+        }else{ // if current expression was not a branch expression
+            expression.preprocess();
+            this->allExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, expression.getResultString()));
+            expressionCount++;
         }
-        curPos++;
     }
-    return line;
-}
 
-/**
- * A member function for class FileReader that removes all tabs and whitespaces before code starts
- * @param curLine the string object of code for current line
- * @return returns string object that just has code without tabs and whitespaces before code
- */
-std::string FileReader::removeTabs(std::string curLine) {
-    return removeTabsTabs(removeTabsSpaces(curLine));
-}
-
-/**
- * A member function that removes whitespaces before real code starts
- * @param curLine the current line to check if there are any spaces.
- * @return returns string object that contains code without whitespaces before code
- */
-std::string FileReader::removeTabsSpaces(std::string curLine) {
-    const char* line = curLine.c_str();
-    uint16_t curPos = 0;
-    while (line[curPos] == 32) curPos++;
-    return curLine.substr(curPos, curLine.size());
-}
-
-/**
- * A member function that removes spaces before real code starts
- * @param curLine the current line to check if there are any spaces.
- * @return returns string object that contains code without tabs before code
- */
-std::string FileReader::removeTabsTabs(std::string curLine) {
-    const char* line = curLine.c_str();
-    uint16_t curPos = 0;
-    while (line[curPos] == 9) curPos++;
-    return curLine.substr(curPos, curLine.size());
+    if(errorCount > 0){
+        std::cout << "Failed to Assemble" << std::endl;
+        std::cout << "Found " << errorCount << " errors" << std::endl;
+        exit(1);
+    }else{
+        std::cout << "Successfully Assembled" << std::endl;
+    }
 }
 
 /**
@@ -140,33 +136,9 @@ std::string FileReader::getCurrentDirectory(std::string curFile){
     return "";
 }
 
-/**
- * A member function that inserts a whitespace to end of expression
- * @param curLine the current line to look for
- * @return returns expression with whitespace
- */
-std::string FileReader::addWhiteSpace(std::string curLine) {
-    const char* line = curLine.c_str();
-    if (line[curLine.size() - 1] != 32){ // string's size just returns \0's index. So this is total len - 1
-        // check if last character was a space, if it was not add one
-        char* result = (char*)malloc(sizeof(char) * (curLine.size() + 1)); // copy all
-        for (uint32_t i = 0; i < curLine.size() ; i++) result[i] = line[i];
-        result[curLine.size()] = 32; // add space
-        result[curLine.size() + 1] = '\0'; // add a \0
-        std::string returnString = std::string(result);
-        return returnString; // return edited
+bool FileReader::isDuplicateBranchName(std::string branchName) {
+    for (auto const& x : this->allBranches){
+        if (x.first == branchName) return true;
     }
-    return curLine; // return original
-}
-
-/**
- * A member function that makes two or more consecutive whitespaces into one whitespace
- * Main idea came from https://stackoverflow.com/questions/8362094/replace-multiple-spaces-with-one-space-in-a-string
- * @param curLine the current line to look for
- * @return returns expression with one whitespaces without to or more consecutive whitespaces
- */
-std::string FileReader::makeOneWhiteSpace(std::string curLine) {
-    std::string::iterator new_end = std::unique(curLine.begin(), curLine.end(), [](char lhs, char rhs) { return (lhs == rhs) && (lhs == ' '); });
-    curLine.erase(new_end, curLine.end());
-    return curLine;
+    return false;
 }
