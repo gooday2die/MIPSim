@@ -22,6 +22,6 @@ Check **[Here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Limitations.
 ### Assembler
 Check [**here**](https://github.com/gooday2die/MIPSim/tree/cpp/github/Assembler.md) for more information.
 ### Overall
-Check **[Here](https://github.com/gooday2die/MIPSim/blob/cpp/github/HowItWorks.md)** for more information. 
+Check **[here](https://github.com/gooday2die/MIPSim/blob/cpp/github/HowItWorks.md)** for more information. 
 ### Tutorial 
-Check **[Here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Tutorial.md)** for more information. 
+Check **[here](https://github.com/gooday2die/MIPSim/blob/cpp/github/Tutorial.md)** for more information. 
