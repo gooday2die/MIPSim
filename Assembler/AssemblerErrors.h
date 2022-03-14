@@ -1,8 +1,8 @@
 //
-// @file : AssemblerErrors.
+// @file : AssemblerErrors.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
+// @brief : A header file that defines all exception classes
 // @date: 2022-03-12
 
 #ifndef MIPSIM_ASSEMBLERERRORS_H
@@ -21,9 +21,12 @@ class unknownInstructionMnemonicException : public std::exception{
 };
 
 class invalidArgumentException : public std::exception{
+};
 
+class invalidBranchName : public std::exception{
 };
 };
+
 class BranchExceptions {
 public:
 class duplicateNameException : public ::std::exception {

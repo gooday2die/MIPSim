@@ -62,7 +62,7 @@ uint8_t GrammarChecker::getInstructionType(const std::string& instructionString)
         || (instructionString == "subu")
         || (instructionString == "jr")) return 1;
 
-    else if((instructionString == "addi") // I Type instructions
+    else if ((instructionString == "addi") // I Type instructions
             || (instructionString == "addiu")
             || (instructionString == "andi")
             || (instructionString == "ori")
@@ -70,9 +70,19 @@ uint8_t GrammarChecker::getInstructionType(const std::string& instructionString)
             || (instructionString == "sltiu")
             || (instructionString == "beq")
             || (instructionString == "bne")
-            || (instructionString == "sll")) return 2;
+            || (instructionString == "sll")
+            || (instructionString == "srl")) return 2;
 
     else if ((instructionString == "j") || instructionString == "jal") return 3; // J Type instructions
+    else if ((instructionString == "move") // pseudo instructions
+            || (instructionString == "li")
+            || (instructionString == "lw")
+            || (instructionString == "la")
+            || (instructionString == "move")
+            || (instructionString == "blt")
+            || (instructionString == "ble")
+            || (instructionString == "bgt")
+            || (instructionString == "bge")) return 4;
     else throw ExpressionExceptions::unknownInstructionMnemonicException(); // unknown instruction
 }
 
@@ -97,6 +107,7 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
     }
 
     std::string instructionMnemonic = words[0]; // split words
+    /**
     uint8_t instructionType = getInstructionType(instructionMnemonic);
     uint8_t registerCount = std::count(currentExpression.begin(), currentExpression.end(), '$'); // count how many $ exists.
     uint8_t wordSizeForTypes = 0 ; // the last index of the register from words object
@@ -118,16 +129,101 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
         default: // will not be reachable
             throw ExpressionExceptions::unknownInstructionMnemonicException();
     }
+     */
+    argumentInfo instructionInfo = getArgumentInfo(words[0]);
+    argumentInfo expressionArguments = getExpressionArguments(currentExpression);
+    //std::cout << currentExpression << std::endl;
+    //printf("CurLine %d %d %d %d\n", expressionArguments.total, expressionArguments.registers, expressionArguments.addresses, expressionArguments.immediates);
+    //printf("Should be %d %d %d %d\n", instructionInfo.total, instructionInfo.registers, instructionInfo.addresses, instructionInfo.immediates);
 
-    for(uint8_t i = 1 ; i < wordSizeForTypes ; i++){  // check if all registers were valid.
-        try {
-            std::string curArgument = words[i];
-            curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), '$'), curArgument.end());
-            curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), ','), curArgument.end());
-            uint32_t translatedInt = std::stoi(curArgument);
-            if ((translatedInt > 31) || (translatedInt < 0)) throw ExpressionExceptions::unknownRegisterException();
-        } catch (std::invalid_argument const& ex){
-            throw ExpressionExceptions::unknownRegisterException();
-        }
+    if (instructionInfo.total == 0) throw ExpressionExceptions::unknownInstructionMnemonicException();
+    else{
+        uint8_t totalArgProcessed = 0;
+        // check instruction's arguments were correct
+        if ((instructionInfo.total == expressionArguments.total) && // check if total arguments were the correct
+        (instructionInfo.addresses == expressionArguments.addresses) && // check if total addresses were correct
+        (instructionInfo.registers == expressionArguments.registers) && // check if registers were correct
+        (instructionInfo.immediates == expressionArguments.immediates)){ // check if immediates were correct
+            for(uint8_t i = 1 ; i < 1 + instructionInfo.registers ; i++) { // check register's validity
+                std::string curArgument = words[i];
+                if (std::count(curArgument.begin(), curArgument.end(), '$') != 1) // if this was not a register
+                    throw ExpressionExceptions::invalidArgumentException(); // throw exception
+                else{ // if this was a register
+                    try{ // try checking if the register was correct
+                        curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), '$'), curArgument.end());
+                        curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), ','), curArgument.end());
+                        uint32_t translatedInt = std::stoi(curArgument);
+                        if ((translatedInt > 31) || (translatedInt < 0)) throw ExpressionExceptions::unknownRegisterException();
+                    }
+                    catch (std::invalid_argument const& ex){ // if it cannot be processed using stoi, it is unknown register
+                            throw ExpressionExceptions::unknownRegisterException();
+                    }
+                }
+                totalArgProcessed++;
+            }
+            try{
+                if (totalArgProcessed == instructionInfo.total) return;
+                std::string curArgument = words[instructionInfo.registers + 1];
+                curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), '&'), curArgument.end());
+                uint32_t translatedInt = std::stoi(curArgument);
+            }
+            catch (std::invalid_argument const& ex){ // if it cannot be processed using stoi, it is unknown register
+                throw ExpressionExceptions::invalidArgumentException();
+            }
+        } else throw ExpressionExceptions::invalidArgumentException();
     }
+}
+
+argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
+    argumentInfo result;
+    uint8_t arguments;
+    if (instruction == "add") arguments = InstructionArgInfo::Aadd;
+    else if (instruction == "and") arguments = InstructionArgInfo::Aand;
+    else if (instruction == "nor") arguments = InstructionArgInfo::Anor;
+    else if (instruction == "or") arguments = InstructionArgInfo::Aor;
+    else if (instruction == "slt") arguments = InstructionArgInfo::Aslt;
+    else if (instruction == "sltu") arguments = InstructionArgInfo::Asltu;
+    else if (instruction == "sub") arguments = InstructionArgInfo::Asub;
+    else if (instruction == "subu") arguments = InstructionArgInfo::Asubu;
+    else if (instruction == "jr") arguments = InstructionArgInfo::Ajr;
+
+    else if (instruction == "addi") arguments = InstructionArgInfo::Aaddi;
+    else if (instruction == "addiu") arguments = InstructionArgInfo::Aaddiu;
+    else if (instruction == "andi") arguments = InstructionArgInfo::Aandi;
+    else if (instruction == "ori") arguments = InstructionArgInfo::Aori;
+    else if (instruction == "slti") arguments = InstructionArgInfo::Aslti;
+    else if (instruction == "sltiu") arguments = InstructionArgInfo::Asltiu;
+    else if (instruction == "beq") arguments = InstructionArgInfo::Abeq;
+    else if (instruction == "bne") arguments = InstructionArgInfo::Abne;
+    else if (instruction == "sll") arguments = InstructionArgInfo::Asll;
+    else if (instruction == "srl")  arguments = InstructionArgInfo::Asrl;
+
+    else if (instruction == "j") arguments = InstructionArgInfo::Aj;
+    else if (instruction == "jal")  arguments = InstructionArgInfo::Ajal;
+
+    else if (instruction == "move") arguments = InstructionArgInfo::Amove;
+    else if (instruction == "li") arguments = InstructionArgInfo::Ali;
+    //else if (instruction == "lw") arguments = InstructionArgInfo::Alw;
+    //else if (instruction == "la") arguments = InstructionArgInfo::Ala;
+    else if (instruction == "blt") arguments = InstructionArgInfo::Ablt;
+    else if (instruction == "ble") arguments = InstructionArgInfo::Able;
+    else if (instruction == "bgt") arguments = InstructionArgInfo::Abgt;
+    else if (instruction == "bge") arguments = InstructionArgInfo::Abge;
+    else arguments = 0x00;
+
+    result.total = arguments >> 6;
+    result.registers = (arguments >> 4) & 0x03;
+    result.immediates = (arguments >> 2) & 0x03;
+    result.addresses = arguments & 0x03;
+
+    return result;
+}
+
+argumentInfo GrammarChecker::getExpressionArguments(const std::string& currentExpression){
+    argumentInfo result;
+    result.total = std::count(currentExpression.begin(), currentExpression.end(), ',') + 1;
+    result.registers = std::count(currentExpression.begin(), currentExpression.end(), '$');
+    result.addresses = std::count(currentExpression.begin(), currentExpression.end(), '&');
+    result.immediates = result.total - result.registers - result.addresses;
+    return result;
 }

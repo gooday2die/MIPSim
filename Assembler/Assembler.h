@@ -25,6 +25,7 @@ private:
     std::map<std::string, uint32_t> allBranches;
     std::map<std::string, uint8_t> registerNames;
     std::map<uint32_t , std::string> processedExpressions;
+    std::map<uint32_t , std::exception> allErrors;
     uint32_t* allMachineCodes;
     uint32_t totalErrorCount = 0;
     uint32_t totalLineCount = 0;
@@ -32,10 +33,13 @@ private:
     std::string replaceRegisterName(const std::string&);
     void setRegisterNames();
     void checkGrammar();
+    uint8_t getBranchAddress(const std::string&);
+    void getAllBranches();
+    void printErrors();
 public:
     Assembler(const char*);
     void translateAll();
-    std::string replaceBranches(std::string);
+    std::string replaceBranch(std::string);
     static bool replaceString(std::string&, const std::string&, const std::string&);
     uint32_t translateLine(std::string);
     void assemble();
