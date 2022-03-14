@@ -26,7 +26,7 @@ Assembler::Assembler(const char* fileName) {
     this->getAllBranches();
     this->assemble();
     for(uint32_t i = 0 ; i < this->processedExpressions.size() ; i++) // Just print all Instructions and all machine codes
-        printf("CurCode Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
+        printf("Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
 
     std::cout << "Assembler Successfully Finished!" << std::endl;
     std::cout << "- Generated Expressions : " << this->processedExpressions.size() << std::endl;
@@ -129,7 +129,6 @@ void Assembler::checkGrammar() {
                 expressionString = replaceRegisterName(expressionString);
                 expressionString = replaceBranch(expressionString);
                 try {
-                    //std::cout << expressionString << std::endl;
                     grammarChecker.checkExpressionValidity(expressionString);
                     this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, expressionString));
                 } catch(ExpressionExceptions::unknownRegisterException const& ex){
@@ -166,14 +165,32 @@ void Assembler::checkGrammar() {
 
 /**
  * A member function that replaces branch string into the instruction address
+ * This member function looks at each arguments and sees if there is branch string in it.
+ * If it has one then it replaces that string.
  * @param curExpression the string object of expression to change branch into instruction address
  * @return returns string object that contains the instruction instead of branch string
  */
 std::string Assembler::replaceBranch(std::string curExpression) {
-    for (auto const& y : this->allBranches){  // get all branches
-        std::string branchString = y.first;
-        replaceString(curExpression, branchString, "&" + std::to_string(getBranchAddress(y.first)));
+    std::string space_delimiter = " ";
+    std::vector<std::string> words{};
+    std::string copiedExpression = curExpression;
+
+    size_t pos = 0;
+    while ((pos = copiedExpression.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
+        words.push_back(copiedExpression.substr(0, pos));
+        copiedExpression.erase(0, pos + space_delimiter.length());
     }
+
+    std::string instructionMnemonic = words[0]; // split words
+
+    for(uint8_t i = 1 ; i < (uint8_t)words.size() ; i++){
+        for (auto const& y : this->allBranches){  // get all branches
+            std::string branchString = y.first;
+            if (branchString == words[i])
+                replaceString(curExpression, branchString, "&" + std::to_string(getBranchAddress(y.first)));
+        }
+    }
+
     return curExpression;
 }
 

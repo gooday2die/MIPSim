@@ -149,11 +149,11 @@ bool GrammarChecker::isValidBranchAddress(const std::string & curArgument) {
         uint32_t addrIndex = std::stoi(argument);
 
         bool result = std::any_of(this->allBranches->begin(), this->allBranches->end(), [&addrIndex](auto const &x) {
-            if (x.second == addrIndex) return true;
+            if (x.second == addrIndex) return true; return false;
         });
         return result;
     } catch(std::exception const& ex){
-        throw ExpressionExceptions::invalidAddressValueException();
+        throw ExpressionExceptions::invalidBranchNameException();
     }
 }
 
@@ -177,7 +177,7 @@ bool GrammarChecker::isValidAddress(const std::string & curArgument) {
  */
 bool GrammarChecker::isBranchName(const std::string& branchName) {
     bool result = std::any_of(this->allBranches->begin(), this->allBranches->end(), [&branchName](auto const& x){
-        if (x.first == branchName) return true;
+        if (x.first == branchName) return true; return false;
     });
     return result;
 }
@@ -233,15 +233,39 @@ argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
 }
 
 /**
- * A member function that gets current expression's arguments
+ * A member function counts arguments type for current expression.
  * @param currentExpression the string object to find out current arguments
  * @return returns argumentInfo type value that represents arguments from expression
  */
 argumentInfo GrammarChecker::getExpressionArguments(const std::string& currentExpression){
     argumentInfo result;
-    result.total = std::count(currentExpression.begin(), currentExpression.end(), ',') + 1;
-    result.registers = std::count(currentExpression.begin(), currentExpression.end(), '$');
-    result.addresses = std::count(currentExpression.begin(), currentExpression.end(), '&');
-    result.immediates = result.total - result.registers - result.addresses;
+
+    std::string space_delimiter = " ";
+    std::vector<std::string> words{};
+    std::string copiedExpression = currentExpression;
+
+    size_t pos = 0;
+    while ((pos = copiedExpression.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
+        words.push_back(copiedExpression.substr(0, pos));
+        copiedExpression.erase(0, pos + space_delimiter.length());
+    }
+
+    result.total = words.size() - 1;
+    result.registers = 0;
+    result.addresses = 0;
+    result.immediates = 0;
+
+    for (uint8_t i = 1 ; i < (uint8_t) words.size() ; i++){
+        if (std::count(words[i].begin(), words[i].end(), '$') == 1) result.registers++; // check if register
+        else {
+            try {
+                std::stoi(words[i]);
+                result.immediates++; // check if immediate
+            } catch (std::exception const &ex) {
+                result.addresses++; // check if address
+            }
+        }
+    }
+
     return result;
 }
