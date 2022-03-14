@@ -79,12 +79,6 @@ uint8_t Assembler::getBranchAddress(const std::string& branchName) {
  */
 void Assembler::assemble(){
     this->checkGrammar();
-    for(auto const& x : this->allBranches){
-        std::cout << x.first << ":" <<  x.second << std::endl;
-    }
-    for(auto const& x : this->processedExpressions){
-        std::cout << x.first << ":" <<  x.second << std::endl;
-    }
     std::cout << "\nResult : " << std::endl;
     if(this->totalErrorCount == 0){
         this->allMachineCodes = (uint32_t *) malloc(sizeof(uint32_t) * (this->processedExpressions.size() + 1));

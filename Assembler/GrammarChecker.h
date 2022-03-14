@@ -15,6 +15,8 @@
 #include <vector>
 #include <stdexcept>
 #include <iostream>
+#include <utility>
+
 #include "AssemblerErrors.h"
 
 

@@ -7,14 +7,16 @@
 
 #include "GrammarChecker.h"
 
-#include <utility>
-
+/**
+ * A constructor member function for GrammarChecker
+ * @param argAllBranches the pointer of allBranches
+ */
 GrammarChecker::GrammarChecker(std::map<std::string, uint32_t>* argAllBranches) {
     this->allBranches = argAllBranches;
 }
 
 /**
- * A member function for class GrammarChecker that checks branch name is valid
+ * A member function that checks if current branch name is valid.
  * @param curLine the string object to find out if the branch name is valid
  * @param allBranchNames all branch's names
  */
@@ -27,16 +29,17 @@ void GrammarChecker::checkBranchName(const std::string& curLine) {
             throw BranchExceptions::emptyNameException();
         }
         originalValue = this->branchDeclarationCount.at(curLine);
-        if (originalValue >= 2){
+        if (originalValue >= 2){ // check if the branch was used before
             throw BranchExceptions::duplicateNameException();
         }
-    } catch(std::out_of_range const& ex){
+    } catch(std::out_of_range const& ex){ // if exception that means it was not generated before.
         this->branchDeclarationCount.insert(std::pair<std::string, uint32_t>(curLine, originalValue + 1));
     }
 }
 
 /**
- * A member function for GrammarChecker that checks if an expression is valid in syntax
+ * A member function for GrammarChecker that checks if an expression is valid in syntax.
+ * This currently checks argument validity.
  * @param currentExpression the string object that represent current expression
  * @param allBranchNames all branches
  */
@@ -44,53 +47,9 @@ void GrammarChecker::checkExpressionValidity(const std::string& currentExpressio
     checkArgumentsValidity(currentExpression);
 }
 
-
-
 /**
- * A member function for GrammarChecker that gets an instruction type from the instruction string
- * @param instructionString the mnemonic string to check type for
- * @return returns 1 if R type, 2 if I type, 3 if J type
- */
-uint8_t GrammarChecker::getInstructionType(const std::string& instructionString) {
-    if ((instructionString == "add") // R Type instructions
-        || (instructionString == "addu")
-        || (instructionString == "and")
-        || (instructionString == "nor")
-        || (instructionString == "or")
-        || (instructionString == "slt")
-        || (instructionString == "sltu")
-        || (instructionString == "sub")
-        || (instructionString == "subu")
-        || (instructionString == "jr")) return 1;
-
-    else if ((instructionString == "addi") // I Type instructions
-            || (instructionString == "addiu")
-            || (instructionString == "andi")
-            || (instructionString == "ori")
-            || (instructionString == "slti")
-            || (instructionString == "sltiu")
-            || (instructionString == "beq")
-            || (instructionString == "bne")
-            || (instructionString == "sll")
-            || (instructionString == "srl")) return 2;
-
-    else if ((instructionString == "j") || instructionString == "jal") return 3; // J Type instructions
-    else if ((instructionString == "move") // pseudo instructions
-            || (instructionString == "li")
-            || (instructionString == "lw")
-            || (instructionString == "la")
-            || (instructionString == "move")
-            || (instructionString == "blt")
-            || (instructionString == "ble")
-            || (instructionString == "bgt")
-            || (instructionString == "bge")) return 4;
-    else throw ExpressionExceptions::unknownInstructionMnemonicException(); // unknown instruction
-}
-
-/**
- * A member function for class GrammarChecker that checks arguments validity.
- * This checks if R type has 3 parameters of registers, I type has 2 parameters of registers, J type if it has 1 address
- * @param currentExpression
+ * A member function for GrammarChecker that checks if expression's arguments were valid in type and order
+ * @param currentExpression current expression string to check if it is valid or not
  */
 void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression) {
     std::string space_delimiter = " ";
@@ -98,23 +57,22 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
     std::string copiedExpression = currentExpression;
 
     size_t pos = 0;
-    /**
-     * A bit of bug here. If the expression string does not have whitespace in the end of expression, it does not
-     * recognize 3rd parameter as its value. Thus put a whitespace in every expressions.
-     */
     while ((pos = copiedExpression.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
         words.push_back(copiedExpression.substr(0, pos));
         copiedExpression.erase(0, pos + space_delimiter.length());
     }
 
     std::string instructionMnemonic = words[0]; // split words
-    argumentInfo instructionInfo = getArgumentInfo(words[0]);
-    argumentInfo expressionArguments = getExpressionArguments(currentExpression);
-    //std::cout << currentExpression << std::endl;
-    //printf("CurLine %d %d %d %d\n", expressionArguments.total, expressionArguments.registers, expressionArguments.addresses, expressionArguments.immediates);
-    //printf("Should be %d %d %d %d\n", instructionInfo.total, instructionInfo.registers, instructionInfo.addresses, instructionInfo.immediates);
+    argumentInfo instructionInfo = getArgumentInfo(words[0]); // get the instruction info that is being used
+    argumentInfo expressionArguments = getExpressionArguments(currentExpression); // get the expression arguments that was entered
+
+    /**
+     * The GrammarChecker has enum InstructionArgInfo which includes the format of each instructions
+     * If the instruction was not found, it is returned as 0x00.
+     */
 
     if (instructionInfo.total == 0) throw ExpressionExceptions::unknownInstructionMnemonicException();
+    // When it was unrecognizable instruction.
     else{
         uint8_t totalArgProcessed = 0;
         // check instruction's arguments were correct
@@ -154,7 +112,7 @@ bool GrammarChecker::isValidRegister(const std::string & curArgument) {
             argument.erase(std::remove(argument.begin(), argument.end(), '$'), argument.end());
             argument.erase(std::remove(argument.begin(), argument.end(), ','), argument.end());
             uint32_t translatedInt = std::stoi(argument); // stoi into integer and check if it was valid register index
-            if ((translatedInt > 31) || (translatedInt < 0)) return false;
+            if ((translatedInt > 31) || (translatedInt < 0)) return false; // check register's range
         }
         catch (std::invalid_argument const& ex){ // if it cannot be processed using stoi, it is unknown register
             return false;
@@ -178,6 +136,12 @@ bool GrammarChecker::isValidImmediate(const std::string& curArgument){
     }
 }
 
+/**
+ * A member function for GrammarChecker that checks if a branch's address is valid
+ * Address is represented as '&' with instruction's index (for example: &3)
+ * @param curArgument current branch's address value.
+ * @return returns true if valid, false if not
+ */
 bool GrammarChecker::isValidBranchAddress(const std::string & curArgument) {
     try {
         std::string argument = curArgument;
@@ -218,6 +182,11 @@ bool GrammarChecker::isBranchName(const std::string& branchName) {
     return result;
 }
 
+/**
+ * A member function for GrammarChecker that retrieves an argument's original argument sets
+ * @param instruction the string object that represents instruction
+ * @return returns argumentInfo type value that represents instruction arguments
+ */
 argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
     argumentInfo result;
     uint8_t arguments;
@@ -263,7 +232,11 @@ argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
     return result;
 }
 
-
+/**
+ * A member function that gets current expression's arguments
+ * @param currentExpression the string object to find out current arguments
+ * @return returns argumentInfo type value that represents arguments from expression
+ */
 argumentInfo GrammarChecker::getExpressionArguments(const std::string& currentExpression){
     argumentInfo result;
     result.total = std::count(currentExpression.begin(), currentExpression.end(), ',') + 1;
