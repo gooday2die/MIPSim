@@ -20,13 +20,13 @@
 Assembler::Assembler(const char* fileName) {
     std::cout << "===== MIPSim Assembler Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
     FileReader fileReader = FileReader(fileName); // Read file
+    this->allMachineCodes = nullptr;
     this->setRegisterNames();
     this->allExpressions = fileReader.getAllExpressions(); // get all expressions
-
     this->getAllBranches();
     this->assemble();
-    //for(uint32_t i = 0 ; i < this->allExpressions.size() ; i++) // Just print all Instructions and all machine codes
-    //    printf("CurCode Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
+    for(uint32_t i = 0 ; i < this->processedExpressions.size() ; i++) // Just print all Instructions and all machine codes
+        printf("CurCode Instruction# %d: 0x%08x\n", i, this->allMachineCodes[i]);
 
     std::cout << "Assembler Successfully Finished!" << std::endl;
     std::cout << "- Generated Expressions : " << this->processedExpressions.size() << std::endl;
@@ -51,10 +51,10 @@ void Assembler::getAllBranches() {
             if (curExpression.isBranchExpression()) { // if current line is a branch expression
                 std::string branchName = curExpression.getBranchName();
                 try {
-                    GrammarChecker::checkBranchName(branchName, this->allBranches);
+                    this->grammarChecker.checkBranchName(branchName);
                     this->allBranches.insert(std::pair<std::string, int>(branchName, expressionCount));
                 } catch(std::exception const& ex){
-                    this->allErrors.insert(std::pair<uint32_t, std::exception>(lineCount, ex));
+                    ;
                 }
             }else expressionCount++;
         }
@@ -71,7 +71,7 @@ uint8_t Assembler::getBranchAddress(const std::string& branchName) {
     for (auto const& x : this->allBranches)
         if(branchName == x.first) return x.second;
 
-    throw ExpressionExceptions::invalidBranchName();
+    throw ExpressionExceptions::invalidBranchNameException();
 }
 
 /**
@@ -82,8 +82,11 @@ void Assembler::assemble(){
     for(auto const& x : this->allBranches){
         std::cout << x.first << ":" <<  x.second << std::endl;
     }
+    for(auto const& x : this->processedExpressions){
+        std::cout << x.first << ":" <<  x.second << std::endl;
+    }
     std::cout << "\nResult : " << std::endl;
-    if(this->allErrors.empty()){
+    if(this->totalErrorCount == 0){
         this->allMachineCodes = (uint32_t *) malloc(sizeof(uint32_t) * (this->processedExpressions.size() + 1));
         this->allMachineCodes[this->processedExpressions.size()] = 0xF0F0F0F0; // let our program know it was last instruction
         this->translateAll();
@@ -91,39 +94,8 @@ void Assembler::assemble(){
     }
     else{
         std::cout << ASSEMBLE_FAILED << std::endl;
-        std::cout << "Found " << this->allErrors.size() << " error(s)" << std::endl;
-        this->printErrors();
+        std::cout << "Found " << this->totalErrorCount << " error(s)" << std::endl;
         exit(1);
-    }
-}
-
-/**
- * A member function that prints out the errors using exceptions
- */
-void Assembler::printErrors() {
-    for (auto const& x : this->allErrors){
-        std::string ErrorExpression = this->allExpressions.at(x.first);
-           try{
-               throw x.second;
-           } catch(BranchExceptions::duplicateNameException const& ex){
-               std::cout << ERROR_TAG << " Branch with duplicate name was found ";
-               std::cout << "@ln " << this->totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
-           } catch(BranchExceptions::emptyNameException const& ex){
-               std::cout << ERROR_TAG << " Branch name cannot be empty string ";
-               std::cout << "@ln " << this->totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
-           } catch(BranchExceptions::whitespaceNameException const& ex){
-               std::cout << ERROR_TAG << " Branch name cannot contain whitespace ";
-               std::cout << "@ln " << this->totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
-           } catch(ExpressionExceptions::unknownRegisterException const& ex){
-               std::cout << ERROR_TAG << " Unknown register ";
-               std::cout << "@ln " << this->totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
-           } catch(ExpressionExceptions::invalidArgumentException const& ex){
-               std::cout << ERROR_TAG << " Invalid arguments for instruction ";
-               std::cout << "@ln " << this->totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
-           } catch(ExpressionExceptions::unknownInstructionMnemonicException const& ex){
-               std::cout << ERROR_TAG << " Unknown Instruction mnemonic ";
-               std::cout << "@ln " << this->totalLineCount << " -> " << ERROR_EXPRESSION << std::endl;
-           }
     }
 }
 
@@ -140,17 +112,56 @@ void Assembler::checkGrammar() {
         std::string curLine = x.second;
         if(!curLine.empty()){ // if current line was empty line, skip
             Expression curExpression = Expression(curLine);
-            if(!curExpression.isBranchExpression()){ // if current expression is not a branch expression.
+            if(curExpression.isBranchExpression()) {
+                try {
+                    grammarChecker.checkBranchName(curExpression.getBranchName());
+                } catch (BranchExceptions::duplicateNameException const &ex) {
+                    std::cout << ERROR_TAG << " Branch with duplicate name was found ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch (BranchExceptions::emptyNameException const &ex) {
+                    std::cout << ERROR_TAG << " Branch name cannot be empty string ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch (BranchExceptions::whitespaceNameException const &ex) {
+                    std::cout << ERROR_TAG << " Branch name cannot contain whitespace ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                }
+            }
+            else{// if current expression is not a branch expression.
                 curExpression.preprocess();
                 std::string expressionString = curExpression.getString();
                 expressionString = replaceRegisterName(expressionString);
                 expressionString = replaceBranch(expressionString);
                 try {
-                    expressionString = replaceBranch(expressionString);
-                    GrammarChecker::checkExpressionValidity(expressionString, this->allBranches);
+                    //std::cout << expressionString << std::endl;
+                    grammarChecker.checkExpressionValidity(expressionString);
                     this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, expressionString));
-                } catch(std::exception const& ex){
-                    this->allErrors.insert(std::pair<uint32_t, std::exception>(lineCount, ex));
+                } catch(ExpressionExceptions::unknownRegisterException const& ex){
+                    std::cout << ERROR_TAG << " Unknown register ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch(ExpressionExceptions::invalidArgumentException const& ex){
+                    std::cout << ERROR_TAG << " Invalid arguments for instruction ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch(ExpressionExceptions::unknownInstructionMnemonicException const& ex){
+                    std::cout << ERROR_TAG << " Unknown instruction mnemonic ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch(ExpressionExceptions::invalidBranchNameException const& ex){
+                    std::cout << ERROR_TAG << " Unknown branch name was found ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch(ExpressionExceptions::invalidAddressValueException const& ex){
+                    std::cout << ERROR_TAG << " Invalid address was found ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
+                } catch(ExpressionExceptions::invalidImmediateValueException const& ex){
+                    std::cout << ERROR_TAG << " Invalid immediate value was found ";
+                    std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
+                    this->totalErrorCount++;
                 }
                 expressionCount++;
             }
@@ -206,7 +217,7 @@ void Assembler::translateAll(){
     uint32_t curIndex = 0;
     for (auto const& y : this->processedExpressions){  // get all expressions
         std::string curLine = y.second;
-        std::cout << curLine << std::endl;
+        //std::cout << curLine << std::endl;
         if (!curLine.empty() && !(Expression(y.second).isBranchExpression())) {
             //curLine = replaceBranch(curLine);
             curLine.erase(std::remove(curLine.begin(), curLine.end(), '&'), curLine.end());

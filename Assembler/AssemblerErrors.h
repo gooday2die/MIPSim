@@ -14,17 +14,23 @@
 
 class ExpressionExceptions{
 public:
-class unknownRegisterException : public std::exception{
-};
+    class unknownRegisterException : public std::exception{
+    };
 
-class unknownInstructionMnemonicException : public std::exception{
-};
+    class unknownInstructionMnemonicException : public std::exception{
+    };
 
-class invalidArgumentException : public std::exception{
-};
+    class invalidArgumentException : public std::exception{
+    };
 
-class invalidBranchName : public std::exception{
-};
+    class invalidBranchNameException : public std::exception{
+    };
+
+    class invalidImmediateValueException : public std::exception{
+    };
+
+    class invalidAddressValueException : public std::exception{
+    };
 };
 
 class BranchExceptions {

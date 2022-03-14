@@ -9,31 +9,30 @@
 
 #include <utility>
 
+GrammarChecker::GrammarChecker(std::map<std::string, uint32_t>* argAllBranches) {
+    this->allBranches = argAllBranches;
+}
+
 /**
  * A member function for class GrammarChecker that checks branch name is valid
  * @param curLine the string object to find out if the branch name is valid
  * @param allBranchNames all branch's names
  */
-void GrammarChecker::checkBranchName(const std::string& curLine, std::map<std::string, uint32_t> allBranchNames) {
-    if(isDuplicateBranchName(curLine, std::move(allBranchNames))) { // check if same duplicate branch exists
-        throw BranchExceptions::duplicateNameException();
-    } else if(curLine.find(32) != std::string::npos){ // check if branch as any whitespaces
-        throw BranchExceptions::whitespaceNameException();
-    } else if(curLine.empty()){ // check if the branch name was empty
-        throw BranchExceptions::emptyNameException();
+void GrammarChecker::checkBranchName(const std::string& curLine) {
+    uint32_t originalValue = 0;
+    try {
+        if (curLine.find(32) != std::string::npos) { // check if branch as any whitespaces
+            throw BranchExceptions::whitespaceNameException();
+        } else if (curLine.empty()) { // check if the branch name was empty
+            throw BranchExceptions::emptyNameException();
+        }
+        originalValue = this->branchDeclarationCount.at(curLine);
+        if (originalValue >= 2){
+            throw BranchExceptions::duplicateNameException();
+        }
+    } catch(std::out_of_range const& ex){
+        this->branchDeclarationCount.insert(std::pair<std::string, uint32_t>(curLine, originalValue + 1));
     }
-}
-
-/**
- * A member function for GrammarChecker that retrieves if a branch's name is duplicate or not
- * @param branchName the string object that represents branch's name
- * @return true if it is a duplicate named branch, false if not
- */
-bool GrammarChecker::isDuplicateBranchName(const std::string& branchName, const std::map<std::string, uint32_t>& allBranchNames) {
-    bool result = std::any_of(allBranchNames.begin(), allBranchNames.end(), [&branchName](auto const& x){
-        if (x.first == branchName) return true;
-    });
-    return result;
 }
 
 /**
@@ -41,9 +40,11 @@ bool GrammarChecker::isDuplicateBranchName(const std::string& branchName, const 
  * @param currentExpression the string object that represent current expression
  * @param allBranchNames all branches
  */
-void GrammarChecker::checkExpressionValidity(std::string currentExpression, std::map<std::string, uint32_t> allBranchNames) {
+void GrammarChecker::checkExpressionValidity(const std::string& currentExpression) {
     checkArgumentsValidity(currentExpression);
 }
+
+
 
 /**
  * A member function for GrammarChecker that gets an instruction type from the instruction string
@@ -107,29 +108,6 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
     }
 
     std::string instructionMnemonic = words[0]; // split words
-    /**
-    uint8_t instructionType = getInstructionType(instructionMnemonic);
-    uint8_t registerCount = std::count(currentExpression.begin(), currentExpression.end(), '$'); // count how many $ exists.
-    uint8_t wordSizeForTypes = 0 ; // the last index of the register from words object
-
-    switch (instructionType) {
-        case 1:{ // if R type, it should have 3 registers and total of 4 parts
-            if ((registerCount != 3) || (words.size() != 4)) throw ExpressionExceptions::invalidArgumentException();
-            wordSizeForTypes = 4;
-            break;
-        }
-        case 2: // if I type, it should have 2 registers and total of 4 parts
-            if ((registerCount != 2) || (words.size() != 4)) throw ExpressionExceptions::invalidArgumentException();
-            wordSizeForTypes = 3;
-            break;
-        case 3: // if J type, it should have 0 registers and 1 address. Total of 2 parts.
-            if ((registerCount != 0) || (words.size() != 2)) throw ExpressionExceptions::invalidArgumentException();
-            wordSizeForTypes = 2;
-            break;
-        default: // will not be reachable
-            throw ExpressionExceptions::unknownInstructionMnemonicException();
-    }
-     */
     argumentInfo instructionInfo = getArgumentInfo(words[0]);
     argumentInfo expressionArguments = getExpressionArguments(currentExpression);
     //std::cout << currentExpression << std::endl;
@@ -144,34 +122,100 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
         (instructionInfo.addresses == expressionArguments.addresses) && // check if total addresses were correct
         (instructionInfo.registers == expressionArguments.registers) && // check if registers were correct
         (instructionInfo.immediates == expressionArguments.immediates)){ // check if immediates were correct
-            for(uint8_t i = 1 ; i < 1 + instructionInfo.registers ; i++) { // check register's validity
-                std::string curArgument = words[i];
-                if (std::count(curArgument.begin(), curArgument.end(), '$') != 1) // if this was not a register
-                    throw ExpressionExceptions::invalidArgumentException(); // throw exception
-                else{ // if this was a register
-                    try{ // try checking if the register was correct
-                        curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), '$'), curArgument.end());
-                        curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), ','), curArgument.end());
-                        uint32_t translatedInt = std::stoi(curArgument);
-                        if ((translatedInt > 31) || (translatedInt < 0)) throw ExpressionExceptions::unknownRegisterException();
-                    }
-                    catch (std::invalid_argument const& ex){ // if it cannot be processed using stoi, it is unknown register
-                            throw ExpressionExceptions::unknownRegisterException();
-                    }
-                }
+            for (uint8_t i = 1 ; i < instructionInfo.registers + 1 ; i++) { // check if registers were correct
+                if (!isValidRegister(words[i])) throw ExpressionExceptions::unknownRegisterException();
                 totalArgProcessed++;
             }
-            try{
-                if (totalArgProcessed == instructionInfo.total) return;
-                std::string curArgument = words[instructionInfo.registers + 1];
-                curArgument.erase(std::remove(curArgument.begin(), curArgument.end(), '&'), curArgument.end());
-                uint32_t translatedInt = std::stoi(curArgument);
+
+            for (uint8_t i = 0 ; i < instructionInfo.immediates ; i++){ // check if immediates were correct
+                if (!isValidImmediate(words[i + 1 + instructionInfo.registers])) throw ExpressionExceptions::invalidImmediateValueException();
+                totalArgProcessed++;
             }
-            catch (std::invalid_argument const& ex){ // if it cannot be processed using stoi, it is unknown register
-                throw ExpressionExceptions::invalidArgumentException();
+
+            for (uint8_t i = 0 ; i < instructionInfo.addresses ; i++){ // check if addresses were correct
+                if (!isValidAddress(words[i + 1 + instructionInfo.registers + instructionInfo.immediates])) throw ExpressionExceptions::invalidAddressValueException();
+                totalArgProcessed++;
             }
         } else throw ExpressionExceptions::invalidArgumentException();
     }
+}
+
+/**
+ * A member function for GrammarChecker that checks if a register is a valid register
+ * @param curArgument current register argument from expression to check validity
+ * @return true if valid, false if not
+ */
+bool GrammarChecker::isValidRegister(const std::string & curArgument) {
+    std::string argument = curArgument;
+    if (std::count(argument.begin(), argument.end(), '$') != 1) // if this was not a register
+        return false; // throw exception
+    else{ // if this was a register
+        try{ // try checking if the register was correct
+            argument.erase(std::remove(argument.begin(), argument.end(), '$'), argument.end());
+            argument.erase(std::remove(argument.begin(), argument.end(), ','), argument.end());
+            uint32_t translatedInt = std::stoi(argument); // stoi into integer and check if it was valid register index
+            if ((translatedInt > 31) || (translatedInt < 0)) return false;
+        }
+        catch (std::invalid_argument const& ex){ // if it cannot be processed using stoi, it is unknown register
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * A member function for GrammarChecker that checks if an immediate is valid
+ * @param curArgument current immediate value from expression to check validity
+ * @return true if valid, false if not
+ */
+bool GrammarChecker::isValidImmediate(const std::string& curArgument){
+    const std::string& argument = curArgument;
+    try{
+        std::stoi(argument);
+        return true;
+    } catch (std::invalid_argument const& ex){ // if it cannot be 'stoi'ed it means that it is not integer
+        return false;
+    }
+}
+
+bool GrammarChecker::isValidBranchAddress(const std::string & curArgument) {
+    try {
+        std::string argument = curArgument;
+        argument.erase(std::remove(argument.begin(), argument.end(), '&'), argument.end());
+        uint32_t addrIndex = std::stoi(argument);
+
+        bool result = std::any_of(this->allBranches->begin(), this->allBranches->end(), [&addrIndex](auto const &x) {
+            if (x.second == addrIndex) return true;
+        });
+        return result;
+    } catch(std::exception const& ex){
+        throw ExpressionExceptions::invalidAddressValueException();
+    }
+}
+
+/**
+ * A member function for GrammarChecker that checks if an address is valid.
+ * This member function currently supports checking branches. More features will be added to this member function.
+ * @param curArgument current address value from expression to check validity
+ * @return true if valid, false if not
+ */
+bool GrammarChecker::isValidAddress(const std::string & curArgument) {
+    //std::cout << curArgument << "is valid branch name : " << isBranchName(curArgument) << std::endl;
+    const std::string& argument = curArgument;
+    if (isValidBranchAddress(argument)) return true;
+    return false;
+}
+
+/**
+ * A member function for GrammarChecker that retrieves if a branch's name is duplicate or not
+ * @param branchName the string object that represents branch's name
+ * @return true if it is a duplicate named branch, false if not
+ */
+bool GrammarChecker::isBranchName(const std::string& branchName) {
+    bool result = std::any_of(this->allBranches->begin(), this->allBranches->end(), [&branchName](auto const& x){
+        if (x.first == branchName) return true;
+    });
+    return result;
 }
 
 argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
@@ -218,6 +262,7 @@ argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
 
     return result;
 }
+
 
 argumentInfo GrammarChecker::getExpressionArguments(const std::string& currentExpression){
     argumentInfo result;

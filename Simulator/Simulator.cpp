@@ -49,13 +49,14 @@ void Simulator::run() {
 
     while (true){
         uint32_t curMachineCode = this->memory[*this->registerHandler->getPC()];
+        *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;
+
         printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", *this->registerHandler->getPC(), curMachineCode);
         try {
             this->executeMachineCode(curMachineCode);
         } catch(std::exception e) {
             std::cout << "Exception : " << e.what() << std::endl;
         }
-        *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;
         this->registerHandler->resetZero();
         if (this->memory[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
 

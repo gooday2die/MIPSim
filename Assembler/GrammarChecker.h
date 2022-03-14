@@ -73,14 +73,22 @@ enum InstructionArgInfo{
 
 class GrammarChecker {
 private:
-    static bool isDuplicateBranchName(const std::string&, const std::map<std::string, uint32_t>&);
+    std::map<std::string, uint32_t>* allBranches;
+    std::map<std::string, uint32_t> branchDeclarationCount;
+    bool isBranchName(const std::string&);
+    static bool isValidRegister(const std::string&);
+    static bool isValidImmediate(const std::string&);
+    bool isValidAddress(const std::string&);
+    bool isValidBranchAddress(const std::string&);
+
     static uint8_t getInstructionType(const std::string&);
-    static void checkArgumentsValidity(const std::string&);
+    void checkArgumentsValidity(const std::string&);
     static argumentInfo getArgumentInfo(const std::string&);
     static argumentInfo getExpressionArguments(const std::string&);
 public:
-    static void checkBranchName(const std::string&, std::map<std::string, uint32_t>);
-    static void checkExpressionValidity(std::string, std::map<std::string, uint32_t>);
+    GrammarChecker(std::map<std::string, uint32_t>*);
+    void checkBranchName(const std::string&);
+    void checkExpressionValidity(const std::string&);
 };
 
 

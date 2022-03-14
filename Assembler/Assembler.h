@@ -25,17 +25,16 @@ private:
     std::map<std::string, uint32_t> allBranches;
     std::map<std::string, uint8_t> registerNames;
     std::map<uint32_t , std::string> processedExpressions;
-    std::map<uint32_t , std::exception> allErrors;
     uint32_t* allMachineCodes;
     uint32_t totalErrorCount = 0;
     uint32_t totalLineCount = 0;
+    GrammarChecker grammarChecker = GrammarChecker(&this->allBranches);
 
     std::string replaceRegisterName(const std::string&);
     void setRegisterNames();
     void checkGrammar();
     uint8_t getBranchAddress(const std::string&);
     void getAllBranches();
-    void printErrors();
 public:
     Assembler(const char*);
     void translateAll();
