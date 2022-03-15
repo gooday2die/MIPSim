@@ -126,21 +126,26 @@ void Assembler::checkGrammar() {
             else{// if current expression was not a branch definition
                 curExpression.preprocess();
                 std::vector<std::string> expressionStrings;
-                if(!curExpression.isPseudoInstruction()) {
-                    expressionStrings.push_back(curExpression.getString());
-                }else{
-                    expressionStrings = curExpression.getTranslatedPseudoInstruction();
-                }
-                for(uint8_t i = 0 ; i < (uint8_t) expressionStrings.size() ; i++){
-                    expressionStrings[i] = replaceRegisterName(expressionStrings[i]);
-                    expressionStrings[i] = replaceBranch(expressionStrings[i]);
-                }
+
+                std::string expressionString = curExpression.getString();
+                expressionString = replaceRegisterName(expressionString);
+                expressionString = replaceBranch(expressionString);
 
                 try {
-                    for (auto const& y: expressionStrings){
-                        grammarChecker.checkExpressionValidity(y);
-                        this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, y));
+                    grammarChecker.checkExpressionValidity(expressionString);
+                    if(!curExpression.isPseudoInstruction()) { // check if this was pseudo instruction
+                        expressionStrings.push_back(expressionString);
+                    }else{
+                        for (auto const& y : curExpression.getTranslatedPseudoInstruction()) {
+                            std::string tmp = y;
+                            tmp = replaceRegisterName(tmp);
+                            tmp = replaceBranch(tmp);
+                            expressionStrings.push_back(tmp);
+                        }
                     }
+                        for (auto const& y: expressionStrings){
+                            this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, y));
+                        }
                 } catch(ExpressionExceptions::unknownRegisterException const& ex){
                     std::cout << ERROR_TAG << " Unknown register ";
                     std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;

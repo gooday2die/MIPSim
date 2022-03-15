@@ -65,6 +65,11 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
     std::string instructionMnemonic = words[0]; // split words
     argumentInfo instructionInfo = getArgumentInfo(words[0]); // get the instruction info that is being used
     argumentInfo expressionArguments = getExpressionArguments(currentExpression); // get the expression arguments that was entered
+    std::cout << currentExpression << std::endl;
+    // The two lines below is for debugging only
+    //printf("SHOULD : %d, %d, %d, %d\n", instructionInfo.total, instructionInfo.registers, instructionInfo.immediates, instructionInfo.addresses);
+    //printf("HAS : %d, %d, %d, %d\n", expressionArguments.total, expressionArguments.registers, expressionArguments.immediates, expressionArguments.addresses);
+
 
     /**
      * The GrammarChecker has enum InstructionArgInfo which includes the format of each instructions
@@ -191,6 +196,7 @@ argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
     argumentInfo result;
     uint8_t arguments;
     if (instruction == "add") arguments = InstructionArgInfo::Aadd;
+    else if (instruction == "addu") arguments = InstructionArgInfo::Aaddu;
     else if (instruction == "and") arguments = InstructionArgInfo::Aand;
     else if (instruction == "nor") arguments = InstructionArgInfo::Anor;
     else if (instruction == "or") arguments = InstructionArgInfo::Aor;
@@ -216,8 +222,6 @@ argumentInfo GrammarChecker::getArgumentInfo(const std::string& instruction){
 
     else if (instruction == "move") arguments = InstructionArgInfo::Amove;
     else if (instruction == "li") arguments = InstructionArgInfo::Ali;
-    //else if (instruction == "lw") arguments = InstructionArgInfo::Alw;
-    //else if (instruction == "la") arguments = InstructionArgInfo::Ala;
     else if (instruction == "blt") arguments = InstructionArgInfo::Ablt;
     else if (instruction == "ble") arguments = InstructionArgInfo::Able;
     else if (instruction == "bgt") arguments = InstructionArgInfo::Abgt;

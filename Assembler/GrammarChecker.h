@@ -37,15 +37,15 @@ typedef struct argumentInfo{
  * ex) 0b1111000 -> total of 3 arguments with 3 register arguments
  */
 enum InstructionArgInfo{
-   Aadd  = 0b1111000, // R Type
-   Aaddu = 0b1111000,
-   Aand = 0b1111000,
-   Anor = 0b1111000,
-   Aor = 0b1111000,
-   Aslt = 0b1111000,
-   Asltu = 0b1111000,
-   Asub = 0b1111000,
-   Asubu = 0b1111000,
+   Aadd  = 0b11110000, // R Type
+   Aaddu = 0b11110000,
+   Aand = 0b11110000,
+   Anor = 0b11110000,
+   Aor = 0b11110000,
+   Aslt = 0b11110000,
+   Asltu = 0b11110000,
+   Asub = 0b11110000,
+   Asubu = 0b11110000,
    Ajr = 0b01010000, // Needs one register argument
 
    Aaddi = 0b11100100, // I type

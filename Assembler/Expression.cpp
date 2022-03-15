@@ -83,11 +83,7 @@ void Expression::removeComments() {
 void Expression::removeTabs() {
     const char* line = this->expressionString.c_str();
     uint16_t curPos = 0;
-    while (line[curPos] == 32) curPos++; // look for spaces
-    this->expressionString =  this->expressionString.substr(curPos, this->expressionString.size());
-
-    curPos = 0;
-    while (line[curPos] == 9) curPos++; // look for tabs
+    while ((line[curPos] == 32) || line[curPos] == 9) curPos++; // look for spaces and tabs
     this->expressionString =  this->expressionString.substr(curPos, this->expressionString.size());
 }
 
@@ -139,6 +135,9 @@ bool Expression::isPseudoInstruction() {
     std::vector<std::string> words{};
     std::string copiedExpression = this->expressionString;
 
+    copiedExpression.erase(std::remove(copiedExpression.begin(), copiedExpression.end(), '$'), copiedExpression.end());
+    copiedExpression.erase(std::remove(copiedExpression.begin(), copiedExpression.end(), ','), copiedExpression.end());
+
     size_t pos = 0;
     while ((pos = copiedExpression.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
         words.push_back(copiedExpression.substr(0, pos));
@@ -148,39 +147,39 @@ bool Expression::isPseudoInstruction() {
     std::string instruction = words[0];
     if (instruction == "move"){
         // move pseudo-instruction: addu $t0, $zero, $s0
-        this->translatedPseudoInstruction.push_back("addu " + words[1] + ", $0, " + words[2]);
+        this->translatedPseudoInstruction.push_back("addu $" + words[1] + ", $0, $" + words[2] + " ");
         return true;
     } else if(instruction == "li"){
         // li pseudo-instruction: ori $s0, $zero, immediate
-        this->translatedPseudoInstruction.push_back("ori " + words[1] + ", $0, " + words[2]);
+        this->translatedPseudoInstruction.push_back("ori $0, $" + words[1] + ", " + words[2] + " ");
         return true;
     } else if(instruction == "blt"){
         // blt pseudo-instruction:
-        // slt $at, $t0, $t1
+        // slt $t0, $t1, $at
         // bne $at, $zero, branch
-        this->translatedPseudoInstruction.push_back("slt $at, " + words[1] + ", " + words[2]);
-        this->translatedPseudoInstruction.push_back("bne $at, $zero, " + words[3]);
+        this->translatedPseudoInstruction.push_back("slt $" + words[1] + ", $" + words[2] + ", $at ");
+        this->translatedPseudoInstruction.push_back("bne $at, $zero, " + words[3] + " ");
         return true;
     } else if(instruction == "ble"){
         // ble pseudo-instruction:
-        // slt $at, $t1, $t0
+        // slt $t1, $t0, $at
         // beq $at, $zero, branch
-        this->translatedPseudoInstruction.push_back("slt $at, " + words[2] + ", " + words[1]);
-        this->translatedPseudoInstruction.push_back("beq $at, $zero, " + words[3]);
+        this->translatedPseudoInstruction.push_back("slt $" + words[2] + ", $" + words[1] + ", $at ");
+        this->translatedPseudoInstruction.push_back("beq $at, $zero, " + words[3] + " ");
         return true;
     } else if(instruction == "bgt"){
         // bgt pseudo-instruction:
-        // slt $at, $t1, $t0
+        // slt $t1, $t0, $at
         // bne $at, $zero, branch
-        this->translatedPseudoInstruction.push_back("slt $at, " + words[2] + ", " + words[1]);
-        this->translatedPseudoInstruction.push_back("bne $at, $zero, " + words[3]);
+        this->translatedPseudoInstruction.push_back("slt $" + words[2] + ", $" + words[1] + ", $at ");
+        this->translatedPseudoInstruction.push_back("bne $at, $zero, " + words[3] + " ");
         return true;
     } else if(instruction == "bge"){
         // bge pseudo-instruction:
-        // slt $at, $t1, $t0
+        // slt $t1, $t0, $at
         // beq $at, $zero, branch
-        this->translatedPseudoInstruction.push_back("slt $at, " + words[1] + ", " + words[2]);
-        this->translatedPseudoInstruction.push_back("beq $at, $zero, " + words[3]);
+        this->translatedPseudoInstruction.push_back("slt $" + words[1] + ", $" + words[2] + ", $at ");
+        this->translatedPseudoInstruction.push_back("beq $at, $zero, " + words[3] + " ");
         return true;
     }
     return false;
