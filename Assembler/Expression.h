@@ -11,10 +11,12 @@
 
 #include <string>
 #include <algorithm>
+#include <vector>
 
 class Expression {
 private:
     std::string expressionString;
+    std::vector<std::string> translatedPseudoInstruction;
     void removeComments();
     void removeTabs();
     void addWhiteSpace();
@@ -22,9 +24,11 @@ private:
 public:
     Expression(std::string);
     bool isBranchExpression();
+    bool isPseudoInstruction();
     std::string getBranchName();
     void preprocess();
     std::string getString() const;
+    std::vector<std::string> getTranslatedPseudoInstruction();
 };
 
 

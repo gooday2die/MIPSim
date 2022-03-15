@@ -32,7 +32,7 @@ Assembler::Assembler(const char* fileName) {
     std::cout << "- Generated Expressions : " << this->processedExpressions.size() << std::endl;
     std::cout << "- Generated Branches : " << this->allBranches.size() << "\n" << std::endl;
 
-    Simulator simulator = Simulator(this->allMachineCodes); // intialize
+    Simulator simulator = Simulator(this->allMachineCodes); // initialize
     simulator.printAllRegisters(); // print registers
     simulator.run(); // then run
     simulator.printAllRegisters(); // print registers
@@ -106,7 +106,7 @@ void Assembler::checkGrammar() {
         std::string curLine = x.second;
         if(!curLine.empty()){ // if current line was empty line, skip
             Expression curExpression = Expression(curLine);
-            if(curExpression.isBranchExpression()) {
+            if(curExpression.isBranchExpression()) { // if current expression was branch definition
                 try {
                     grammarChecker.checkBranchName(curExpression.getBranchName());
                 } catch (BranchExceptions::duplicateNameException const &ex) {
@@ -123,14 +123,24 @@ void Assembler::checkGrammar() {
                     this->totalErrorCount++;
                 }
             }
-            else{// if current expression is not a branch expression.
+            else{// if current expression was not a branch definition
                 curExpression.preprocess();
-                std::string expressionString = curExpression.getString();
-                expressionString = replaceRegisterName(expressionString);
-                expressionString = replaceBranch(expressionString);
+                std::vector<std::string> expressionStrings;
+                if(!curExpression.isPseudoInstruction()) {
+                    expressionStrings.push_back(curExpression.getString());
+                }else{
+                    expressionStrings = curExpression.getTranslatedPseudoInstruction();
+                }
+                for(uint8_t i = 0 ; i < (uint8_t) expressionStrings.size() ; i++){
+                    expressionStrings[i] = replaceRegisterName(expressionStrings[i]);
+                    expressionStrings[i] = replaceBranch(expressionStrings[i]);
+                }
+
                 try {
-                    grammarChecker.checkExpressionValidity(expressionString);
-                    this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, expressionString));
+                    for (auto const& y: expressionStrings){
+                        grammarChecker.checkExpressionValidity(y);
+                        this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, y));
+                    }
                 } catch(ExpressionExceptions::unknownRegisterException const& ex){
                     std::cout << ERROR_TAG << " Unknown register ";
                     std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
