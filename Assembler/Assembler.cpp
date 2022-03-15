@@ -56,7 +56,11 @@ void Assembler::getAllBranches() {
                 } catch(std::exception const& ex){
                     ;
                 }
-            }else expressionCount++;
+            } else if(curExpression.isPseudoInstruction()){
+                curExpression.translatePseudoInstruction();
+                expressionCount = expressionCount + curExpression.getTranslatedPseudoInstruction().size();
+            } // some pseudo instructions contain two instructions, so should be added by sizes.
+            else expressionCount++;
         }
         lineCount++;
     }
@@ -134,8 +138,9 @@ void Assembler::checkGrammar() {
                 try {
                     grammarChecker.checkExpressionValidity(expressionString);
                     if(!curExpression.isPseudoInstruction()) { // check if this was pseudo instruction
-                        expressionStrings.push_back(expressionString);
+                        expressionStrings.push_back(expressionString); // if it was not, just push it to the vector
                     }else{
+                        curExpression.translatePseudoInstruction(); // if it was pseudo instruction, push all instructions
                         for (auto const& y : curExpression.getTranslatedPseudoInstruction()) {
                             std::string tmp = y;
                             tmp = replaceRegisterName(tmp);
@@ -143,9 +148,10 @@ void Assembler::checkGrammar() {
                             expressionStrings.push_back(tmp);
                         }
                     }
-                        for (auto const& y: expressionStrings){
-                            this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, y));
-                        }
+                    for (auto const& y: expressionStrings){
+                        this->processedExpressions.insert(std::pair<uint32_t, std::string>(expressionCount, y));
+                        expressionCount++;
+                    }
                 } catch(ExpressionExceptions::unknownRegisterException const& ex){
                     std::cout << ERROR_TAG << " Unknown register ";
                     std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
@@ -171,7 +177,6 @@ void Assembler::checkGrammar() {
                     std::cout << "@ln " << lineCount << " -> " << ERROR_EXPRESSION << std::endl;
                     this->totalErrorCount++;
                 }
-                expressionCount++;
             }
         }
         lineCount++;

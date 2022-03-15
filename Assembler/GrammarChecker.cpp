@@ -65,11 +65,9 @@ void GrammarChecker::checkArgumentsValidity(const std::string &currentExpression
     std::string instructionMnemonic = words[0]; // split words
     argumentInfo instructionInfo = getArgumentInfo(words[0]); // get the instruction info that is being used
     argumentInfo expressionArguments = getExpressionArguments(currentExpression); // get the expression arguments that was entered
-    std::cout << currentExpression << std::endl;
     // The two lines below is for debugging only
     //printf("SHOULD : %d, %d, %d, %d\n", instructionInfo.total, instructionInfo.registers, instructionInfo.immediates, instructionInfo.addresses);
     //printf("HAS : %d, %d, %d, %d\n", expressionArguments.total, expressionArguments.registers, expressionArguments.immediates, expressionArguments.addresses);
-
 
     /**
      * The GrammarChecker has enum InstructionArgInfo which includes the format of each instructions

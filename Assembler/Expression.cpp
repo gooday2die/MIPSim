@@ -125,12 +125,10 @@ std::string Expression::getString() const {
 }
 
 /**
- * A member function for class Expression that finds out if an instruction is a pseudo instruction.
  * If the expression is pseudo instruction, it generates a vector object containing translated mips code that
  * corresponds to pseudo instruction.
- * @return returns true if pseudo instruction, false if not
  */
-bool Expression::isPseudoInstruction() {
+void Expression::translatePseudoInstruction() {
     std::string space_delimiter = " ";
     std::vector<std::string> words{};
     std::string copiedExpression = this->expressionString;
@@ -148,40 +146,59 @@ bool Expression::isPseudoInstruction() {
     if (instruction == "move"){
         // move pseudo-instruction: addu $t0, $zero, $s0
         this->translatedPseudoInstruction.push_back("addu $" + words[1] + ", $0, $" + words[2] + " ");
-        return true;
     } else if(instruction == "li"){
         // li pseudo-instruction: ori $s0, $zero, immediate
         this->translatedPseudoInstruction.push_back("ori $0, $" + words[1] + ", " + words[2] + " ");
-        return true;
     } else if(instruction == "blt"){
         // blt pseudo-instruction:
         // slt $t0, $t1, $at
         // bne $at, $zero, branch
         this->translatedPseudoInstruction.push_back("slt $" + words[1] + ", $" + words[2] + ", $at ");
         this->translatedPseudoInstruction.push_back("bne $at, $zero, " + words[3] + " ");
-        return true;
     } else if(instruction == "ble"){
         // ble pseudo-instruction:
         // slt $t1, $t0, $at
         // beq $at, $zero, branch
         this->translatedPseudoInstruction.push_back("slt $" + words[2] + ", $" + words[1] + ", $at ");
         this->translatedPseudoInstruction.push_back("beq $at, $zero, " + words[3] + " ");
-        return true;
     } else if(instruction == "bgt"){
         // bgt pseudo-instruction:
         // slt $t1, $t0, $at
         // bne $at, $zero, branch
         this->translatedPseudoInstruction.push_back("slt $" + words[2] + ", $" + words[1] + ", $at ");
         this->translatedPseudoInstruction.push_back("bne $at, $zero, " + words[3] + " ");
-        return true;
     } else if(instruction == "bge"){
         // bge pseudo-instruction:
         // slt $t1, $t0, $at
         // beq $at, $zero, branch
         this->translatedPseudoInstruction.push_back("slt $" + words[1] + ", $" + words[2] + ", $at ");
         this->translatedPseudoInstruction.push_back("beq $at, $zero, " + words[3] + " ");
-        return true;
     }
+}
+
+/**
+ * A member function for class Expression that checks if current expression is pseudo-instruction
+ * @return returns true if it is pseudo-instruction, false if not
+ */
+bool Expression::isPseudoInstruction() {
+    std::string space_delimiter = " ";
+    std::vector<std::string> words{};
+    std::string copiedExpression = this->expressionString;
+
+    size_t pos = 0;
+    while ((pos = copiedExpression.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
+        words.push_back(copiedExpression.substr(0, pos));
+        copiedExpression.erase(0, pos + space_delimiter.length());
+    }
+
+    std::string instruction = words[0];
+    if ((instruction == "move")
+        || (instruction == "li")
+        || (instruction == "blt")
+        || (instruction == "ble")
+        || (instruction == "bgt")
+        || (instruction == "bge"))
+        return true;
     return false;
 }
 

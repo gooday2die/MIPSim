@@ -29,6 +29,7 @@ public:
     void preprocess();
     std::string getString() const;
     std::vector<std::string> getTranslatedPseudoInstruction();
+    void translatePseudoInstruction();
 };
 
 

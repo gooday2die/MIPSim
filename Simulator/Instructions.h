@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <cstdint>
 #include <climits>
+#include <iostream>
 
 
 class Instructions {
