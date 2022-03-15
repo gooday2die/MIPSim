@@ -9,7 +9,7 @@
 #define MIPSIM_MAIN_H
 #pragma once
 
-#include "./Assembler/Assembler.h"
+#include "./AssemblerV2/Assembler.h"
 
 #include <iostream>
 #include <queue>
