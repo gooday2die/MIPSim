@@ -1,5 +1,5 @@
 //
-// @file : Assembler.
+// @file : Assembler.cpp
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : 
@@ -16,17 +16,20 @@ Assembler::Assembler(string argFileName) {
     this->fileReader = new FileReader(this->fileName);
     this->allExpressions = this->fileReader->getAllExpressions();
 
+    this->lexicalAnalyzer = new LexicalAnalyzer(this->allExpressions);
     this->performLexicalAnalysis();
     //this->parseSections();
     //if (!this->allErrors.empty()) this->printErrors();
 }
 
 void Assembler::performLexicalAnalysis() {
+    uint32_t i = 0;
     for(auto const& x : this->allExpressions){
-        if(!x.second.getExpressionString().empty()){
-            LexicalAnalyzer::analyze(x.second.getExpressionString());
-
+        if(x.second.getExpressionString().size() != 1){
+            std::cout << to_string(i) << " : ";
+            this->lexicalAnalyzer->analyze(x.second.getExpressionString());
         }
+        i++;
     }
 }
 

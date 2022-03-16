@@ -1,8 +1,8 @@
 //
-// @file : LexicalAnalyzer.
+// @file : LexicalAnalyzer.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
+// @brief : A file that defines all attributes and member functions for class GrammarChecker
 // @date: 2022-03-16
 
 #ifndef MIPSIM_LEXICALANALYZER_H
@@ -11,17 +11,36 @@
 
 #include <string>
 #include <iostream>
+#include <vector>
+#include <algorithm>
+#include <map>
+#include <utility>
 
+#include "Expression.h"
+
+/**
+ * A class that is for analyzing expressions using lexical analysis.
+ */
 class LexicalAnalyzer {
 private:
-    static bool isSectionToken(const std::string&);
-    static bool isImmediateToken(const std::string&);
-    static bool isLabelToken(const std::string&);
-    static bool isRegisterToken(const std::string&);
-    static std::string getLabelName(const std::string&);
-    static std::string getSectionName(const std::string&);
+    std::vector<std::string> allFoundLabels;
+    std::vector<std::string> sectionTokens;
+    std::vector<std::string> registerTokens;
+    std::vector<std::string> instructionTokens;
+
+    std::map<uint32_t, Expression> allExpressions;
+
+    bool isSectionToken(const std::string&);
+    bool isLabelToken(const std::string&);
+    bool isRegisterToken(const std::string&);
+    bool isImmediateToken(const std::string&);
+    bool isMnemonicInstructionToken(const std::string&);
+    bool isDefinedLabelToken(const std::string&);
+
+    void scanLabelTokens();
 public:
-    static void analyze(const std::string&);
+    explicit LexicalAnalyzer(std::map<uint32_t, Expression>);
+    void analyze(const std::string&);
 };
 
 

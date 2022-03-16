@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that defines all attributes and member functions for class FileReader
-// @date: 2022-03-15
+// @date: 2022-03-16
 
 #ifndef MIPSIM_FILEREADER_H
 #define MIPSIM_FILEREADER_H
@@ -16,10 +16,12 @@
 #include <map>
 #include <regex>
 #include <tuple>
+#include <algorithm>
 
 #include "Expression.h"
 
 using namespace std;
+
 
 /**
  * A class for reading, preprocessing and generating expressions
@@ -33,6 +35,9 @@ private:
     static string removeTabs(const string&);
     static string removeComments(const string&);
     static string removeDuplicateWhitespaces(const string&);
+    static string addWhiteSpace(const string&);
+    static string replaceTabToWhitespaces(const string&);
+    static string removeCommas(const string&);
 public:
     explicit FileReader(const string&);
     map<uint32_t, Expression> getAllExpressions();

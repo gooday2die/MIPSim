@@ -30,6 +30,7 @@ private:
     FileReader* fileReader = nullptr;
     Section* textSection = nullptr;
     Section* dataSection = nullptr;
+    LexicalAnalyzer* lexicalAnalyzer = nullptr;
 
     uint16_t scanSections();
     void parseSections();

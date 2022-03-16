@@ -3,9 +3,8 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that implements all member functions for class FileReader
-// @date: 2022-03-15
+// @date: 2022-03-16
 
-#include <algorithm>
 #include "FileReader.h"
 
 
@@ -94,10 +93,55 @@ string FileReader::removeDuplicateWhitespaces(const string& expressionString) {
 }
 
 /**
+ * A member function for class FileReader for adding a whitespace into the end of the expression string
+ * @param expressionString the current expression string to add a whitespace into
+ * @return string object that represents current expression with a whitespace added in the back
+ */
+string FileReader::addWhiteSpace(const string& expressionString) {
+    const char* line = expressionString.c_str();
+    if (line[expressionString.size() - 1] != 32){ // string's size just returns \0's index. So this is total len - 1
+        // check if last character was a space, if it was not add one
+        char* result = (char*)malloc(sizeof(char) * (expressionString.size() + 1)); // copy all
+        for (uint32_t i = 0; i < expressionString.size() ; i++) result[i] = line[i];
+        result[expressionString.size()] = 32; // add space
+        result[expressionString.size() + 1] = '\0'; // add a \0
+        return result;
+    }
+    return line;
+}
+
+/**
+ * A member function for class FileReader for replacing tabs into whitespaces in a expression.
+ * @param expressionString the current expression string to replace tabs into whitespaces
+ * @return string object that represents current expression with tabs replaced into whitespaces
+ */
+string FileReader::replaceTabToWhitespaces(const string& expressionString) {
+    string copied = expressionString;
+    copied = regex_replace(expressionString, std::regex("\t"), " ");
+
+    return copied;
+}
+
+/**
+ * A member function for class FileReader for replacing commas into whitespaces in a expression.
+ * @param expressionString the current expression string to replace commas into whitespaces
+ * @return string object that represents current expression with commas replaced into whitespaces
+ */
+string FileReader::removeCommas(const string& expressionString) {
+    string copied = expressionString;
+    copied = regex_replace(expressionString, std::regex(","), " ");
+
+    return copied;
+}
+
+/**
  * A member function for class FileReader for preprocessing current expression string before generating a expression.
  * This member function currently calls following preprocessing features.
  * removeTabs
  * removeComments
+ * addWhiteSpace
+ * replaceTabToWhitespaces
+ * removeCommas
  * removeDuplicateWhitespaces
  * @param expressionString the current expression string to preprocess
  * @return string object that represents current expression that was preprocessed.
@@ -106,6 +150,9 @@ string FileReader::preProcess(const string& expressionString) {
     string copied = expressionString;
     copied = removeTabs(copied);
     copied = removeComments(copied);
+    copied = addWhiteSpace(copied);
+    copied = replaceTabToWhitespaces(copied);
+    copied = removeCommas(copied);
     copied = removeDuplicateWhitespaces(copied);
 
     return copied;
