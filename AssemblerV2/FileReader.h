@@ -17,6 +17,8 @@
 #include <regex>
 #include <tuple>
 
+#include "Expression.h"
+
 using namespace std;
 
 /**
@@ -24,7 +26,7 @@ using namespace std;
  */
 class FileReader {
 private:
-    map<uint32_t, string> allExpressions;
+    map<uint32_t, Expression> allExpressions;
     ifstream fileObject;
     static string getCurrentDirectory(const string&);
     static string preProcess(const string&);
@@ -33,7 +35,7 @@ private:
     static string removeDuplicateWhitespaces(const string&);
 public:
     explicit FileReader(const string&);
-    map<uint32_t, string> getAllExpressions();
+    map<uint32_t, Expression> getAllExpressions();
 };
 
 

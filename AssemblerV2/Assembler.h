@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "FileReader.h"
 #include "Section.h"
 #include "AssemblerError.h"
@@ -21,11 +22,16 @@ using namespace std;
 class Assembler {
 private:
     string fileName;
-    map<uint32_t , string> allExpressions;
+    map<uint32_t, Expression> allExpressions;
     vector<AssemblerError> allErrors;
-    FileReader* fileReader = nullptr;
 
+    FileReader* fileReader = nullptr;
+    Section* textSection = nullptr;
+    Section* dataSection = nullptr;
+
+    uint16_t scanSections();
     void parseSections();
+
 public:
     explicit Assembler(string);
     void printErrors();

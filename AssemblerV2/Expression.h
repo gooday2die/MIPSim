@@ -21,7 +21,7 @@ public:
     Expression(std::string&);
     void setExpressionAddress(uint32_t);
     uint32_t getExpressionAddress();
-    std::string getExpressionString();
+    std::string getExpressionString() const;
 };
 
 

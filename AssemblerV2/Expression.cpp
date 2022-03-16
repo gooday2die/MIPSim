@@ -19,6 +19,6 @@ uint32_t Expression::getExpressionAddress() {
     return this->expressionAddress;
 }
 
-std::string Expression::getExpressionString() {
+std::string Expression::getExpressionString() const {
     return this->expressionString;
 }

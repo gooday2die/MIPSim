@@ -10,6 +10,7 @@
 #pragma once
 
 #include <vector>
+#include <iostream>
 #include "Expression.h"
 
 class Section {
@@ -19,6 +20,7 @@ private:
     uint32_t startingAddress;
 public:
     Section(std::vector<Expression>, uint8_t);
+    void printSection();
 };
 
 

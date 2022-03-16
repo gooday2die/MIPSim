@@ -15,3 +15,13 @@ Section::Section(std::vector<Expression> sectionExpressions, uint8_t sectionType
     if(this->type == 1) this->startingAddress = 0x00400000;
     else if(this->type == 2) this->startingAddress = 0x10000000;
 }
+
+void Section::printSection(){
+    uint32_t i = 0;
+    if(this->type == 1) std::cout << "TEXT Section" << std::endl;
+    else if(this->type == 2) std::cout << "DATA Section" << std::endl;
+    for(const Expression& x : this->allExpressions){
+        std::cout << std::to_string(i) << " : " << x.getExpressionString() << std::endl;\
+        i++;
+    }
+}

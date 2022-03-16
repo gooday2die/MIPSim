@@ -45,7 +45,7 @@ FileReader::FileReader(const string& fileName) {
         string curLine;
         getline(fileObject, curLine, '\n');
         curLine = preProcess(curLine);
-        this->allExpressions.insert(pair<uint32_t, string>(expressionCount, curLine));
+        this->allExpressions.insert(pair<uint32_t, Expression>(expressionCount, Expression(curLine)));
         expressionCount++;
     }
 }
@@ -115,7 +115,7 @@ string FileReader::preProcess(const string& expressionString) {
  * A getter member function for attribute allExpressions
  * @return returns allExpression in map object
  */
-map<uint32_t, string> FileReader::getAllExpressions() {
+map<uint32_t, Expression> FileReader::getAllExpressions() {
     return this->allExpressions;
 }
 
