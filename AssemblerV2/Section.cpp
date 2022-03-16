@@ -21,7 +21,20 @@ void Section::printSection(){
     if(this->type == 1) std::cout << "TEXT Section" << std::endl;
     else if(this->type == 2) std::cout << "DATA Section" << std::endl;
     for(const Expression& x : this->allExpressions){
-        std::cout << std::to_string(i) << " : " << x.getExpressionString() << std::endl;\
+        std::cout << std::to_string(i) << " : " << x.getExpressionString() << std::endl;
         i++;
     }
+}
+
+void Section::scanLabels() {
+    for(Expression x : this->allExpressions){
+        if(x.isLabelExpression()){
+            Label newLabel = Label(x.getExpressionString());
+            this->allLabels.push_back(newLabel);
+        }
+    }
+}
+
+void Section::checkGrammar(){
+
 }

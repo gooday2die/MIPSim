@@ -22,6 +22,8 @@ public:
     void setExpressionAddress(uint32_t);
     uint32_t getExpressionAddress();
     std::string getExpressionString() const;
+    bool isLabelExpression();
+    bool isEmptyExpression();
 };
 
 

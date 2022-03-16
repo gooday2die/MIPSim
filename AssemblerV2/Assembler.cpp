@@ -16,8 +16,18 @@ Assembler::Assembler(string argFileName) {
     this->fileReader = new FileReader(this->fileName);
     this->allExpressions = this->fileReader->getAllExpressions();
 
-    this->parseSections();
-    if (!this->allErrors.empty()) this->printErrors();
+    this->performLexicalAnalysis();
+    //this->parseSections();
+    //if (!this->allErrors.empty()) this->printErrors();
+}
+
+void Assembler::performLexicalAnalysis() {
+    for(auto const& x : this->allExpressions){
+        if(!x.second.getExpressionString().empty()){
+            LexicalAnalyzer::analyze(x.second.getExpressionString());
+
+        }
+    }
 }
 
 /**
@@ -80,7 +90,6 @@ void Assembler::parseSections() {
 
     this->dataSection->printSection();
     this->textSection->printSection();
-
 }
 
 /**

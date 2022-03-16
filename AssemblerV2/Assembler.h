@@ -17,6 +17,8 @@
 #include "Section.h"
 #include "AssemblerError.h"
 
+#include "LexicalAnalyzer.h"
+
 using namespace std;
 
 class Assembler {
@@ -31,6 +33,9 @@ private:
 
     uint16_t scanSections();
     void parseSections();
+
+    void performLexicalAnalysis();
+
 
 public:
     explicit Assembler(string);
