@@ -31,6 +31,7 @@ private:
     vector<string> sectionTokens;
     vector<string> registerTokens;
     vector<string> instructionTokens;
+    vector<string> dataDefinitionTokens;
 
     map<uint32_t, Expression> allExpressions;
 
@@ -40,6 +41,7 @@ private:
     bool isImmediateToken(const string&);
     bool isMnemonicInstructionToken(const string&);
     bool isDefinedLabelToken(const string&);
+    bool isDataDefinitionToken(const string&);
 
     void scanLabelTokens();
 public:

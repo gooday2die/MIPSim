@@ -40,51 +40,56 @@ void Assembler::checkExpressionGrammar(const string& expressionString){
  * totalErrorCount for future use.
  */
 void Assembler::checkGrammar() {
-    uint32_t i = 0;
+    uint32_t lineCount = 0;
     uint32_t expressionCount = 0;
     for(auto const& x : this->allExpressions){
         if((x.second.getExpressionString() != " ") || (x.second.getExpressionString().empty())){
             try {
                 this->checkExpressionGrammar(x.second.getExpressionString());
             } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Unknown mnemonic expression was found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::invalidArgumentException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Invalid argument found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::unknownTokenException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Unknown token was found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::bareImmediateValueException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Immediate value without expression was found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::bareRegisterException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Register without expression was found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::bareLabelException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Label value without expression was found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const BranchExceptions::duplicateNameException& ex){
-                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            } catch (const ExpressionExceptions::duplicateLabelNameException& ex){
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
                 cout << ERROR_TAG << " Duplicate label declaration was found  ";
-                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::tokenInWrongSection& ex){
+                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                cout << ERROR_TAG << " Token was found in wrong code section  ";
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             }
             expressionCount++;
-            i++;
         }
+        lineCount++;
     }
 }
 

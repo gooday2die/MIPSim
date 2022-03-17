@@ -83,6 +83,12 @@ LexicalAnalyzer::LexicalAnalyzer(map<uint32_t, Expression> argAllExpressions) {
     this->instructionTokens.emplace_back("la");
     this->instructionTokens.emplace_back("bge");
 
+    this->dataDefinitionTokens.emplace_back(".word");
+    this->dataDefinitionTokens.emplace_back(".half");
+    this->dataDefinitionTokens.emplace_back(".byte");
+    this->dataDefinitionTokens.emplace_back(".ascii");
+    this->dataDefinitionTokens.emplace_back(".asciiz");
+
     this->scanLabelTokens();
 }
 
@@ -169,6 +175,18 @@ bool LexicalAnalyzer::isDefinedLabelToken(const string& argumentString) {
 }
 
 /**
+ * A member function for LexicalAnalyzer that finds out if current argument is data definition token
+ * @param argumentString the string object that represents current argument
+ * @return true if it is a data definition token, false if not
+ */
+bool LexicalAnalyzer::isDataDefinitionToken(const string& argumentString){
+    bool result = any_of(this->dataDefinitionTokens.begin(), this->dataDefinitionTokens.end(), [&argumentString](auto const &x) {
+        if (x == argumentString) return true; return false;
+    });
+    return result;
+}
+
+/**
  * A member function for LexicalAnalyzer that scans through all expressions and look for labels.
  * When each labels were found, it is stored inside allFoundLabels vector.
  */
@@ -216,6 +234,7 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
         else if (this->isImmediateToken(x)) resultQueue.push(Tokens::tImmediate);
         else if (this->isMnemonicInstructionToken(x)) resultQueue.push(Tokens::tInstructionMnemonic);
         else if (this->isDefinedLabelToken(x)) resultQueue.push(Tokens::tDefinedLabel);
+        else if (this->isDataDefinitionToken(x)) resultQueue.push(Tokens::tDataDefinition);
         else resultQueue.push(Tokens::tUnknown);
     }
 

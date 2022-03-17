@@ -31,12 +31,16 @@ public:
 
     class bareLabelException : public std::exception{
     };
+
+    class tokenInWrongSection : public std::exception{
+    };
+
+    class duplicateLabelNameException : public ::std::exception {
+    };
 };
 
 class BranchExceptions {
 public:
-class duplicateNameException : public ::std::exception {
-};
 
 class whitespaceNameException : public std::exception {
 };

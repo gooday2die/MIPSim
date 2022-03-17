@@ -23,8 +23,11 @@ using namespace std;
 class SemanticAnalyzer {
 private:
     vector<string> allBranches;
+    uint8_t sectionType = 1; // section type defaults to 1 when not specified.
 
+    void getSectionType(const string&);
     bool isDuplicateLabelName(const string&);
+    bool isExpressionInRightSection(const Tokens&) const;
 public:
     SemanticAnalyzer();
     void analyze(const pair<string, queue<Tokens>>&);
