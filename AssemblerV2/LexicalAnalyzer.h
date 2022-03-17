@@ -2,7 +2,7 @@
 // @file : LexicalAnalyzer.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : A file that defines all attributes and member functions for class GrammarChecker
+// @brief : A file that defines all attributes and member functions for class LexicalAnalyzer
 // @date: 2022-03-16
 
 #ifndef MIPSIM_LEXICALANALYZER_H
