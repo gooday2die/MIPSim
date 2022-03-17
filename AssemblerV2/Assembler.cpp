@@ -22,12 +22,17 @@ Assembler::Assembler(string argFileName) {
     //if (!this->allErrors.empty()) this->printErrors();
 }
 
+/**
+ * A member function that performs lexical analysis and puts it inside a map that has queues of tokens.
+ */
 void Assembler::performLexicalAnalysis() {
     uint32_t i = 0;
     for(auto const& x : this->allExpressions){
-        if(x.second.getExpressionString().size() != 1){
+        string currentExpression = x.second.getExpressionString();
+        if(currentExpression.size() != 1){
             std::cout << to_string(i) << " : ";
-            this->lexicalAnalyzer->analyze(x.second.getExpressionString());
+            queue<Tokens> result = this->lexicalAnalyzer->analyze(currentExpression);
+            this->allTokens.insert(pair<uint32_t, queue<Tokens>>(i, result));
         }
         i++;
     }

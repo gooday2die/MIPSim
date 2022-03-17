@@ -14,8 +14,8 @@
  * Also this member function will scan throughout all lines to look for labels and save them for future use.
  * @param argAllExpressions the map object that represents all expressions
  */
-LexicalAnalyzer::LexicalAnalyzer(std::map<uint32_t, Expression> argAllExpressions) {
-    this->allExpressions = std::move(argAllExpressions);
+LexicalAnalyzer::LexicalAnalyzer(map<uint32_t, Expression> argAllExpressions) {
+    this->allExpressions = move(argAllExpressions);
 
     this->sectionTokens.emplace_back(".text"); // section tokens
     this->sectionTokens.emplace_back(".data");
@@ -91,8 +91,8 @@ LexicalAnalyzer::LexicalAnalyzer(std::map<uint32_t, Expression> argAllExpression
  * @param argumentString the string object that represents current argument
  * @return true if it is a section token, false if not
  */
-bool LexicalAnalyzer::isSectionToken(const std::string& argumentString) {
-    bool result = std::any_of(this->sectionTokens.begin(), this->sectionTokens.end(), [&argumentString](auto const &x) {
+bool LexicalAnalyzer::isSectionToken(const string& argumentString) {
+    bool result = any_of(this->sectionTokens.begin(), this->sectionTokens.end(), [&argumentString](auto const &x) {
         if (x == argumentString) return true; return false;
     });
     return result;
@@ -103,8 +103,8 @@ bool LexicalAnalyzer::isSectionToken(const std::string& argumentString) {
  * @param argumentString the string object that represents current argument
  * @return true if it is a label token, false if not
  */
-bool LexicalAnalyzer::isLabelToken(const std::string& argumentString){
-    return (std::count(argumentString.begin(), argumentString.end(), ':') == 1);
+bool LexicalAnalyzer::isLabelToken(const string& argumentString){
+    return (count(argumentString.begin(), argumentString.end(), ':') == 1);
 }
 
 /**
@@ -112,11 +112,11 @@ bool LexicalAnalyzer::isLabelToken(const std::string& argumentString){
  * @param argumentString the string object that represents current argument
  * @return true if it is a immediate token, false if not
  */
-bool LexicalAnalyzer::isImmediateToken(const std::string& argumentString) {
+bool LexicalAnalyzer::isImmediateToken(const string& argumentString) {
     try{
-        std::stoi(argumentString);
+        stoi(argumentString);
         return true;
-    } catch(std::exception const& ex){
+    } catch(exception const& ex){
         return false;
     }
 }
@@ -126,18 +126,18 @@ bool LexicalAnalyzer::isImmediateToken(const std::string& argumentString) {
  * @param argumentString the string object that represents current argument
  * @return true if it is a register token, false if not
  */
-bool LexicalAnalyzer::isRegisterToken(const std::string& argumentString) {
-    std::string copiedString = argumentString;
+bool LexicalAnalyzer::isRegisterToken(const string& argumentString) {
+    string copiedString = argumentString;
     try{
-        if(std::count(argumentString.begin(), argumentString.end(), '$') != 1) return false;
+        if(count(argumentString.begin(), argumentString.end(), '$') != 1) return false;
         else {
-            copiedString.erase(std::remove(copiedString.begin(), copiedString.end(), '$'), copiedString.end());
-            uint8_t converted = std::stoi(copiedString);
+            copiedString.erase(remove(copiedString.begin(), copiedString.end(), '$'), copiedString.end());
+            uint8_t converted = stoi(copiedString);
             if ((converted > 0) && (converted < 31)) return true;
             else return false;
         }
-    } catch (const std::exception& ex){
-        bool result = std::any_of(this->registerTokens.begin(), this->registerTokens.end(), [&argumentString](auto const &x) {
+    } catch (const exception& ex){
+        bool result = any_of(this->registerTokens.begin(), this->registerTokens.end(), [&argumentString](auto const &x) {
             if (x == argumentString) return true; return false;
         });
         return result;
@@ -149,8 +149,8 @@ bool LexicalAnalyzer::isRegisterToken(const std::string& argumentString) {
  * @param argumentString the string object that represents current argument
  * @return true if it is a mnemonic instruction token, false if not
  */
-bool LexicalAnalyzer::isMnemonicInstructionToken(const std::string& argumentString){
-    bool result = std::any_of(this->instructionTokens.begin(), this->instructionTokens.end(), [&argumentString](auto const &x) {
+bool LexicalAnalyzer::isMnemonicInstructionToken(const string& argumentString){
+    bool result = any_of(this->instructionTokens.begin(), this->instructionTokens.end(), [&argumentString](auto const &x) {
         if (x == argumentString) return true; return false;
     });
     return result;
@@ -161,8 +161,8 @@ bool LexicalAnalyzer::isMnemonicInstructionToken(const std::string& argumentStri
  * @param argumentString the string object that represents current argument
  * @return true if it is a defined label token, false if not
  */
-bool LexicalAnalyzer::isDefinedLabelToken(const std::string& argumentString) {
-    bool result = std::any_of(this->allFoundLabels.begin(), this->allFoundLabels.end(), [&argumentString](auto const &x) {
+bool LexicalAnalyzer::isDefinedLabelToken(const string& argumentString) {
+    bool result = any_of(this->allFoundLabels.begin(), this->allFoundLabels.end(), [&argumentString](auto const &x) {
         if (x == argumentString) return true; return false;
     });
     return result;
@@ -174,8 +174,8 @@ bool LexicalAnalyzer::isDefinedLabelToken(const std::string& argumentString) {
  */
 void LexicalAnalyzer::scanLabelTokens() {
     for (auto const& x : this->allExpressions){
-        std::string expressionString = x.second.getExpressionString();
-        if (std::count(expressionString.begin(), expressionString.end(), ':') == 1){
+        string expressionString = x.second.getExpressionString();
+        if (count(expressionString.begin(), expressionString.end(), ':') == 1){
             const char* line = expressionString.c_str();
             uint16_t curPos = 0;
             while(line[curPos] != '\0'){
@@ -190,31 +190,32 @@ void LexicalAnalyzer::scanLabelTokens() {
 }
 
 /**
- * A member function for LexicalAnalyzer that analyzes a single expression string using lexical analysis.
- * @param expressionString the string object that represents current expression.
+ * A member function for class LexicalAnalyzer that analyzes each tokens and generates a queue of tokens
+ * @param expressionString the string object that represents expression that we would like to analyze tokens from
+ * @return queue that includes tokens.
  */
-void LexicalAnalyzer::analyze(const std::string& expressionString) {
-    std::string copied = expressionString;
+queue<Tokens> LexicalAnalyzer::analyze(const string& expressionString) {
+    string copied = expressionString;
+    queue<Tokens> resultQueue;
 
-    if (copied.empty()) return;
-    std::string space_delimiter = " ";
-    std::vector<std::string> words{};
+    if (copied.empty()) return resultQueue;
+    string space_delimiter = " ";
+    vector<string> words{};
 
     size_t pos = 0;
-    while ((pos = copied.find(space_delimiter)) != std::string::npos) { // split expression with whitespace
+    while ((pos = copied.find(space_delimiter)) != string::npos) { // split expression with whitespace
         words.push_back(copied.substr(0, pos));
         copied.erase(0, pos + space_delimiter.length());
     }
 
-    for(auto const& x : words){
-        std::cout << x << " ";
-        if (this->isSectionToken(x)) std::cout << "SECTION_TOKEN ";
-        else if (this->isLabelToken(x)) std::cout << "LABEL_TOKEN ";
-        else if (this->isRegisterToken(x)) std::cout << "REGISTER_TOKEN ";
-        else if (this->isImmediateToken(x)) std::cout << "IMMEDIATE_TOKEN ";
-        else if (this->isMnemonicInstructionToken(x)) std::cout << "MNEMONIC_TOKEN ";
-        else if (this->isDefinedLabelToken(x)) std::cout << "DEFINED_LABEL_TOKEN";
-        else std::cout << "UNKNOWN_TOKEN ";
+    for (auto const &x: words) {
+        if (this->isSectionToken(x)) resultQueue.push(Tokens::tSection);
+        else if (this->isLabelToken(x)) resultQueue.push(Tokens::tLabel);
+        else if (this->isRegisterToken(x)) resultQueue.push(Tokens::tRegister);
+        else if (this->isImmediateToken(x)) resultQueue.push(Tokens::tImmediate);
+        else if (this->isMnemonicInstructionToken(x)) resultQueue.push(Tokens::tInstructionMnemonic);
+        else if (this->isDefinedLabelToken(x)) resultQueue.push(Tokens::tDefinedLabel);
+        else resultQueue.push(Tokens::tUnknown);
     }
-    std::cout << std::endl;
+    return resultQueue;
 }

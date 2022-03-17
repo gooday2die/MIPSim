@@ -26,6 +26,7 @@ private:
     string fileName;
     map<uint32_t, Expression> allExpressions;
     vector<AssemblerError> allErrors;
+    map<uint32_t, queue<Tokens>> allTokens;
 
     FileReader* fileReader = nullptr;
     Section* textSection = nullptr;

@@ -15,32 +15,36 @@
 #include <algorithm>
 #include <map>
 #include <utility>
+#include <queue>
 
 #include "Expression.h"
+#include "Token.h"
+
+using namespace std;
 
 /**
  * A class that is for analyzing expressions using lexical analysis.
  */
 class LexicalAnalyzer {
 private:
-    std::vector<std::string> allFoundLabels;
-    std::vector<std::string> sectionTokens;
-    std::vector<std::string> registerTokens;
-    std::vector<std::string> instructionTokens;
+    vector<string> allFoundLabels;
+    vector<string> sectionTokens;
+    vector<string> registerTokens;
+    vector<string> instructionTokens;
 
-    std::map<uint32_t, Expression> allExpressions;
+    map<uint32_t, Expression> allExpressions;
 
-    bool isSectionToken(const std::string&);
-    bool isLabelToken(const std::string&);
-    bool isRegisterToken(const std::string&);
-    bool isImmediateToken(const std::string&);
-    bool isMnemonicInstructionToken(const std::string&);
-    bool isDefinedLabelToken(const std::string&);
+    bool isSectionToken(const string&);
+    bool isLabelToken(const string&);
+    bool isRegisterToken(const string&);
+    bool isImmediateToken(const string&);
+    bool isMnemonicInstructionToken(const string&);
+    bool isDefinedLabelToken(const string&);
 
     void scanLabelTokens();
 public:
-    explicit LexicalAnalyzer(std::map<uint32_t, Expression>);
-    void analyze(const std::string&);
+    explicit LexicalAnalyzer(map<uint32_t, Expression>);
+    queue<Tokens> analyze(const string&);
 };
 
 
