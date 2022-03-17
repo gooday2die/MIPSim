@@ -104,5 +104,9 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
             if(expressionToken == Tokens::tUnknown) throw ExpressionExceptions::unknownTokenException();
             else throw ExpressionExceptions::invalidArgumentException();
         }
+
+        if (expressionTokens.size() == syntax.size()) return;
+        // if token counts do not match after popping, arguments were set wrong.
+        else throw ExpressionExceptions::invalidArgumentException();
     }
 }

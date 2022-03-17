@@ -23,6 +23,65 @@ Assembler::Assembler(string argFileName) {
 }
 
 /**
+ * A member function for class Assembler that checks expression's grammar using lexical analysis, syntax analysis
+ * and semantic analysis. This member function throws exceptions when it finds out a syntax or semantic error.
+ * @param expressionString the string object that represents current expression.
+ */
+void Assembler::checkExpressionGrammar(const string& expressionString){
+    pair<string, queue<Tokens>> result = this->lexicalAnalyzer->analyze(expressionString);
+    this->syntaxAnalyzer->analyze(result);
+}
+
+/**
+ * A member function for class Assembler that checks all expression's grammar and prints out errors if they have one.
+ * This checks each expression's syntax errors and semantic errors. If any errors occur, the errors are stored in
+ * totalErrorCount for future use.
+ */
+void Assembler::checkGrammar() {
+    uint32_t i = 0;
+    uint32_t expressionCount = 0;
+    for(auto const& x : this->allExpressions){
+        if(!x.second.getExpressionString().empty()){
+            try {
+                this->checkExpressionGrammar(x.second.getExpressionString());
+            } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Unknown mnemonic expression was found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::invalidArgumentException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Invalid argument found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::unknownTokenException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Unknown token was found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::bareImmediateValueException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Immediate value without expression was found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::bareRegisterException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Register without expression was found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::bareLabelException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Label value without expression was found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            }
+            expressionCount++;
+            i++;
+        }
+    }
+}
+
+/**
  * A member function for class Assembler that assembles current code into machine code.
  * This member function does the following things.
  * 1. Perform Lexical analysis and parse out tokens.
@@ -30,8 +89,7 @@ Assembler::Assembler(string argFileName) {
  */
 void Assembler::assemble() {
     cout << "Assembling..." << endl;
-    this->performLexicalAnalysis();
-    this->performSyntaxAnalysis();
+    this->checkGrammar();
 
     if(this->totalErrorCount > 0){
         cout << ASSEMBLE_FAILED << endl;
@@ -39,65 +97,6 @@ void Assembler::assemble() {
         exit(0);
     } else{
         cout << ASSEMBLE_SUCCESS << endl;
-    }
-}
-
-/**
- * A member function that does lexical analysis and puts all tokens and first instruction string into map attribute.
- */
-void Assembler::performLexicalAnalysis() {
-    uint32_t i = 0;
-    for(auto const& x : this->allExpressions){
-        string currentExpression = x.second.getExpressionString();
-        if(currentExpression.size() != 1){
-            pair<string, queue<Tokens>> result = this->lexicalAnalyzer->analyze(currentExpression);
-            this->allTokens.insert(pair<uint32_t, pair<string, queue<Tokens>>>(i, result));
-        }
-        i++;
-    }
-}
-
-/**
- * A member function that does syntax analysis and looks for syntax errors.
- */
-void Assembler::performSyntaxAnalysis() {
-    uint32_t i = 0;
-    for(auto const& x : this->allTokens){
-        pair<string, queue<Tokens>> curLexical= x.second;
-        try {
-            this->syntaxAnalyzer->analyze(curLexical);
-        } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
-            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
-            cout << ERROR_TAG << " Unknown mnemonic expression was found  ";
-            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
-            this->totalErrorCount++;
-        } catch (const ExpressionExceptions::invalidArgumentException& ex){
-            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
-            cout << ERROR_TAG << " Invalid argument found  ";
-            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
-            this->totalErrorCount++;
-        } catch (const ExpressionExceptions::unknownTokenException& ex){
-            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
-            cout << ERROR_TAG << " Unknown token was found  ";
-            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
-            this->totalErrorCount++;
-        } catch (const ExpressionExceptions::bareImmediateValueException& ex){
-            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
-            cout << ERROR_TAG << " Immediate value without expression was found  ";
-            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
-            this->totalErrorCount++;
-        } catch (const ExpressionExceptions::bareRegisterException& ex){
-            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
-            cout << ERROR_TAG << " Register without expression was found  ";
-            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
-            this->totalErrorCount++;
-        } catch (const ExpressionExceptions::bareLabelException& ex){
-            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
-            cout << ERROR_TAG << " Label value without expression was found  ";
-            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
-            this->totalErrorCount++;
-        }
-        i++;
     }
 }
 

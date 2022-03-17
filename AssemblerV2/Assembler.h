@@ -38,11 +38,12 @@ private:
     uint16_t scanSections();
     void parseSections();
 
-    void performLexicalAnalysis();
-    void performSyntaxAnalysis();
+    void checkExpressionGrammar(const string&);
+    void checkGrammar();
+    void assemble();
+
 public:
     explicit Assembler(string);
-    void assemble();
 };
 
 
