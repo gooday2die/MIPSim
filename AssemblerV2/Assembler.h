@@ -18,6 +18,7 @@
 #include "Messages.h"
 #include "LexicalAnalyzer.h"
 #include "SyntaxAnalyzer.h"
+#include "SemanticAnalyzer.h"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ private:
     Section* dataSection = nullptr;
     LexicalAnalyzer* lexicalAnalyzer = nullptr;
     SyntaxAnalyzer* syntaxAnalyzer = nullptr;
+    SemanticAnalyzer* semanticAnalyzer = nullptr;
 
     uint32_t totalErrorCount = 0 ;
 

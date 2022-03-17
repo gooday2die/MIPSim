@@ -18,6 +18,7 @@ Assembler::Assembler(string argFileName) {
 
     this->lexicalAnalyzer = new LexicalAnalyzer(this->allExpressions);
     this->syntaxAnalyzer = new SyntaxAnalyzer();
+    this->semanticAnalyzer = new SemanticAnalyzer();
 
     this->assemble();
 }
@@ -30,6 +31,7 @@ Assembler::Assembler(string argFileName) {
 void Assembler::checkExpressionGrammar(const string& expressionString){
     pair<string, queue<Tokens>> result = this->lexicalAnalyzer->analyze(expressionString);
     this->syntaxAnalyzer->analyze(result);
+    this->semanticAnalyzer->analyze(result);
 }
 
 /**
@@ -41,7 +43,7 @@ void Assembler::checkGrammar() {
     uint32_t i = 0;
     uint32_t expressionCount = 0;
     for(auto const& x : this->allExpressions){
-        if(!x.second.getExpressionString().empty()){
+        if((x.second.getExpressionString() != " ") || (x.second.getExpressionString().empty())){
             try {
                 this->checkExpressionGrammar(x.second.getExpressionString());
             } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
@@ -72,6 +74,11 @@ void Assembler::checkGrammar() {
             } catch (const ExpressionExceptions::bareLabelException& ex){
                 const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
                 cout << ERROR_TAG << " Label value without expression was found  ";
+                cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const BranchExceptions::duplicateNameException& ex){
+                const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+                cout << ERROR_TAG << " Duplicate label declaration was found  ";
                 cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             }
