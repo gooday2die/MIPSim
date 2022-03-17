@@ -44,7 +44,7 @@ private:
     void scanLabelTokens();
 public:
     explicit LexicalAnalyzer(map<uint32_t, Expression>);
-    queue<Tokens> analyze(const string&);
+    pair<string, queue<Tokens>> analyze(const string&);
 };
 
 

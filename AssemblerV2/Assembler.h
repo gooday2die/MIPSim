@@ -15,9 +15,9 @@
 
 #include "FileReader.h"
 #include "Section.h"
-#include "AssemblerError.h"
-
+#include "Messages.h"
 #include "LexicalAnalyzer.h"
+#include "SyntaxAnalyzer.h"
 
 using namespace std;
 
@@ -25,23 +25,24 @@ class Assembler {
 private:
     string fileName;
     map<uint32_t, Expression> allExpressions;
-    vector<AssemblerError> allErrors;
-    map<uint32_t, queue<Tokens>> allTokens;
+    map<uint32_t, pair<string, queue<Tokens>>> allTokens;
 
     FileReader* fileReader = nullptr;
     Section* textSection = nullptr;
     Section* dataSection = nullptr;
     LexicalAnalyzer* lexicalAnalyzer = nullptr;
+    SyntaxAnalyzer* syntaxAnalyzer = nullptr;
+
+    uint32_t totalErrorCount = 0 ;
 
     uint16_t scanSections();
     void parseSections();
 
     void performLexicalAnalysis();
-
-
+    void performSyntaxAnalysis();
 public:
     explicit Assembler(string);
-    void printErrors();
+    void assemble();
 };
 
 

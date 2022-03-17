@@ -8,6 +8,9 @@
 #include "SyntaxAnalyzer.h"
 
 
+/**
+ * A constructor member function that adds all syntax to syntax analyzer.
+ */
 SyntaxAnalyzer::SyntaxAnalyzer() {
     this->allSyntax.insert(pair<string, queue<Tokens>>());
     this->allSyntax.insert(pair<string, queue<Tokens>>("add", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tRegister})));
@@ -30,17 +33,17 @@ SyntaxAnalyzer::SyntaxAnalyzer() {
 
     this->allSyntax.insert(pair<string, queue<Tokens>>("beq", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
     this->allSyntax.insert(pair<string, queue<Tokens>>("bne", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
-    
-    this->allSyntax.insert(pair<string, queue<Tokens>>("sll", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("srl", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("j", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("jal", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("move", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("li", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("blt", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("ble", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("bgt", generateTokenQueue()));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("bge", generateTokenQueue()));
+
+    this->allSyntax.insert(pair<string, queue<Tokens>>("sll", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tImmediate})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("srl", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tImmediate})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("j", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("jal", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("move", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("li", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tImmediate})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("blt", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("ble", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("bgt", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("bge", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
 }
 
 /**
@@ -53,4 +56,53 @@ queue<Tokens> SyntaxAnalyzer::generateTokenQueue(const initializer_list<int> &to
     for (auto x: tokenList)
         resultQueue.push((Tokens)x);
     return resultQueue;
+}
+
+/**
+ * A member function for SyntaxAnalyzer that analyzes a single queue of tokens with its instructions.
+ * This compares the original syntax queues and the expression queue that was given as arguments.
+ * If the original syntax matches with the given instruction, syntax is considered correct.
+ * Else, that means syntax was incorrect.
+ * @param curInstruction the pair of string and token's queue
+ */
+void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) {
+    queue<Tokens> syntax;
+    string instructionString = curInstruction.first;
+    queue<Tokens> expressionTokens = curInstruction.second;
+
+    switch (expressionTokens.front()){
+        case tUnknown:
+            throw ExpressionExceptions::unknownTokenException();
+        case tSection:
+            return; // for now. Temp
+        case tLabel:
+            return; // When label was found, it means that we just declared a label.
+        case tRegister:
+            throw ExpressionExceptions::bareRegisterException();
+        case tImmediate:
+            throw ExpressionExceptions::bareImmediateValueException();
+        case tInstructionMnemonic: {
+            try {
+                syntax = this->allSyntax.find(instructionString)->second;
+            } catch (const std::exception &ex) {
+                throw ExpressionExceptions::unknownInstructionMnemonicException();
+            }
+            break;
+        }
+        case tDefinedLabel:
+            throw ExpressionExceptions::bareLabelException();
+    }
+
+    while(!syntax.empty()){
+        Tokens syntaxToken = syntax.front();
+        Tokens expressionToken = expressionTokens.front();
+
+        syntax.pop();
+        expressionTokens.pop();
+
+        if(syntaxToken != expressionToken){
+            if(expressionToken == Tokens::tUnknown) throw ExpressionExceptions::unknownTokenException();
+            else throw ExpressionExceptions::invalidArgumentException();
+        }
+    }
 }

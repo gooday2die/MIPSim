@@ -192,13 +192,14 @@ void LexicalAnalyzer::scanLabelTokens() {
 /**
  * A member function for class LexicalAnalyzer that analyzes each tokens and generates a queue of tokens
  * @param expressionString the string object that represents expression that we would like to analyze tokens from
- * @return queue that includes tokens.
+ * @return a pair that includes string and queue of tokens
  */
-queue<Tokens> LexicalAnalyzer::analyze(const string& expressionString) {
+pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionString) {
     string copied = expressionString;
     queue<Tokens> resultQueue;
+    pair<string, queue<Tokens>> result;
 
-    if (copied.empty()) return resultQueue;
+    if (copied.empty()) return result;
     string space_delimiter = " ";
     vector<string> words{};
 
@@ -217,5 +218,9 @@ queue<Tokens> LexicalAnalyzer::analyze(const string& expressionString) {
         else if (this->isDefinedLabelToken(x)) resultQueue.push(Tokens::tDefinedLabel);
         else resultQueue.push(Tokens::tUnknown);
     }
-    return resultQueue;
+
+    result.first = words[0];
+    result.second = resultQueue;
+
+    return result;
 }

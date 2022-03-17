@@ -17,22 +17,85 @@ Assembler::Assembler(string argFileName) {
     this->allExpressions = this->fileReader->getAllExpressions();
 
     this->lexicalAnalyzer = new LexicalAnalyzer(this->allExpressions);
-    this->performLexicalAnalysis();
-    //this->parseSections();
-    //if (!this->allErrors.empty()) this->printErrors();
+    this->syntaxAnalyzer = new SyntaxAnalyzer();
+
+    this->assemble();
 }
 
 /**
- * A member function that performs lexical analysis and puts it inside a map that has queues of tokens.
+ * A member function for class Assembler that assembles current code into machine code.
+ * This member function does the following things.
+ * 1. Perform Lexical analysis and parse out tokens.
+ * 2. Perform Syntax analysis and checks if syntax was correct.
+ */
+void Assembler::assemble() {
+    cout << "Assembling..." << endl;
+    this->performLexicalAnalysis();
+    this->performSyntaxAnalysis();
+
+    if(this->totalErrorCount > 0){
+        cout << ASSEMBLE_FAILED << endl;
+        cout << "Found " << to_string(this->totalErrorCount) << " error(s)" << endl;
+        exit(0);
+    } else{
+        cout << ASSEMBLE_SUCCESS << endl;
+    }
+}
+
+/**
+ * A member function that does lexical analysis and puts all tokens and first instruction string into map attribute.
  */
 void Assembler::performLexicalAnalysis() {
     uint32_t i = 0;
     for(auto const& x : this->allExpressions){
         string currentExpression = x.second.getExpressionString();
         if(currentExpression.size() != 1){
-            std::cout << to_string(i) << " : ";
-            queue<Tokens> result = this->lexicalAnalyzer->analyze(currentExpression);
-            this->allTokens.insert(pair<uint32_t, queue<Tokens>>(i, result));
+            pair<string, queue<Tokens>> result = this->lexicalAnalyzer->analyze(currentExpression);
+            this->allTokens.insert(pair<uint32_t, pair<string, queue<Tokens>>>(i, result));
+        }
+        i++;
+    }
+}
+
+/**
+ * A member function that does syntax analysis and looks for syntax errors.
+ */
+void Assembler::performSyntaxAnalysis() {
+    uint32_t i = 0;
+    for(auto const& x : this->allTokens){
+        pair<string, queue<Tokens>> curLexical= x.second;
+        try {
+            this->syntaxAnalyzer->analyze(curLexical);
+        } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
+            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            cout << ERROR_TAG << " Unknown mnemonic expression was found  ";
+            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const ExpressionExceptions::invalidArgumentException& ex){
+            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            cout << ERROR_TAG << " Invalid argument found  ";
+            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const ExpressionExceptions::unknownTokenException& ex){
+            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            cout << ERROR_TAG << " Unknown token was found  ";
+            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const ExpressionExceptions::bareImmediateValueException& ex){
+            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            cout << ERROR_TAG << " Immediate value without expression was found  ";
+            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const ExpressionExceptions::bareRegisterException& ex){
+            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            cout << ERROR_TAG << " Register without expression was found  ";
+            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const ExpressionExceptions::bareLabelException& ex){
+            const string& errorExpression = this->allExpressions.find(i)->second.getExpressionString();
+            cout << ERROR_TAG << " Label value without expression was found  ";
+            cout << "@ln " << to_string(i) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
         }
         i++;
     }
@@ -86,10 +149,10 @@ void Assembler::parseSections() {
         else if (currentSectionType == 2){
             dataSectionExpressions.push_back(x.second);
         } else{
-            if (!expressionString.empty())
-            this->allErrors.emplace_back(AssemblerError("Expression without section was found.", expressionString, curPointer));
+            //if (!expressionString.empty())
+            //this->allErrors.emplace_back(AssemblerError("Expression without section was found.", expressionString, curPointer));
         }
-        std::cout << x.first << " : " <<x.second.getExpressionString() << std::endl;
+        cout << x.first << " : " <<x.second.getExpressionString() << endl;
         curPointer++;
     }
 
@@ -98,13 +161,4 @@ void Assembler::parseSections() {
 
     this->dataSection->printSection();
     this->textSection->printSection();
-}
-
-/**
- * A member function that prints out errors
- */
-void Assembler::printErrors() {
-    for (auto x : this->allErrors){
-        x.print();
-    }
 }

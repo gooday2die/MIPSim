@@ -14,6 +14,7 @@
 #include <queue>
 
 #include "Token.h"
+#include "Errors.h"
 
 using namespace std;
 
@@ -26,6 +27,7 @@ private:
     static queue<Tokens> generateTokenQueue(const initializer_list<int> &il);
 public:
     SyntaxAnalyzer();
+    void analyze(const pair<string, queue<Tokens>>&);
 };
 
 

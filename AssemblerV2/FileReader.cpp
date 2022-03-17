@@ -35,7 +35,7 @@ FileReader::FileReader(const string& fileName) {
     if (!fileObject) { // if not loaded, try with relative path
         fileObject = ifstream(FileReader::getCurrentDirectory(fileName) + "/" + fileName);
         if (!fileObject) { // if relative path failed, exit
-            cout << "Error: Cannot locate file: " << fileName << endl;
+            cout << "[Error] Cannot locate file: " << fileName << endl;
             exit(1);
         }
     }
