@@ -12,7 +12,7 @@
 #include <exception>
 
 
-class ExpressionExceptions{
+class GrammarExceptions{
 public:
     class unknownInstructionMnemonicException : public std::exception{
     };
@@ -38,9 +38,22 @@ public:
     class duplicateLabelNameException : public ::std::exception {
     };
 
+    class whitespaceLabelNameException : public ::std::exception {
+    };
+
+    class emptyLabelNameException : public ::std::exception {
+    };
+
     class unknownPseudoInstructionMnemonicException : public ::std::exception {
     };
 };
+
+class TranslatorExceptions{
+public:
+    class cannotFindRegisterIndexException : public ::std::exception {
+    };
+};
+
 
 class BranchExceptions {
 public:

@@ -70,10 +70,10 @@ void SemanticAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction
             if (this->isExpressionInRightSection(currentToken)){
                 if (currentToken == Tokens::tLabel){
                     instructionString = regex_replace(instructionString, std::regex(":"), "");
-                    if (this->isDuplicateLabelName(instructionString)) throw ExpressionExceptions::duplicateLabelNameException();
+                    if(this->isDuplicateLabelName(instructionString)) throw GrammarExceptions::duplicateLabelNameException();
                 }
             } else{
-                throw ExpressionExceptions::tokenInWrongSection();
+                throw GrammarExceptions::tokenInWrongSection();
             }
         }
 

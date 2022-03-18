@@ -46,47 +46,47 @@ void Assembler::checkGrammar() {
         if((x.second != " ") || (x.second.empty())){
             try {
                 this->checkExpressionGrammar(x.second);
-            } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
+            } catch(const GrammarExceptions::unknownInstructionMnemonicException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Unknown mnemonic expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::invalidArgumentException& ex){
+            } catch (const GrammarExceptions::invalidArgumentException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Invalid argument found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::unknownTokenException& ex){
+            } catch (const GrammarExceptions::unknownTokenException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Unknown token was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::bareImmediateValueException& ex){
+            } catch (const GrammarExceptions::bareImmediateValueException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Immediate value without expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::bareRegisterException& ex){
+            } catch (const GrammarExceptions::bareRegisterException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Register without expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::bareLabelException& ex){
+            } catch (const GrammarExceptions::bareLabelException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Label value without expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::duplicateLabelNameException& ex){
+            } catch (const GrammarExceptions::duplicateLabelNameException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Duplicate label declaration was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::tokenInWrongSection& ex){
+            } catch (const GrammarExceptions::tokenInWrongSection& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Token was found in wrong code section  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
-            } catch (const ExpressionExceptions::unknownPseudoInstructionMnemonicException& ex){
+            } catch (const GrammarExceptions::unknownPseudoInstructionMnemonicException& ex){
                 const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Unknown pseudo-instruction was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;

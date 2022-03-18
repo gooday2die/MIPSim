@@ -1,13 +1,24 @@
 //
-// @file : Translator.
+// @file : Translator.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
+// @brief : A file that defines all attributes and member functions for class Translator
 //
 
 #ifndef MIPSIM_TRANSLATOR_H
 #define MIPSIM_TRANSLATOR_H
+#pragma once
 
+#include <string>
+#include <queue>
+#include <vector>
+#include <map>
+#include <regex>
+
+#include "Token.h"
+#include "Errors.h"
+
+using namespace std;
 
 enum Mnemonic{
     _add = 0x00000020,
@@ -35,7 +46,16 @@ enum Mnemonic{
 };
 
 class Translator {
-
+private:
+    map<string, uint32_t> labelAddresses;
+    map<string, uint32_t> registerMnemonics;
+    uint8_t currentSectionType = 0;
+    uint8_t translateRegister(const string&);
+    uint16_t translateImmediate(const string&);
+    uint16_t translateBranch(const string&);
+public:
+    Translator();
+    uint32_t translate(pair<string, queue<Tokens>>, const string&);
 };
 
 

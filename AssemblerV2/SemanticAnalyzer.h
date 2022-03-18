@@ -26,8 +26,8 @@ private:
     uint8_t sectionType = 1; // section type defaults to 1 when not specified.
 
     void getSectionType(const string&);
-    bool isDuplicateLabelName(const string&);
     bool isExpressionInRightSection(const Tokens&) const;
+    bool isDuplicateLabelName(const string&);
 public:
     SemanticAnalyzer();
     void analyze(const pair<string, queue<Tokens>>&);

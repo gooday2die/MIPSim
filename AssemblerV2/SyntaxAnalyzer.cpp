@@ -73,24 +73,24 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
 
     switch (expressionTokens.front()){
         case tUnknown:
-            throw ExpressionExceptions::unknownTokenException();
+            throw GrammarExceptions::unknownTokenException();
         case tSection:
             return; // for now. Temp
         case tLabel:
             return; // When label was found, it means that we just declared a label.
         case tRegister:
-            throw ExpressionExceptions::bareRegisterException();
+            throw GrammarExceptions::bareRegisterException();
         case tImmediate:
-            throw ExpressionExceptions::bareImmediateValueException();
+            throw GrammarExceptions::bareImmediateValueException();
         case tDefinedLabel:
-            throw ExpressionExceptions::bareLabelException();
+            throw GrammarExceptions::bareLabelException();
         case tDataDefinition:
             break;
         case tPseudoInstruction: {
             try {
                 syntax = this->allSyntax.find(instructionString)->second;
             } catch (const std::exception &ex) {
-                throw ExpressionExceptions::unknownPseudoInstructionMnemonicException();
+                throw GrammarExceptions::unknownPseudoInstructionMnemonicException();
             }
             break;
         }
@@ -98,7 +98,7 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
             try {
                 syntax = this->allSyntax.find(instructionString)->second;
             } catch (const std::exception &ex) {
-                throw ExpressionExceptions::unknownInstructionMnemonicException();
+                throw GrammarExceptions::unknownInstructionMnemonicException();
             }
             break;
         }
@@ -112,12 +112,12 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
         expressionTokens.pop();
 
         if(syntaxToken != expressionToken){
-            if(expressionToken == Tokens::tUnknown) throw ExpressionExceptions::unknownTokenException();
-            else throw ExpressionExceptions::invalidArgumentException();
+            if(expressionToken == Tokens::tUnknown) throw GrammarExceptions::unknownTokenException();
+            else throw GrammarExceptions::invalidArgumentException();
         }
 
         if (expressionTokens.size() == syntax.size()) return;
         // if token counts do not match after popping, arguments were set wrong.
-        else throw ExpressionExceptions::invalidArgumentException();
+        else throw GrammarExceptions::invalidArgumentException();
     }
 }

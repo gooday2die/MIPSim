@@ -37,8 +37,10 @@ private:
 
     void checkExpressionGrammar(const string&);
     void checkGrammar();
-    void assemble();
+    void translateExpression(const string&);
+    void translate();
 
+    void assemble();
 public:
     explicit Assembler(string);
 };
