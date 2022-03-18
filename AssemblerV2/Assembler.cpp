@@ -45,7 +45,7 @@ void Assembler::translate() {
     vector<uint32_t> machineCodes;
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        uint32_t result = this->translator->translate(move(tokenInfo), x.second);
+        uint32_t result = this->translator->translate(move(tokenInfo.second), x.second);
         machineCodes.emplace_back(result);
     }
 

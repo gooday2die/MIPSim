@@ -242,7 +242,7 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
 
     for (auto const &x: words) {
         if (this->isSectionToken(x)) resultQueue.push(Tokens::tSection);
-        else if (this->isLabelToken(x)) resultQueue.push(Tokens::tLabel);
+        else if (this->isLabelToken(x)) resultQueue.push(Tokens::tLabelDeclaration);
         else if (this->isRegisterToken(x)) resultQueue.push(Tokens::tRegister);
         else if (this->isImmediateToken(x)) resultQueue.push(Tokens::tImmediate);
         else if (this->isMnemonicInstructionToken(x)) resultQueue.push(Tokens::tInstructionMnemonic);

@@ -54,6 +54,14 @@ public:
     };
     class cannotTranslateImmediateException : public std::exception{
     };
+    class cannotFindInstructionMnemonicException : public std::exception{
+    };
+    class unexpectedInstructionArgumentTokenException : public std::exception{
+    };
+    class unexpectedInstructionTokenTypeException : public std::exception{
+    };
+    class cannotFindLabelNameException : public std::exception{
+    };
 };
 
 

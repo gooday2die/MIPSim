@@ -17,7 +17,7 @@
 enum Tokens{
     tUnknown = 0,
     tSection = 1,
-    tLabel = 2,
+    tLabelDeclaration = 2,
     tRegister = 3,
     tImmediate = 4,
     tInstructionMnemonic = 5,

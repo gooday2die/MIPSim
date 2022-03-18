@@ -76,7 +76,7 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
             throw GrammarExceptions::unknownTokenException();
         case tSection:
             return; // for now. Temp
-        case tLabel:
+        case tLabelDeclaration:
             return; // When label was found, it means that we just declared a label.
         case tRegister:
             throw GrammarExceptions::bareRegisterException();

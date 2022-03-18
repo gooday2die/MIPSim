@@ -68,7 +68,7 @@ void SemanticAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction
             this->getSectionType(instructionString);
         } else{
             if (this->isExpressionInRightSection(currentToken)){
-                if (currentToken == Tokens::tLabel){
+                if (currentToken == Tokens::tLabelDeclaration){
                     instructionString = regex_replace(instructionString, std::regex(":"), "");
                     if(this->isDuplicateLabelName(instructionString)) throw GrammarExceptions::duplicateLabelNameException();
                 }
