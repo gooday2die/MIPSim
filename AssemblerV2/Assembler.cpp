@@ -7,6 +7,8 @@
 
 #include "Assembler.h"
 
+#include <utility>
+
 /**
  * A constructor member function for class Assembler
  * @param argFileName the string object that represents file name
@@ -19,6 +21,7 @@ Assembler::Assembler(string argFileName) {
     this->lexicalAnalyzer = new LexicalAnalyzer(this->allExpressionStrings);
     this->syntaxAnalyzer = new SyntaxAnalyzer();
     this->semanticAnalyzer = new SemanticAnalyzer();
+    this->translator = new Translator();
 
     this->assemble();
 }
@@ -32,6 +35,29 @@ void Assembler::checkExpressionGrammar(const string& expressionString){
     pair<string, queue<Tokens>> result = this->lexicalAnalyzer->analyze(expressionString);
     this->syntaxAnalyzer->analyze(result);
     this->semanticAnalyzer->analyze(result);
+}
+
+/**
+ * A member function for class Assembler that translates all expression into machine codes.
+ * When it is done translating, this will automatically load machine codes into allMachineCodes attribute.
+ */
+void Assembler::translate() {
+    vector<uint32_t> machineCodes;
+    for (auto const& x: this->allExpressionStrings){
+        pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
+        uint32_t result = this->translator->translate(move(tokenInfo), x.second);
+        machineCodes.emplace_back(result);
+    }
+
+    this->allMachineCodes = (uint32_t*) malloc(sizeof(uint32_t) * machineCodes.size() + 1);
+    this->allMachineCodes[machineCodes.size()] = 0xF0F0F0F0;
+
+    uint32_t curPos = 0;
+    for (auto const& x : machineCodes){
+        this->allMachineCodes[curPos] = x;
+        curPos++;
+        printf("Expression %d: 0x08%x\n", curPos, this->allMachineCodes[curPos]);
+    }
 }
 
 /**
@@ -114,5 +140,6 @@ void Assembler::assemble() {
         exit(0);
     } else{
         cout << ASSEMBLE_SUCCESS << endl;
+        this->translate();
     }
 }

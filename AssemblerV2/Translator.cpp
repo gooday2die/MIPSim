@@ -52,12 +52,11 @@ Translator::Translator() {
  * @return returns uint8_t type that represents register's index.
  */
 uint8_t Translator::translateRegister(const string& registerString) {
-    string copied;
+    string copied = regex_replace(registerString, regex("$"), "");
     uint8_t registerIndex;
-    copied = regex_replace(registerString, regex("$"), "");
     try{
         registerIndex = stoi(copied);
-    } catch (const std::range_error& ex){
+    } catch (const range_error& ex){
         try{
             registerIndex = this->registerMnemonics.at(copied);
         } catch (const range_error& ex){
@@ -65,4 +64,17 @@ uint8_t Translator::translateRegister(const string& registerString) {
         }
     }
     return registerIndex;
+}
+
+/**
+ * A member function for class Translator that translates given immediate string into immediate value.
+ * @param registerString the string that represents immediate value.
+ * @return uint16_t type that represents immediate.
+ */
+uint16_t Translator::translateImmediate(const string& registerString) {
+    try{
+        return stoi(registerString);
+    } catch (const range_error& ex){
+        throw TranslatorExceptions::cannotTranslateImmediateException();
+    }
 }

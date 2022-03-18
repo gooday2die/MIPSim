@@ -51,7 +51,7 @@ private:
     map<string, uint32_t> registerMnemonics;
     uint8_t currentSectionType = 0;
     uint8_t translateRegister(const string&);
-    uint16_t translateImmediate(const string&);
+    static uint16_t translateImmediate(const string&);
     uint16_t translateBranch(const string&);
 public:
     Translator();

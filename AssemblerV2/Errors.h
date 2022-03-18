@@ -35,22 +35,24 @@ public:
     class tokenInWrongSection : public std::exception{
     };
 
-    class duplicateLabelNameException : public ::std::exception {
+    class duplicateLabelNameException : public std::exception {
     };
 
-    class whitespaceLabelNameException : public ::std::exception {
+    class whitespaceLabelNameException : public std::exception {
     };
 
-    class emptyLabelNameException : public ::std::exception {
+    class emptyLabelNameException : public std::exception {
     };
 
-    class unknownPseudoInstructionMnemonicException : public ::std::exception {
+    class unknownPseudoInstructionMnemonicException : public std::exception {
     };
 };
 
 class TranslatorExceptions{
 public:
-    class cannotFindRegisterIndexException : public ::std::exception {
+    class cannotFindRegisterIndexException : public std::exception {
+    };
+    class cannotTranslateImmediateException : public std::exception{
     };
 };
 
