@@ -1,0 +1,26 @@
+.text
+start:
+	li $v0, 100  # 0
+	li $v0, 100, $10  # 0
+	move $v0, $t0  # 1
+	ble $zero, $t0, a_b  # 2,3
+	.asciiz
+	exit
+	$t0
+	100
+asdf
+.data
+.text
+start:
+	bge $t0, $zero, b_a  # 4,5
+	j exit  # 6
+	start
+a_b:
+	li $t4, 150 # 7
+	j exit  # 8
+b_a:
+	li $t4, 200 # 9
+	j exit # 10
+exit:
+	li $t3 10000 # 11
+.asciiz

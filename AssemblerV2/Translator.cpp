@@ -67,6 +67,13 @@ Translator::Translator() {
     this->instructionMnemonics.insert(pair<string, uint32_t>("srl", 0x00000002));
     this->instructionMnemonics.insert(pair<string, uint32_t>("sub", 0x00000022));
     this->instructionMnemonics.insert(pair<string, uint32_t>("subu", 0x00000023));
+
+    this->pseudoInstructionExpressionCounts.insert(pair<string, uint8_t>("move", 1));
+    this->pseudoInstructionExpressionCounts.insert(pair<string, uint8_t>("li", 1));
+    this->pseudoInstructionExpressionCounts.insert(pair<string, uint8_t>("blt", 2));
+    this->pseudoInstructionExpressionCounts.insert(pair<string, uint8_t>("ble", 2));
+    this->pseudoInstructionExpressionCounts.insert(pair<string, uint8_t>("bgt", 2));
+    this->pseudoInstructionExpressionCounts.insert(pair<string, uint8_t>("bge", 2));
 }
 
 /**
@@ -116,29 +123,54 @@ uint16_t Translator::translateLabel(const string& labelName) {
 }
 
 /**
+ * A member function that prints out all labels and its addresses
+ */
+void Translator::printLabels() {
+    for (auto const& x : this->labelAddresses)
+        cout << "Branch Name : " << x.first << " @ " << to_string(x.second) << endl;
+}
+
+/**
  * A member function that scans all labels and sets address for the label map
  * @param token the first token for current expression
  * @param expressionString the string object that represents current expression.
  */
 void Translator::scanLabelAddresses(const Tokens& token, const string& expressionString) {
     switch(token){
-        case tLabelDeclaration:
+        case tSection: {
+            if ("text." == expressionString) this->currentSectionType = 1;
+            else if ("data." == expressionString) this->currentSectionType = 2;
             break;
-        case tDefinedLabel:
+        }
+        case tLabelDeclaration:{
+            string labelName = regex_replace(expressionString, std::regex(":"), "");
+            if (this->currentSectionType == 1) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->textSectionExpressionCount));
+            else if (this->currentSectionType == 2) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
+            break;
+        }
+        case tInstructionMnemonic:
             textSectionExpressionCount++;
             break;
         case tDataDefinition:
             dataSectionExpressionCount++;
             break;
         case tPseudoInstruction:
+            textSectionExpressionCount = textSectionExpressionCount + this->pseudoInstructionExpressionCounts.at(expressionString);
             break;
         case tUnknown:
         case tRegister:
         case tImmediate:
-        case tSection:
-        case tInstructionMnemonic:
+        case tDefinedLabel:
             break;
     }
+}
+
+/**
+ * A member function that gets total label's count
+ * @return uint16_t type that represents total count of declared labels.
+ */
+uint16_t Translator::getLabelCount() {
+    return this->labelAddresses.size();
 }
 
 /**
@@ -208,7 +240,6 @@ uint32_t Translator::translate(const queue<Tokens>& tokenQueue, const string& ex
             } catch (const out_of_range& ex) {
                 throw TranslatorExceptions::cannotFindInstructionMnemonicException();
             }
-            textSectionExpressionCount++; // normal instructions takes one expression count
             break;
         }
         case tPseudoInstruction:

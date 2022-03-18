@@ -44,8 +44,26 @@ void Assembler::checkExpressionGrammar(const string& expressionString){
 void Assembler::translate() {
     vector<uint32_t> machineCodes;
     for (auto const& x: this->allExpressionStrings){
+        string space_delimiter = " ";
+        vector<string> words{};
+        string copied = x.second;
+
+        size_t pos = 0;
+        while ((pos = copied.find(space_delimiter)) != string::npos) { // split expression with whitespace
+            words.push_back(copied.substr(0, pos));
+            copied.erase(0, pos + space_delimiter.length());
+        }
+
+        queue<Tokens> tokenQueue = this->lexicalAnalyzer->analyze(x.second).second;
+        this->translator->scanLabelAddresses(tokenQueue.front(), words[0]);
+    }
+
+    this->translator->printBranches();
+
+    /**
+    for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        uint32_t result = this->translator->translate(move(tokenInfo.second), x.second);
+        uint32_t result = this->translator->translate(tokenInfo.second, x.second);
         machineCodes.emplace_back(result);
     }
 
@@ -58,6 +76,7 @@ void Assembler::translate() {
         curPos++;
         printf("Expression %d: 0x08%x\n", curPos, this->allMachineCodes[curPos]);
     }
+     **/
 }
 
 /**

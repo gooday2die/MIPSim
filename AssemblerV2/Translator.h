@@ -14,6 +14,7 @@
 #include <vector>
 #include <map>
 #include <regex>
+#include <iostream>
 
 #include "Token.h"
 #include "Errors.h"
@@ -30,7 +31,12 @@ private:
     map<string, uint32_t> registerMnemonics;
     map<string, uint32_t> instructionMnemonics;
 
-    uint8_t currentSectionType = 0; // 1 text, 2 data
+    /// Pseudo instructions are going to be translated into normal instructions.
+    /// The map pseudoInstructionExpressionCounts represent how many normal instructions that current pseudo instruction
+    /// will be turned into. This is for branch addressing and indexes.
+    map<string, uint8_t> pseudoInstructionExpressionCounts;
+
+    uint8_t currentSectionType = 1; // 1 text, 2 data. Defaults to text
 
     uint32_t dataSectionExpressionCount = 0;
     uint32_t textSectionExpressionCount = 0;
@@ -42,6 +48,8 @@ public:
     Translator();
     void scanLabelAddresses(const Tokens&, const string&);
     uint32_t translate(const queue<Tokens>&, const string&);
+    void printLabels();
+    uint16_t getLabelCount();
 };
 
 
