@@ -38,12 +38,13 @@ SyntaxAnalyzer::SyntaxAnalyzer() {
     this->allSyntax.insert(pair<string, queue<Tokens>>("srl", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tImmediate})));
     this->allSyntax.insert(pair<string, queue<Tokens>>("j", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tDefinedLabel})));
     this->allSyntax.insert(pair<string, queue<Tokens>>("jal", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tDefinedLabel})));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("move", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister})));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("li", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tImmediate})));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("blt", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("ble", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("bgt", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
-    this->allSyntax.insert(pair<string, queue<Tokens>>("bge", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+
+    this->allSyntax.insert(pair<string, queue<Tokens>>("move", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("li", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tImmediate})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("blt", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("ble", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("bgt", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
+    this->allSyntax.insert(pair<string, queue<Tokens>>("bge", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
 }
 
 /**
