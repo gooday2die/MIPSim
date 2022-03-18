@@ -14,9 +14,9 @@
 Assembler::Assembler(string argFileName) {
     this->fileName = move(argFileName);
     this->fileReader = new FileReader(this->fileName);
-    this->allExpressions = this->fileReader->getAllExpressions();
+    this->allExpressionStrings = this->fileReader->getAllExpressions();
 
-    this->lexicalAnalyzer = new LexicalAnalyzer(this->allExpressions);
+    this->lexicalAnalyzer = new LexicalAnalyzer(this->allExpressionStrings);
     this->syntaxAnalyzer = new SyntaxAnalyzer();
     this->semanticAnalyzer = new SemanticAnalyzer();
 
@@ -42,48 +42,53 @@ void Assembler::checkExpressionGrammar(const string& expressionString){
 void Assembler::checkGrammar() {
     uint32_t lineCount = 0;
     uint32_t expressionCount = 0;
-    for(auto const& x : this->allExpressions){
-        if((x.second.getExpressionString() != " ") || (x.second.getExpressionString().empty())){
+    for(auto const& x : this->allExpressionStrings){
+        if((x.second != " ") || (x.second.empty())){
             try {
-                this->checkExpressionGrammar(x.second.getExpressionString());
+                this->checkExpressionGrammar(x.second);
             } catch(const ExpressionExceptions::unknownInstructionMnemonicException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Unknown mnemonic expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::invalidArgumentException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Invalid argument found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::unknownTokenException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Unknown token was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::bareImmediateValueException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Immediate value without expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::bareRegisterException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Register without expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::bareLabelException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Label value without expression was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::duplicateLabelNameException& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Duplicate label declaration was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             } catch (const ExpressionExceptions::tokenInWrongSection& ex){
-                const string& errorExpression = this->allExpressions.find(lineCount)->second.getExpressionString();
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
                 cout << ERROR_TAG << " Token was found in wrong code section  ";
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const ExpressionExceptions::unknownPseudoInstructionMnemonicException& ex){
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+                cout << ERROR_TAG << " Unknown pseudo-instruction was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
             }
@@ -110,66 +115,4 @@ void Assembler::assemble() {
     } else{
         cout << ASSEMBLE_SUCCESS << endl;
     }
-}
-
-/**
- * A member function for class Assembler
- * @return returns uint16_t type that represents data section count in MSB 8 bits, text section count in LSB 8 bits
- */
-uint16_t Assembler::scanSections() {
-    uint8_t textSectionCount = 0;
-    uint8_t dataSectionCount = 0;
-    for (auto const& x : this->allExpressions){
-        textSectionCount = textSectionCount + (x.second.getExpressionString().find(".text") != string::npos);
-        dataSectionCount = dataSectionCount + (x.second.getExpressionString().find(".data") != string::npos);
-    }
-
-    uint16_t returnValue = 0x0000;
-    returnValue = returnValue | textSectionCount;
-    returnValue = returnValue | ((dataSectionCount << 8) & 0xFF00);
-
-    return returnValue;
-}
-
-/**
- * A member function that parses .text and .data sections.
- * This will set generate textSection and dataSection attributes automatically.
- */
-void Assembler::parseSections() {
-    vector<Expression> dataSectionExpressions;
-    vector<Expression> textSectionExpressions;
-    uint16_t sectionCounts = this->scanSections();
-    uint8_t textSectionCount = sectionCounts & 0xFF;
-    uint8_t dataSectionCount = (sectionCounts >> 8) & 0xFF;
-
-
-    /// Current section type defaults to 1 if there were no text section that was manually declared.
-    /// However, if text section was declared manually current section type defaults to 0 since it would not be regarded
-    /// as text section.
-    uint8_t currentSectionType = textSectionCount != 0 ? 0 : 1; // type 1: text, type 2: data
-
-    uint32_t curPointer = 0;
-    for (auto const& x : this->allExpressions){
-        string expressionString = x.second.getExpressionString();
-        if(expressionString.find(".text") != string::npos) currentSectionType = 1; // set current section types
-        else if(expressionString.find(".data") != string::npos) currentSectionType = 2;
-
-        if (currentSectionType == 1){
-            textSectionExpressions.push_back(x.second);
-        }
-        else if (currentSectionType == 2){
-            dataSectionExpressions.push_back(x.second);
-        } else{
-            //if (!expressionString.empty())
-            //this->allErrors.emplace_back(AssemblerError("Expression without section was found.", expressionString, curPointer));
-        }
-        cout << x.first << " : " <<x.second.getExpressionString() << endl;
-        curPointer++;
-    }
-
-    this->dataSection = new Section(dataSectionExpressions, 2);
-    this->textSection = new Section(textSectionExpressions, 1);
-
-    this->dataSection->printSection();
-    this->textSection->printSection();
 }

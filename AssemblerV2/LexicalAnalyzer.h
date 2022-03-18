@@ -17,7 +17,6 @@
 #include <utility>
 #include <queue>
 
-#include "Expression.h"
 #include "Token.h"
 
 using namespace std;
@@ -31,9 +30,10 @@ private:
     vector<string> sectionTokens;
     vector<string> registerTokens;
     vector<string> instructionTokens;
+    vector<string> pseudoInstructionTokens;
     vector<string> dataDefinitionTokens;
 
-    map<uint32_t, Expression> allExpressions;
+    map<uint32_t, string> allExpressions;
 
     bool isSectionToken(const string&);
     bool isLabelToken(const string&);
@@ -42,10 +42,11 @@ private:
     bool isMnemonicInstructionToken(const string&);
     bool isDefinedLabelToken(const string&);
     bool isDataDefinitionToken(const string&);
+    bool isPseudoInstructionToken(const string&);
 
     void scanLabelTokens();
 public:
-    explicit LexicalAnalyzer(map<uint32_t, Expression>);
+    explicit LexicalAnalyzer(map<uint32_t, string>);
     pair<string, queue<Tokens>> analyze(const string&);
 };
 

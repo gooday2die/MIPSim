@@ -81,6 +81,18 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
             throw ExpressionExceptions::bareRegisterException();
         case tImmediate:
             throw ExpressionExceptions::bareImmediateValueException();
+        case tDefinedLabel:
+            throw ExpressionExceptions::bareLabelException();
+        case tDataDefinition:
+            break;
+        case tPseudoInstruction: {
+            try {
+                syntax = this->allSyntax.find(instructionString)->second;
+            } catch (const std::exception &ex) {
+                throw ExpressionExceptions::unknownPseudoInstructionMnemonicException();
+            }
+            break;
+        }
         case tInstructionMnemonic: {
             try {
                 syntax = this->allSyntax.find(instructionString)->second;
@@ -89,8 +101,6 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
             }
             break;
         }
-        case tDefinedLabel:
-            throw ExpressionExceptions::bareLabelException();
     }
 
     while(!syntax.empty()){

@@ -25,7 +25,7 @@ using namespace std;
 class Assembler {
 private:
     string fileName;
-    map<uint32_t, Expression> allExpressions;
+    map<uint32_t, string> allExpressionStrings;
     map<uint32_t, pair<string, queue<Tokens>>> allTokens;
 
     FileReader* fileReader = nullptr;

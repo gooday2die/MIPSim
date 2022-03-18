@@ -14,7 +14,7 @@
  * Also this member function will scan throughout all lines to look for labels and save them for future use.
  * @param argAllExpressions the map object that represents all expressions
  */
-LexicalAnalyzer::LexicalAnalyzer(map<uint32_t, Expression> argAllExpressions) {
+LexicalAnalyzer::LexicalAnalyzer(map<uint32_t, string> argAllExpressions) {
     this->allExpressions = move(argAllExpressions);
 
     this->sectionTokens.emplace_back(".text"); // section tokens
@@ -75,19 +75,20 @@ LexicalAnalyzer::LexicalAnalyzer(map<uint32_t, Expression> argAllExpressions) {
     this->instructionTokens.emplace_back("srl");
     this->instructionTokens.emplace_back("j");
     this->instructionTokens.emplace_back("jal");
-    this->instructionTokens.emplace_back("move");
-    this->instructionTokens.emplace_back("li");
-    this->instructionTokens.emplace_back("blt");
-    this->instructionTokens.emplace_back("ble");
-    this->instructionTokens.emplace_back("bgt");
-    this->instructionTokens.emplace_back("la");
-    this->instructionTokens.emplace_back("bge");
 
     this->dataDefinitionTokens.emplace_back(".word");
     this->dataDefinitionTokens.emplace_back(".half");
     this->dataDefinitionTokens.emplace_back(".byte");
     this->dataDefinitionTokens.emplace_back(".ascii");
     this->dataDefinitionTokens.emplace_back(".asciiz");
+
+    this->pseudoInstructionTokens.emplace_back("move");
+    this->pseudoInstructionTokens.emplace_back("li");
+    this->pseudoInstructionTokens.emplace_back("blt");
+    this->pseudoInstructionTokens.emplace_back("ble");
+    this->pseudoInstructionTokens.emplace_back("bgt");
+    this->pseudoInstructionTokens.emplace_back("la");
+    this->pseudoInstructionTokens.emplace_back("bge");
 
     this->scanLabelTokens();
 }
@@ -187,12 +188,24 @@ bool LexicalAnalyzer::isDataDefinitionToken(const string& argumentString){
 }
 
 /**
+ * A member function for LexicalAnalyzer that finds out if current argument is pseudo instruction token
+ * @param argumentString the string object that represents current argument
+ * @return true if it is a pseudo instruction token, false if not
+ */
+bool LexicalAnalyzer::isPseudoInstructionToken(const string& argumentString) {
+    bool result = any_of(this->pseudoInstructionTokens.begin(), this->pseudoInstructionTokens.end(), [&argumentString](auto const &x) {
+        if (x == argumentString) return true; return false;
+    });
+    return result;
+}
+
+/**
  * A member function for LexicalAnalyzer that scans through all expressions and look for labels.
  * When each labels were found, it is stored inside allFoundLabels vector.
  */
 void LexicalAnalyzer::scanLabelTokens() {
     for (auto const& x : this->allExpressions){
-        string expressionString = x.second.getExpressionString();
+        string expressionString = x.second;
         if (count(expressionString.begin(), expressionString.end(), ':') == 1){
             const char* line = expressionString.c_str();
             uint16_t curPos = 0;
@@ -235,6 +248,7 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
         else if (this->isMnemonicInstructionToken(x)) resultQueue.push(Tokens::tInstructionMnemonic);
         else if (this->isDefinedLabelToken(x)) resultQueue.push(Tokens::tDefinedLabel);
         else if (this->isDataDefinitionToken(x)) resultQueue.push(Tokens::tDataDefinition);
+        else if (this->isPseudoInstructionToken(x)) resultQueue.push(Tokens::tPseudoInstruction);
         else resultQueue.push(Tokens::tUnknown);
     }
 

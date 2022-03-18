@@ -23,6 +23,7 @@ enum Tokens{
     tInstructionMnemonic = 5,
     tDefinedLabel = 6,
     tDataDefinition = 7,
+    tPseudoInstruction = 8,
 };
 
 #endif //MIPSIM_TOKEN_H

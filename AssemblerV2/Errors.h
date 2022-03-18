@@ -37,6 +37,9 @@ public:
 
     class duplicateLabelNameException : public ::std::exception {
     };
+
+    class unknownPseudoInstructionMnemonicException : public ::std::exception {
+    };
 };
 
 class BranchExceptions {
