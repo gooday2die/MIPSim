@@ -58,7 +58,7 @@ void Assembler::translate() {
         this->translator->scanLabelAddresses(tokenQueue.front(), words[0]);
     }
 
-    this->translator->printBranches();
+    this->translator->printLabels();
 
     /**
     for (auto const& x: this->allExpressionStrings){

@@ -95,3 +95,19 @@ MNEMONIC_TOKEN REGISTER_TOKEN REGISTER_TOKEN IMMEDIATE_TOKEN
 ```
 This order does **not** match the original `li`'s argument orders and types. Thus will be resulting `ExpressionExceptions::invalidArgumentException` defined in `Errors.h`. All exceptions and errors related to grammars are defined as `class` in file `Errors.h`.
 ### Till this step, the assembler did NOT generate any machine codes at all.
+
+## 3. Semantic Analysis
+Yes, assembler does not need semantic analysis. Also in `MIPSim` it does not use ASTs for semantic analysis. The main difference between *Syntax Analysis* is that *Syntax Analysis* just checks syntax by with tokens. This will only check if the token order and count was correct. However with this method, *Syntax Analysis* cannot find semantic errors at all. Look at an example below.
+
+```
+$tart:
+```
+This will be translated into `LabelDefinitionToken`. This means that with *Syntax Analysis*, this expression will be considered correct. However this is not correct with `MIPSim` grammar. Since it includes special character (`$`) in the branch's name. *Semantic Analysis* provides extra layer of detecting flaws in grammars or any flaws that might potentially cause errors during simulation runtime. 
+### Till this step, the assembler did NOT generate any machine codes at all.
+
+## 4. Translating
+After all expressions have passed grammar, it is now time for translating. In this step, the expression that was written in expressions as human-friendly (*MIPS is not that human-friendly, however at least it is human-friendly compared to 32bit hex codes*) to machine code instructions. In this step, **translator assumes all expressions are correct and has no grammatical errors**. This means that if there were any errors that were not detected during grammar checking phase from **Step 1 ~ 3**, this might cause translator to fail translating. When there was a error or exception with translator, this will output text in following format
+```
+[TRANSLATOR ERROR] error reasons.
+```
+Since `MIPSim` is still in development phase, as well as I have never had a compiler class before, there might be some unexpected translator errors or bugs. So, if you happen to find any bugs or errors while running this in your environment, please open an issue with the code snippet in this GitHub repository so that I can look into those bugs. 

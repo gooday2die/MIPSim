@@ -12,6 +12,7 @@
 // Windows don't deserve color output. :b
 #ifdef _WIN32
 #define ERROR_TAG "[ERROR]"
+#define TRANSLATOR_ERROR_TAG "[TRANSLATOR ERROR]"
 #define ASSEMBLE_FAILED "Failed to assemble"
 #define ASSEMBLE_SUCCESS "Successfully assembled"
 #define ERROR_EXPRESSION errorExpression
@@ -21,6 +22,7 @@
 // Linux deserves color output. :)
 #ifdef linux
 #define ERROR_TAG "\x1B[31m[ERROR]\033[0m"
+#define TRANSLATOR_ERROR_TAG "\x1B[31m[TRANSLATOR ERROR]\033[0m"
 #define ASSEMBLE_FAILED "\x1B[31mFailed to assemble\033[0m"
 #define ASSEMBLE_SUCCESS "\x1B[32mSuccessfully assembled\033[0m"
 #define ERROR_EXPRESSION "\x1B[93m" << errorExpression << "\033[0m"
