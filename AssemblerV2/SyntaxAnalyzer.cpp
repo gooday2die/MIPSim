@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that implements all member functions for class SyntaxAnalyzer
-// @date: 2022-03-17
+//
 
 #include "SyntaxAnalyzer.h"
 

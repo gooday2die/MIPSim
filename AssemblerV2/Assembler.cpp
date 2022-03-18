@@ -2,8 +2,8 @@
 // @file : Assembler.cpp
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
-// @date: 2022-03-15
+// @brief : A file that implements all member functions for class Assembler
+//
 
 #include "Assembler.h"
 

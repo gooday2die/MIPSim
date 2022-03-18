@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A header file that defines all messages.
-// @date: 2022-03-17
+//
 
 #ifndef MIPSIM_MESSAGES_H
 #define MIPSIM_MESSAGES_H

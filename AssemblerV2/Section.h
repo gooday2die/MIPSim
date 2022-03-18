@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : 
-// @date: 2022-03-15
+//
 
 #ifndef MIPSIM_SECTION_H
 #define MIPSIM_SECTION_H

@@ -1,9 +1,9 @@
 //
-// @file : Assembler.
+// @file : Assembler.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
-// @date: 2022-03-15
+// @brief : A file that defines all attributes and member functions for class Assembler
+//
 
 #ifndef MIPSIM_ASSEMBLER_H
 #define MIPSIM_ASSEMBLER_H
@@ -29,16 +29,11 @@ private:
     map<uint32_t, pair<string, queue<Tokens>>> allTokens;
 
     FileReader* fileReader = nullptr;
-    Section* textSection = nullptr;
-    Section* dataSection = nullptr;
     LexicalAnalyzer* lexicalAnalyzer = nullptr;
     SyntaxAnalyzer* syntaxAnalyzer = nullptr;
     SemanticAnalyzer* semanticAnalyzer = nullptr;
 
     uint32_t totalErrorCount = 0 ;
-
-    uint16_t scanSections();
-    void parseSections();
 
     void checkExpressionGrammar(const string&);
     void checkGrammar();
