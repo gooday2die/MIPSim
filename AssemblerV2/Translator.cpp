@@ -82,11 +82,12 @@ Translator::Translator() {
  * @return returns uint8_t type that represents register's index.
  */
 uint8_t Translator::translateRegister(const string& registerString) {
-    string copied = regex_replace(registerString, regex("$"), "");
+    string copied = registerString;
+    copied = regex_replace(copied, regex("\\$"), ""); // need to have \\$ as regex since $ is a regex
     uint8_t registerIndex;
     try{
         registerIndex = stoi(copied);
-    } catch (const range_error& ex){
+    } catch (const invalid_argument& ex){
         try{
             registerIndex = this->registerMnemonics.at(copied);
         } catch (const out_of_range& ex){
@@ -98,13 +99,13 @@ uint8_t Translator::translateRegister(const string& registerString) {
 
 /**
  * A member function for class Translator that translates given immediate string into immediate value.
- * @param registerString the string that represents immediate value.
+ * @param immediateString the string that represents immediate value.
  * @return uint16_t type that represents immediate.
  */
-uint16_t Translator::translateImmediate(const string& registerString) {
+uint16_t Translator::translateImmediate(const string& immediateString) {
     try{
-        return stoi(registerString);
-    } catch (const range_error& ex){
+        return stoi(immediateString);
+    } catch (const invalid_argument& ex){
         throw TranslatorExceptions::cannotTranslateImmediateException();
     }
 }
@@ -127,7 +128,7 @@ uint16_t Translator::translateLabel(const string& labelName) {
  */
 void Translator::printLabels() {
     for (auto const& x : this->labelAddresses)
-        cout << "Branch Name : " << x.first << " @ " << to_string(x.second) << endl;
+        cout << "Label Name : " << x.first << " @ " << to_string(x.second) << endl;
 }
 
 /**
@@ -143,9 +144,9 @@ void Translator::scanLabelAddresses(const Tokens& token, const string& expressio
             break;
         }
         case tLabelDeclaration:{
-            string labelName = regex_replace(expressionString, std::regex(":"), "");
+            string labelName = regex_replace(expressionString, regex(":"), "");
             if (this->currentSectionType == 1) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->textSectionExpressionCount));
-            else if (this->currentSectionType == 2) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
+            else this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
             break;
         }
         case tInstructionMnemonic:
@@ -173,16 +174,67 @@ uint16_t Translator::getLabelCount() {
     return this->labelAddresses.size();
 }
 
+uint32_t Translator::translateNormalInstruction(const queue<Tokens>& tokenQueue, const string& expressionString) {
+    string copiedExpressionString = expressionString;
+    queue<Tokens> copiedTokenQueue = tokenQueue;
+    uint32_t returnValue;
+
+    string space_delimiter = " ";
+    vector<string> words{};
+    size_t pos;
+    while ((pos = copiedExpressionString.find(space_delimiter)) != string::npos) { // split expression with whitespace
+        words.push_back(copiedExpressionString.substr(0, pos));
+        copiedExpressionString.erase(0, pos + space_delimiter.length());
+    }
+    //cout << expressionString << " -> ";
+    string instructionMnemonic = words[0]; // parse instruction mnemonic
+    try {
+        returnValue = this->instructionMnemonics.at(instructionMnemonic);
+        uint8_t nthArgument = 1;
+        uint8_t curRegisterCount = 0;
+        copiedTokenQueue.pop();
+
+        while (!copiedTokenQueue.empty()) { // pop and translate each argument strings.
+            Tokens currentToken = copiedTokenQueue.front();
+            string currentArgument = words[nthArgument];
+            copiedTokenQueue.pop();
+            nthArgument++;
+
+            if (currentToken == Tokens::tRegister) {
+                uint8_t registerValue = this->translateRegister(currentArgument);
+                returnValue = returnValue | (registerValue < (21 - curRegisterCount * 5));
+                curRegisterCount++;
+                //cout << "Register $" << to_string(registerValue) << " ";
+            } else if (currentToken == Tokens::tImmediate) {
+                uint16_t immediateValue = this->translateImmediate(currentArgument);
+                returnValue = returnValue | (immediateValue);
+                //cout << "Immediate Value" << to_string(immediateValue) << " ";
+            } else if (currentToken == Tokens::tDefinedLabel) {
+                uint16_t addressValue = this->translateLabel(currentArgument);
+                returnValue = returnValue | (addressValue);
+                //cout << "Address Value" << to_string(addressValue) << " ";
+            } else {
+                throw TranslatorExceptions::unexpectedInstructionArgumentTokenException();
+            }
+        }
+    }
+    catch (const out_of_range& ex) {
+        throw TranslatorExceptions::cannotFindInstructionMnemonicException();
+    }
+    //cout << endl;
+    return returnValue;
+}
+
 /**
  * A member function for class Translator that translates the current expression with tokens into machine code
  * @param tokenQueue queue of tokens
  * @param expressionString the string object that represents current expression
  * @return returns uint32_t type of machine code that was translated from expression.
  */
-uint32_t Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
+vector<uint32_t> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
     queue<Tokens> copiedTokenQueue = tokenQueue;
     string copiedExpressionString = expressionString;
-    uint32_t returnValue = 0;
+    vector<uint32_t> returnVector;
 
     Tokens instructionToken = copiedTokenQueue.front();
     copiedTokenQueue.pop();
@@ -193,58 +245,135 @@ uint32_t Translator::translate(const queue<Tokens>& tokenQueue, const string& ex
             else if ("data." == expressionString) this->currentSectionType = 2;
             break;
         }
-        case tLabelDeclaration:{ // when it was a label definition, add their addresses to the label address map.
-            string labelName = regex_replace(expressionString, std::regex(":"), "");
-            if (this->currentSectionType == 1) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->textSectionExpressionCount));
-            else if (this->currentSectionType == 2) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
+        case tLabelDeclaration:{ // we have already set all label's addresses using scanLabelAddresses. So skip
             break;
         }
         case tInstructionMnemonic:{ // when this was an instruction mnemonic then process as it should be
+            uint32_t returnValue;
+            returnValue = this->translateNormalInstruction(tokenQueue, expressionString);
+            returnVector.emplace_back(returnValue);
+            break;
+        }
+        case tPseudoInstruction: {
             string space_delimiter = " ";
             vector<string> words{};
+            vector<string> translatedPseudoInstruction;
+
             size_t pos;
             while ((pos = copiedExpressionString.find(space_delimiter)) != string::npos) { // split expression with whitespace
                 words.push_back(copiedExpressionString.substr(0, pos));
                 copiedExpressionString.erase(0, pos + space_delimiter.length());
             }
 
-            string instructionMnemonic = words[0]; // parse instruction mnemonic
-            try{
-                returnValue = this->instructionMnemonics.at(instructionMnemonic);
-                uint8_t nthArgument = 1;
-                uint8_t curRegisterCount = 0;
+            string instruction = words[0];
+            if (instruction == "move"){
+                /// move pseudo-instruction: addu $t0, $zero, $s0
+                queue<Tokens> tmpTokenQueue;
+                tmpTokenQueue.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue.push(Tokens::tRegister);
+                tmpTokenQueue.push(Tokens::tRegister);
+                tmpTokenQueue.push(Tokens::tRegister);
 
-                while(!copiedTokenQueue.empty()){ // pop and translate each argument strings.
-                    Tokens currentToken = copiedTokenQueue.front();
-                    string currentArgument = words[nthArgument];
-                    copiedTokenQueue.pop();
-                    nthArgument++;
+                uint32_t returnValue = this->translateNormalInstruction(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
+                returnVector.emplace_back(returnValue);
 
-                    if (currentToken == Tokens::tRegister){
-                        uint8_t registerValue = this->translateRegister(currentArgument);
-                        returnValue = returnValue | (registerValue < (21 - curRegisterCount * 5));
-                        curRegisterCount++;
-                    }
-                    else if (currentToken == Tokens::tImmediate){
-                        uint16_t immediateValue = this->translateImmediate(currentArgument);
-                        returnValue = returnValue | (immediateValue);
-                    }
-                    else if (currentToken == Tokens::tLabelDeclaration){
-                        uint16_t addressValue = this->translateLabel(currentArgument);
-                        returnValue = returnValue | (addressValue);
-                    }
-                    else {
-                        throw TranslatorExceptions::unexpectedInstructionArgumentTokenException();
-                    }
-                }
-            } catch (const out_of_range& ex) {
-                throw TranslatorExceptions::cannotFindInstructionMnemonicException();
+            } else if(instruction == "li"){
+                /// li pseudo-instruction: ori $s0, $zero, immediate
+                queue<Tokens> tmpTokenQueue;
+                tmpTokenQueue.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue.push(Tokens::tRegister);
+                tmpTokenQueue.push(Tokens::tRegister);
+                tmpTokenQueue.push(Tokens::tImmediate);
+
+                uint32_t returnValue = this->translateNormalInstruction(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
+                returnVector.emplace_back(returnValue);
+
+            } else if(instruction == "blt"){
+                /// blt pseudo-instruction:
+                /// slt $t0, $t1, $at
+                /// bne $at, $zero, branch
+                queue<Tokens> tmpTokenQueue1;
+                queue<Tokens> tmpTokenQueue2;
+                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+
+                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+                uint32_t returnValue = this->translateNormalInstruction(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
+                returnVector.emplace_back(returnValue);
+                returnValue = this->translateNormalInstruction(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
+                returnVector.emplace_back(returnValue);
+
+            } else if(instruction == "ble"){
+                /// ble pseudo-instruction:
+                /// slt $t1, $t0, $at
+                /// beq $at, $zero, branch
+                queue<Tokens> tmpTokenQueue1;
+                queue<Tokens> tmpTokenQueue2;
+                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+
+                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+                uint32_t returnValue = this->translateNormalInstruction(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
+                returnVector.emplace_back(returnValue);
+                returnValue = this->translateNormalInstruction(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
+                returnVector.emplace_back(returnValue);
+
+            } else if(instruction == "bgt"){
+                /// bgt pseudo-instruction:
+                /// slt $t1, $t0, $at
+                /// bne $at, $zero, branch
+                queue<Tokens> tmpTokenQueue1;
+                queue<Tokens> tmpTokenQueue2;
+                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+
+                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+                uint32_t returnValue = this->translateNormalInstruction(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
+                returnVector.emplace_back(returnValue);
+                returnValue = this->translateNormalInstruction(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
+                returnVector.emplace_back(returnValue);
+
+            } else if(instruction == "bge"){
+                /// bge pseudo-instruction:
+                /// slt $t1, $t0, $at
+                /// beq $at, $zero, branch
+                queue<Tokens> tmpTokenQueue1;
+                queue<Tokens> tmpTokenQueue2;
+                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+                tmpTokenQueue1.push(Tokens::tRegister);
+
+                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tRegister);
+                tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+                uint32_t returnValue = this->translateNormalInstruction(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
+                returnVector.emplace_back(returnValue);
+                returnValue = this->translateNormalInstruction(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
+                returnVector.emplace_back(returnValue);
             }
             break;
         }
-        case tPseudoInstruction:
-            break;
-
         case tUnknown:
         case tDefinedLabel:
         case tDataDefinition:
@@ -252,5 +381,5 @@ uint32_t Translator::translate(const queue<Tokens>& tokenQueue, const string& ex
         case tImmediate:
             throw TranslatorExceptions::unexpectedInstructionTokenTypeException();
     }
-    return returnValue;
+    return returnVector;
 }

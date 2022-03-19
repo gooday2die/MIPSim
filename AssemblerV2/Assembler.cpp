@@ -60,11 +60,12 @@ void Assembler::translate() {
 
     this->translator->printLabels();
 
-    /**
+
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        uint32_t result = this->translator->translate(tokenInfo.second, x.second);
-        machineCodes.emplace_back(result);
+        vector<uint32_t> results = this->translator->translate(tokenInfo.second, x.second);
+        for (auto const& y : results)
+            machineCodes.emplace_back(y);
     }
 
     this->allMachineCodes = (uint32_t*) malloc(sizeof(uint32_t) * machineCodes.size() + 1);
@@ -73,10 +74,9 @@ void Assembler::translate() {
     uint32_t curPos = 0;
     for (auto const& x : machineCodes){
         this->allMachineCodes[curPos] = x;
+        printf("Expression %d: 0x%08x\n", curPos, this->allMachineCodes[curPos]);
         curPos++;
-        printf("Expression %d: 0x08%x\n", curPos, this->allMachineCodes[curPos]);
     }
-     **/
 }
 
 /**

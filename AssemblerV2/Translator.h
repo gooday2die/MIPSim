@@ -44,10 +44,13 @@ private:
     uint8_t translateRegister(const string&);
     static uint16_t translateImmediate(const string&);
     uint16_t translateLabel(const string&);
+
+    uint32_t translateNormalInstruction(const queue<Tokens>&, const string&);
+
 public:
     Translator();
     void scanLabelAddresses(const Tokens&, const string&);
-    uint32_t translate(const queue<Tokens>&, const string&);
+    vector<uint32_t> translate(const queue<Tokens>&, const string&);
     void printLabels();
     uint16_t getLabelCount();
 };
