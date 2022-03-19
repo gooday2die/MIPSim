@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "FileReader.h"
-#include "Section.h"
 #include "Messages.h"
 #include "LexicalAnalyzer.h"
 #include "SyntaxAnalyzer.h"
