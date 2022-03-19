@@ -24,6 +24,7 @@ Assembler::Assembler(string argFileName) {
     this->translator = new Translator();
 
     this->assemble();
+    this->simulate();
 }
 
 /**
@@ -77,6 +78,8 @@ void Assembler::translate() {
         printf("Expression %d: 0x%08x\n", curPos, this->allMachineCodes[curPos]);
         curPos++;
     }
+    this->totalExpressionCount = curPos + 1;
+    this->totalLabelCount = this->translator->getLabelCount();
 }
 
 /**
@@ -161,4 +164,18 @@ void Assembler::assemble() {
         cout << ASSEMBLE_SUCCESS << endl;
         this->translate();
     }
+}
+
+/**
+ * A member function for class Assembler that simulates the code that was translated by translator
+ */
+void Assembler::simulate(){
+    std::cout << "Assembler Successfully Finished!" << std::endl;
+    std::cout << "- Generated Expressions : " << this->totalExpressionCount << std::endl;
+    std::cout << "- Generated Labels : " << this->totalLabelCount << "\n" << std::endl;
+
+    this->simulator = new Simulator(this->allMachineCodes);
+    simulator->printAllRegisters(); // print registers
+    simulator->run(); // then run
+    simulator->printAllRegisters(); // print registers
 }

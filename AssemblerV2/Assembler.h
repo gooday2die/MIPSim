@@ -20,6 +20,7 @@
 #include "SyntaxAnalyzer.h"
 #include "SemanticAnalyzer.h"
 #include "Translator.h"
+#include "../Simulator/Simulator.h"
 
 using namespace std;
 
@@ -29,6 +30,9 @@ private:
     map<uint32_t, string> allExpressionStrings;
     map<uint32_t, pair<string, queue<Tokens>>> allTokens;
 
+    uint32_t totalExpressionCount = 0;
+    uint32_t totalLabelCount = 0;
+
     uint32_t* allMachineCodes = nullptr;
 
     FileReader* fileReader = nullptr;
@@ -36,6 +40,7 @@ private:
     SyntaxAnalyzer* syntaxAnalyzer = nullptr;
     SemanticAnalyzer* semanticAnalyzer = nullptr;
     Translator* translator = nullptr;
+    Simulator* simulator = nullptr;
 
     uint32_t totalErrorCount = 0 ;
 
@@ -44,6 +49,7 @@ private:
 
     void translate();
     void assemble();
+    void simulate();
 public:
     explicit Assembler(string);
 };
