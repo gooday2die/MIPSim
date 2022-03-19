@@ -111,3 +111,72 @@ After all expressions have passed grammar, it is now time for translating. In th
 [TRANSLATOR ERROR] error reasons.
 ```
 Since `MIPSim` is still in development phase, as well as I have never had a compiler class before, there might be some unexpected translator errors or bugs. So, if you happen to find any bugs or errors while running this in your environment, please open an issue with the code snippet in this GitHub repository so that I can look into those bugs. 
+
+### Example with example
+```
+start:  
+   li $v0, 100  # 0  
+   move $v0, $t0  # 1   
+   ble $zero, $t0, a_b  # 2,3  
+   bge $t0, $zero, b_a  # 4,5  
+   j exit  # 6  
+a_b:  
+   li $t4, 150 # 7  
+   j exit  # 8  
+b_a:  
+   li $t4, 200 # 9  
+   j exit # 10  
+exit:  
+   li $t3 10000 # 11
+```
+Let's assume that we have an code snippet above. When `MIPSim` translates it to machine language, the following steps will be executed in order.
+
+#### Step1. Scanning and storing all labels
+All labels regardless of its section type, `MIPSim` loads all labels and stores their address. 
+```
+Label Name : a_b @ 7
+Label Name : b_a @ 9
+Label Name : exit @ 11
+Label Name : start @ 0
+```
+#### Step2. Translating pseudo instructions into normal instructions
+This step translates pseudo instructions into normal instructions. Pseudo instructions are **not** a real instruction. Thus it should be translated into normal instructions.
+```
+li $v0, 100  # li is a pseudo instruction. 
+```
+This pseudo instruction will be translated into following expression
+```
+ori $0 $v0 100
+```
+These expressions will be stored in a vector of string that represents all expressions. 
+ #### Step3. Translating normal instructions
+Each arguments are going to be parsed in the type that was provided by *Lexical Analysis* and are translated into machine codes. The code snippet will be translated by tokens in following forms.
+```
+ori $0 $v0 100  -> Register $0 Register $2 Immediate Value 100
+addu $v0 $0 $t0  -> Register $2 Register $0 Register $8
+slt $t0 $zero $at  -> Register $8 Register $0 Register $1
+beq $at $zero a_b  -> Register $1 Register $0 Address Value 7
+slt $t0 $zero $at  -> Register $8 Register $0 Register $1
+beq $at $zero b_a  -> Register $1 Register $0 Address Value 9
+j exit  -> Address Value 11
+ori $0 $t4 150  -> Register $0 Register $12 Immediate Value 150
+j exit  -> Address Value 11
+ori $0 $t4 200  -> Register $0 Register $12 Immediate Value 200
+j exit  -> Address Value 11
+ori $0 $t3 10000  -> Register $0 Register $11 Immediate Value 10000
+```
+When it is done translating all arguments by its token types, `MIPSim` now will translate them into real machine codes.
+```
+Expression 0: 0x34020064
+Expression 1: 0x00404021
+Expression 2: 0x0100082a
+Expression 3: 0x10200007
+Expression 4: 0x0100082a
+Expression 5: 0x10200009
+Expression 6: 0x0800000b
+Expression 7: 0x340c0096
+Expression 8: 0x0800000b
+Expression 9: 0x340c00c8
+Expression 10: 0x0800000b
+Expression 11: 0x340b2710
+```
