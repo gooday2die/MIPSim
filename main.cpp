@@ -70,7 +70,7 @@ commands getCommandType(string argString){
  */
 map<string, uint32_t*> assemble(const string& fileName){
     Assembler assembler = Assembler(fileName);
-    return assembler.assemble();
+    return assembler.getResults();
 }
 
 /**

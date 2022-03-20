@@ -45,11 +45,11 @@ private:
 
     void checkExpressionGrammar(const string&);
     void checkGrammar();
-
     void translate();
+    void assemble();
 public:
     explicit Assembler(string);
-    map<string, uint32_t*> assemble();
+    map<string, uint32_t*> getResults();
 };
 
 

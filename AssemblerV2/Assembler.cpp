@@ -22,6 +22,8 @@ Assembler::Assembler(string argFileName) {
     this->syntaxAnalyzer = new SyntaxAnalyzer();
     this->semanticAnalyzer = new SemanticAnalyzer();
     this->translator = new Translator();
+
+    this->assemble();
 }
 
 /**
@@ -56,8 +58,7 @@ void Assembler::translate() {
         this->translator->scanLabelAddresses(tokenQueue.front(), words[0]);
     }
 
-    this->translator->printLabels();
-
+    //this->translator->printLabels();
 
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
@@ -75,7 +76,7 @@ void Assembler::translate() {
         printf("Expression %d: 0x%08x\n", curPos, this->textSectionCodes[curPos]);
         curPos++;
     }
-    this->totalExpressionCount = curPos + 1;
+    this->totalExpressionCount = curPos;
     this->totalLabelCount = this->translator->getLabelCount();
 }
 
@@ -148,8 +149,10 @@ void Assembler::checkGrammar() {
  * This member function does the following things.
  * 1. Perform Lexical analysis and parse out tokens.
  * 2. Perform Syntax analysis and checks if syntax was correct.
+ * 3. Perform Semantic analysis and check if it was grammatically correct.
+ * 4. Translate into machine codes.
  */
-map<string, uint32_t*> Assembler::assemble() {
+void Assembler::assemble() {
     cout << "Assembling..." << endl;
     this->checkGrammar();
 
@@ -162,9 +165,15 @@ map<string, uint32_t*> Assembler::assemble() {
         this->translate();
         cout << "Assembled " << to_string(this->totalExpressionCount) << " expression(s)" << endl;
         cout << "Generated " << to_string(this->totalLabelCount) << " label(s)" << endl;
-
-        map<string, uint32_t*> result;
-        result.insert(pair<string, uint32_t*>("text", this->textSectionCodes));
-        return result;
     }
+}
+
+/**
+ * A member function that returns map of translated machine codes
+ * @return returns map of string that represents type of machine code and machine codes.
+ */
+map<string, uint32_t*> Assembler::getResults() {
+    map<string, uint32_t*> result;
+    result.insert(pair<string, uint32_t*>("text", this->textSectionCodes));
+    return result;
 }

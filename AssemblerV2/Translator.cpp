@@ -186,7 +186,7 @@ uint32_t Translator::translateNormalInstruction(const queue<Tokens>& tokenQueue,
         words.push_back(copiedExpressionString.substr(0, pos));
         copiedExpressionString.erase(0, pos + space_delimiter.length());
     }
-    cout << expressionString << " -> ";
+    // cout << expressionString << " -> ";
     string instructionMnemonic = words[0]; // parse instruction mnemonic
     try {
         returnValue = this->instructionMnemonics.at(instructionMnemonic);
@@ -204,15 +204,15 @@ uint32_t Translator::translateNormalInstruction(const queue<Tokens>& tokenQueue,
                 uint8_t registerValue = this->translateRegister(currentArgument);
                 returnValue = returnValue | (registerValue << (21 - curRegisterCount * 5));
                 curRegisterCount++;
-                cout << "Register $" << to_string(registerValue) << " ";
+                // cout << "Register $" << to_string(registerValue) << " ";
             } else if (currentToken == Tokens::tImmediate) {
                 uint16_t immediateValue = this->translateImmediate(currentArgument);
                 returnValue = returnValue | (immediateValue);
-                cout << "Immediate Value " << to_string(immediateValue) << " ";
+                // cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
                 uint16_t addressValue = this->translateLabel(currentArgument);
                 returnValue = returnValue | (addressValue);
-                cout << "Address Value " << to_string(addressValue) << " ";
+                // cout << "Address Value " << to_string(addressValue) << " ";
             } else {
                 throw TranslatorExceptions::unexpectedInstructionArgumentTokenException();
             }
@@ -221,7 +221,7 @@ uint32_t Translator::translateNormalInstruction(const queue<Tokens>& tokenQueue,
     catch (const out_of_range& ex) {
         throw TranslatorExceptions::cannotFindInstructionMnemonicException();
     }
-    cout << endl;
+    // cout << endl;
     return returnValue;
 }
 
