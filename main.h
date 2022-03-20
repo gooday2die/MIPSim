@@ -22,10 +22,11 @@ enum commands{
     help = 1,
     runFile = 2,
     dev = 3,
-    unknown = 4
+    unknown = 4,
+    assembleFile = 5,
 };
 void argHandler(int argc, char** argv);
-commands getCommandType(string);
+commands getCommandType(const string& argString);
 map<string, uint32_t*> assemble(const string&);
 void simulate(const map<string, uint32_t*>&);
 

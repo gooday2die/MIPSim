@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A header file that defines all exception classes
-// @date: 2022-03-12
+//
 
 #ifndef MIPSIM_ASSEMBLERERRORS_H
 #define MIPSIM_ASSEMBLERERRORS_H

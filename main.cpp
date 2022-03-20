@@ -21,15 +21,18 @@ void argHandler(int argc, char** argv) {
         queue<string> argQueue;
         commands curCommand = getCommandType(argv[1]);
         switch (curCommand) {
-            case help:
-                cout << "Check manual for more information!" << endl;
+            case help:{
+                cout << "--help : prints out this page" << endl;
+                cout << "--dev : show developer credit" << endl;
+                cout << "-rf, -runfile fileName : assemble and simulate specified file" << endl;
+                cout << "-a, -assemble fileName : assemble and print out the translated expressions of specified file" << endl;
+            }
                 break;
             case runFile: {
                 if (argc < 3){
                     cout << "Error: Missing filename" << endl;
                     exit(1);
                 }else if (argc == 3) {
-                    cout << "Running file : " << argv[2] << endl;
                     map<string, uint32_t*> assembled = assemble(argv[2]);
                     simulate(assembled);
                 }else{
@@ -39,13 +42,35 @@ void argHandler(int argc, char** argv) {
                 break;
             }
             case dev: {
-                cout << "By Gooday2die :b" << endl;
-                cout << "https://github.com/gooday2die/MIPSim" << endl;
+                cout << R"( _____ ______   ___  ________  ________  ___  _____ ______      )" << endl;
+                cout << R"(|\   _ \  _   \|\  \|\   __  \|\   ____\|\  \|\   _ \  _   \    )" << endl;
+                cout << R"(\ \  \\\__\ \  \ \  \ \  \|\  \ \  \___|\ \  \ \  \\\__\ \  \   )" << endl;
+                cout << R"( \ \  \\|__| \  \ \  \ \   ____\ \_____  \ \  \ \  \\|__| \  \  )" << endl;
+                cout << R"(  \ \  \    \ \  \ \  \ \  \___|\|____|\  \ \  \ \  \    \ \  \ )" << endl;
+                cout << R"(   \ \__\    \ \__\ \__\ \__\     ____\_\  \ \__\ \__\    \ \__\)" << endl;
+                cout << R"(    \|__|     \|__|\|__|\|__|    |\_________\|__|\|__|     \|__|)" << endl;
+                cout << R"(                                 \|_________|)" << endl;
+                cout << "                                        Version : " << MIPSIM_VERSION << endl;
+                cout << "                                                   By Gooday2die :b" << endl;
+                cout << "                               https://github.com/gooday2die/MIPSim" << endl;
                 break;
             }
             case unknown:
                 cout << "Unknown argument : " << argv[1] << endl;
                 break;
+            case assembleFile:
+            {
+                if (argc < 3){
+                    cout << "Error: Missing filename" << endl;
+                    exit(1);
+                }else if (argc == 3) {
+                    map<string, uint32_t*> assembled = assemble(argv[2]);
+                }else{
+                    cout << "Error: Too many filenames" << endl;
+                    exit(1);
+                }
+                break;
+            }
         }
     }
 }
@@ -55,11 +80,11 @@ void argHandler(int argc, char** argv) {
  * @param argString the string to find type
  * @return the commands type for the command
  */
-commands getCommandType(string argString){
-    if(equal(argString.begin(), argString.end(), "--help")) return commands::help;
-    else if (equal(argString.begin(), argString.end(), "-file")) return commands::runFile;
-    else if (equal(argString.begin(), argString.end(), "-f")) return commands::runFile;
-    else if (equal(argString.begin(), argString.end(), "--dev")) return commands::dev;
+commands getCommandType(const string& argString){
+    if(argString == "--help") return commands::help;
+    else if((argString == "-rf") || (argString == "-runfile")) return commands::runFile;
+    else if(argString == "--dev") return commands::dev;
+    else if ((argString == "-a") || (argString == "-assemble")) return commands::assembleFile;
     else return commands::unknown;
 }
 

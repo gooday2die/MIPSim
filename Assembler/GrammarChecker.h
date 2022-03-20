@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that defines all attributes and member functions for class GrammarChecker
-// @date: 2022-03-12
+//
 
 #ifndef MIPSIM_GRAMMARCHECKER_H
 #define MIPSIM_GRAMMARCHECKER_H
