@@ -50,7 +50,7 @@ void argHandler(int argc, char** argv) {
                 cout << R"(   \ \__\    \ \__\ \__\ \__\     ____\_\  \ \__\ \__\    \ \__\)" << endl;
                 cout << R"(    \|__|     \|__|\|__|\|__|    |\_________\|__|\|__|     \|__|)" << endl;
                 cout << R"(                                 \|_________|)" << endl;
-                cout << "                                        Version : " << MIPSIM_VERSION << endl;
+                cout << "                                                    Version : " << MIPSIM_VERSION << endl;
                 cout << "                                                   By Gooday2die :b" << endl;
                 cout << "                               https://github.com/gooday2die/MIPSim" << endl;
                 break;
