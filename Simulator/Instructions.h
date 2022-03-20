@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that defines every attribute and member function for class Instructions
-// @date: 2022-03-07
+//
 
 #ifndef MIPSIM_INSTRUCTIONS_H
 #define MIPSIM_INSTRUCTIONS_H

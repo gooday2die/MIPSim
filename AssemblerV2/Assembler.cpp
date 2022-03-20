@@ -22,9 +22,6 @@ Assembler::Assembler(string argFileName) {
     this->syntaxAnalyzer = new SyntaxAnalyzer();
     this->semanticAnalyzer = new SemanticAnalyzer();
     this->translator = new Translator();
-
-    this->assemble();
-    this->simulate();
 }
 
 /**
@@ -69,13 +66,13 @@ void Assembler::translate() {
             machineCodes.emplace_back(y);
     }
 
-    this->allMachineCodes = (uint32_t*) malloc(sizeof(uint32_t) * machineCodes.size() + 1);
-    this->allMachineCodes[machineCodes.size()] = 0xF0F0F0F0;
+    this->textSectionCodes = (uint32_t*) malloc(sizeof(uint32_t) * machineCodes.size() + 1);
+    this->textSectionCodes[machineCodes.size()] = 0xF0F0F0F0;
 
     uint32_t curPos = 0;
     for (auto const& x : machineCodes){
-        this->allMachineCodes[curPos] = x;
-        printf("Expression %d: 0x%08x\n", curPos, this->allMachineCodes[curPos]);
+        this->textSectionCodes[curPos] = x;
+        printf("Expression %d: 0x%08x\n", curPos, this->textSectionCodes[curPos]);
         curPos++;
     }
     this->totalExpressionCount = curPos + 1;
@@ -152,7 +149,7 @@ void Assembler::checkGrammar() {
  * 1. Perform Lexical analysis and parse out tokens.
  * 2. Perform Syntax analysis and checks if syntax was correct.
  */
-void Assembler::assemble() {
+map<string, uint32_t*> Assembler::assemble() {
     cout << "Assembling..." << endl;
     this->checkGrammar();
 
@@ -163,19 +160,11 @@ void Assembler::assemble() {
     } else{
         cout << ASSEMBLE_SUCCESS << endl;
         this->translate();
+        cout << "Assembled " << to_string(this->totalExpressionCount) << " expression(s)" << endl;
+        cout << "Generated " << to_string(this->totalLabelCount) << " label(s)" << endl;
+
+        map<string, uint32_t*> result;
+        result.insert(pair<string, uint32_t*>("text", this->textSectionCodes));
+        return result;
     }
-}
-
-/**
- * A member function for class Assembler that simulates the code that was translated by translator
- */
-void Assembler::simulate(){
-    std::cout << "Assembler Successfully Finished!" << std::endl;
-    std::cout << "- Generated Expressions : " << this->totalExpressionCount << std::endl;
-    std::cout << "- Generated Labels : " << this->totalLabelCount << "\n" << std::endl;
-
-    this->simulator = new Simulator(this->allMachineCodes);
-    simulator->printAllRegisters(); // print registers
-    simulator->run(); // then run
-    simulator->printAllRegisters(); // print registers
 }

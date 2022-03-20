@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file for storing all defines
-// @date: 2022-03-07
+//
 
 #ifndef MIPSIM_DEFINES_H
 #define MIPSIM_DEFINES_H

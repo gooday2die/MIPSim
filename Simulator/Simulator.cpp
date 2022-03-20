@@ -3,7 +3,7 @@
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
 // @brief : A file that implements all member functions for class Simulator
-// @date: 2022-03-07
+//
 
 #include "Simulator.h"
 
@@ -11,9 +11,14 @@
 /**
  * A constructor member function for class Simulator
  */
-Simulator::Simulator(uint32_t* argMemory){
-    this->memory = argMemory;
-    std::cout << "===== MIPSim Version : " << MIPSIM_VERSION << " by Gooday2die =====" << std::endl;
+Simulator::Simulator(map<string, uint32_t*> machineCodes){
+    cout << "===== MIPSim Version : " << MIPSIM_VERSION << " by Gooday2die =====" << endl;
+    try{
+        this->textSection = machineCodes.at("text");
+    } catch (const out_of_range& ex){
+        cout << "Cannot find text section from code" << endl;
+        cout << "Nothing to execute" << endl;
+    }
 }
 
 /**
@@ -48,17 +53,17 @@ void Simulator::run() {
     printf("Starting Job...\n");
 
     while (true){
-        uint32_t curMachineCode = this->memory[*this->registerHandler->getPC()];
+        uint32_t curMachineCode = this->textSection[*this->registerHandler->getPC()];
         *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;
 
-        printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", *this->registerHandler->getPC(), curMachineCode);
+        printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", (0x00400000 + 4 * (*this->registerHandler->getPC())), curMachineCode);
         try {
             this->executeMachineCode(curMachineCode);
-        } catch(std::exception e) {
-            std::cout << "Exception : " << e.what() << std::endl;
+        } catch(const exception& ex) {
+            cout << "Exception : " << ex.what() << endl;
         }
         this->registerHandler->resetZero();
-        if (this->memory[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
+        if (this->textSection[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
 
     }
     clock_t end = clock();

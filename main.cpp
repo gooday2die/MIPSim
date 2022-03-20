@@ -1,8 +1,9 @@
 #include "main.h"
 
+#include <utility>
+
 int main(int argc, char**argv){
     argHandler(argc, argv);
-    //Assembler as = Assembler(R"(C:\Users\pc\Documents\GitHub\MIPSim\github\test.txt)");
     return 0;
 }
 
@@ -13,36 +14,37 @@ int main(int argc, char**argv){
  */
 void argHandler(int argc, char** argv) {
     if(argc == 1){
-        std::cout << "Error: Empty arguments" << std::endl;
-        std::cout << "Tip: Use --help to get information" << std::endl;
+        cout << "Error: Empty arguments" << endl;
+        cout << "Tip: Use --help to get information" << endl;
         exit(1);
     } else{
-        std::queue<std::string> argQueue;
+        queue<string> argQueue;
         commands curCommand = getCommandType(argv[1]);
         switch (curCommand) {
             case help:
-                std::cout << "Check manual for more information!" << std::endl;
+                cout << "Check manual for more information!" << endl;
                 break;
             case runFile: {
                 if (argc < 3){
-                    std::cout << "Error: Missing filename" << std::endl;
+                    cout << "Error: Missing filename" << endl;
                     exit(1);
                 }else if (argc == 3) {
-                    std::cout << "Running file : " << argv[2] << std::endl;
-                    Assembler as = Assembler(argv[2]);
+                    cout << "Running file : " << argv[2] << endl;
+                    map<string, uint32_t*> assembled = assemble(argv[2]);
+                    simulate(assembled);
                 }else{
-                    std::cout << "Error: Too many filenames" << std::endl;
+                    cout << "Error: Too many filenames" << endl;
                     exit(1);
                 }
                 break;
             }
             case dev: {
-                std::cout << "By Gooday2die :b" << std::endl;
-                std::cout << "https://github.com/gooday2die/MIPSim" << std::endl;
+                cout << "By Gooday2die :b" << endl;
+                cout << "https://github.com/gooday2die/MIPSim" << endl;
                 break;
             }
             case unknown:
-                std::cout << "Unknown argument : " << argv[1] << std::endl;
+                cout << "Unknown argument : " << argv[1] << endl;
                 break;
         }
     }
@@ -53,10 +55,30 @@ void argHandler(int argc, char** argv) {
  * @param argString the string to find type
  * @return the commands type for the command
  */
-commands getCommandType(std::string argString){
-    if(std::equal(argString.begin(), argString.end(), "--help")) return commands::help;
-    else if (std::equal(argString.begin(), argString.end(), "-file")) return commands::runFile;
-    else if (std::equal(argString.begin(), argString.end(), "-f")) return commands::runFile;
-    else if (std::equal(argString.begin(), argString.end(), "--dev")) return commands::dev;
+commands getCommandType(string argString){
+    if(equal(argString.begin(), argString.end(), "--help")) return commands::help;
+    else if (equal(argString.begin(), argString.end(), "-file")) return commands::runFile;
+    else if (equal(argString.begin(), argString.end(), "-f")) return commands::runFile;
+    else if (equal(argString.begin(), argString.end(), "--dev")) return commands::dev;
     else return commands::unknown;
+}
+
+/**
+ * A function that takes file name string and assembles into machine codes
+ * @param fileName the string that represents file name
+ * @return map of string and uint32_t array;
+ */
+map<string, uint32_t*> assemble(const string& fileName){
+    Assembler assembler = Assembler(fileName);
+    return assembler.assemble();
+}
+
+/**
+ * A function that simulates the machine codes.
+ * @param machineCodes mapped type of string and uint32_t array that represents machine code.
+ */
+void simulate(const map<string, uint32_t*>& machineCodes){
+    Simulator simulator = Simulator(machineCodes);
+    simulator.run();
+    simulator.printAllRegisters();
 }

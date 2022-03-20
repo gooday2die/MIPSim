@@ -21,9 +21,6 @@
 
 using namespace std;
 
-enum Mnemonic{
-
-};
 
 class Translator {
 private:
