@@ -58,13 +58,46 @@ void Assembler::translate() {
         this->translator->scanLabelAddresses(tokenQueue.front(), words[0]);
     }
 
-    //this->translator->printLabels();
-
+    uint32_t lineCount = 0;
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        vector<uint32_t> results = this->translator->translate(tokenInfo.second, x.second);
+        vector<uint32_t> results;
+        try {
+             results = this->translator->translate(tokenInfo.second, x.second);
+        } catch (const TranslatorExceptions::cannotFindRegisterIndexException& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Cannot find register ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const TranslatorExceptions::cannotTranslateImmediateException& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Cannot translate immediate value ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const TranslatorExceptions::cannotFindInstructionMnemonicException& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Cannot find instruction mnemonic ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const TranslatorExceptions::unexpectedInstructionArgumentTokenException& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Unexpected instruction argument token ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const TranslatorExceptions::unexpectedInstructionTokenTypeException& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Unexpected instruction token type ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        } catch (const TranslatorExceptions::cannotFindLabelNameException& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Cannot find label name ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
+        }
         for (auto const& y : results)
             machineCodes.emplace_back(y);
+        lineCount++;
     }
 
     this->textSectionCodes = (uint32_t*) malloc(sizeof(uint32_t) * machineCodes.size() + 1);
