@@ -27,6 +27,8 @@ private:
     map<string, uint32_t> labelAddresses;
     map<string, uint32_t> registerMnemonics;
     map<string, uint32_t> instructionMnemonics;
+    map<string, uint32_t> dataSectionLabel;
+    map<string, uint32_t> textSectionLabel;
 
     /// Pseudo instructions are going to be translated into normal instructions.
     /// The map pseudoInstructionExpressionCounts represent how many normal instructions that current pseudo instruction
@@ -38,9 +40,11 @@ private:
     uint32_t dataSectionExpressionCount = 0;
     uint32_t textSectionExpressionCount = 0;
 
+    uint32_t curTextSectionExpressionIndex = 0;
+
     uint8_t translateRegister(const string&);
     static uint16_t translateImmediate(const string&);
-    uint16_t translateLabel(const string&);
+    uint32_t translateLabel(const string&, const string&);
 
     uint32_t translateNormalInstruction(const queue<Tokens>&, const string&);
 

@@ -115,9 +115,21 @@ uint16_t Translator::translateImmediate(const string& immediateString) {
  * @param labelName the string object that represents label name
  * @return returns uint16_t type of expression's index.
  */
-uint16_t Translator::translateLabel(const string& labelName) {
+uint32_t Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
     try{
-        return this->labelAddresses.at(labelName);
+        if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
+            int16_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex - 1;
+            return relativeAddress;
+        } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
+            uint32_t returnAddr = 0x00400000 + 4 * this->textSectionLabel.at(labelName);
+            // printf("ADDRESS UNPROCESSED : 0x%08x ", returnAddr);
+            returnAddr = returnAddr >> 2;
+            return returnAddr;
+        }
+        else{
+            cout << "CANNOT PROCESS LABEL " << endl;
+            return 0;
+        }
     } catch (const range_error& ex){
         throw TranslatorExceptions::cannotFindLabelNameException();
     }
@@ -145,8 +157,10 @@ void Translator::scanLabelAddresses(const Tokens& token, const string& expressio
         }
         case tLabelDeclaration:{
             string labelName = regex_replace(expressionString, regex(":"), "");
-            if (this->currentSectionType == 1) this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->textSectionExpressionCount));
-            else this->labelAddresses.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
+            if (this->currentSectionType == 1)
+                this->textSectionLabel.insert(pair<string, uint32_t>(labelName, this->textSectionExpressionCount));
+            else
+                this->dataSectionLabel.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
             break;
         }
         case tInstructionMnemonic:
@@ -210,9 +224,9 @@ uint32_t Translator::translateNormalInstruction(const queue<Tokens>& tokenQueue,
                 returnValue = returnValue | (immediateValue);
                 // cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
-                uint16_t addressValue = this->translateLabel(currentArgument);
+                uint16_t addressValue = this->translateLabel(currentArgument, instructionMnemonic);
                 returnValue = returnValue | (addressValue);
-                // cout << "Address Value " << to_string(addressValue) << " ";
+                // printf("Address Value 0x%08x", addressValue);
             } else {
                 throw TranslatorExceptions::unexpectedInstructionArgumentTokenException();
             }
@@ -222,6 +236,7 @@ uint32_t Translator::translateNormalInstruction(const queue<Tokens>& tokenQueue,
         throw TranslatorExceptions::cannotFindInstructionMnemonicException();
     }
     // cout << endl;
+    this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
     return returnValue;
 }
 

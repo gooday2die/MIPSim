@@ -240,20 +240,53 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
         copied.erase(0, pos + space_delimiter.length());
     }
 
+    // cout << expressionString << " ";
+
     for (auto const &x: words) {
-        if (this->isSectionToken(x)) resultQueue.push(Tokens::tSection);
-        else if (this->isLabelToken(x)) resultQueue.push(Tokens::tLabelDeclaration);
-        else if (this->isRegisterToken(x)) resultQueue.push(Tokens::tRegister);
-        else if (this->isImmediateToken(x)) resultQueue.push(Tokens::tImmediate);
-        else if (this->isMnemonicInstructionToken(x)) resultQueue.push(Tokens::tInstructionMnemonic);
-        else if (this->isDefinedLabelToken(x)) resultQueue.push(Tokens::tDefinedLabel);
-        else if (this->isDataDefinitionToken(x)) resultQueue.push(Tokens::tDataDefinition);
-        else if (this->isPseudoInstructionToken(x)) resultQueue.push(Tokens::tPseudoInstruction);
-        else resultQueue.push(Tokens::tUnknown);
+        if (this->isSectionToken(x)) {
+            resultQueue.push(Tokens::tSection);
+            // cout << "SECTION_TOKEN ";
+        }
+        else if (this->isLabelToken(x)) {
+            resultQueue.push(Tokens::tLabelDeclaration);
+            // cout << "LABEL_DECLARATION_TOKEN ";
+        }
+        else if (this->isRegisterToken(x)) {
+            resultQueue.push(Tokens::tRegister);
+            // cout << "REGISTER_TOKEN ";
+        }
+        else if (this->isImmediateToken(x)) {
+            resultQueue.push(Tokens::tImmediate);
+            // cout << "IMMEDIATE_TOKEN ";
+        }
+        else if (this->isMnemonicInstructionToken(x)) {
+            resultQueue.push(Tokens::tInstructionMnemonic);
+            // cout << "INSTRUCTION_TOKEN ";
+        }
+        else if (this->isDefinedLabelToken(x)) {
+            resultQueue.push(Tokens::tDefinedLabel);
+            // cout << "LABEL_TOKEN ";
+        }
+        else if (this->isDataDefinitionToken(x)) {
+            resultQueue.push(Tokens::tDataDefinition);
+            // cout << "DATA_DEFINITION_TOKEN ";
+        }
+        else if (this->isPseudoInstructionToken(x)){
+            resultQueue.push(Tokens::tPseudoInstruction);
+            // cout << "PSEUDO_INSTRUCTION_TOKEN ";
+        }
+        else{
+            resultQueue.push(Tokens::tUnknown);
+            // cout << "UNKNOWN ";
+        }
     }
 
     result.first = words[0];
     result.second = resultQueue;
-
+    // cout << endl;
     return result;
+}
+
+bool LexicalAnalyzer::isStringToken(const string&) {
+    return true;
 }
