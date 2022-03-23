@@ -61,9 +61,13 @@ void Assembler::translate() {
     uint32_t lineCount = 0;
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        vector<uint32_t> results;
+        vector<pair<uint32_t, Expression>> results;
+        vector<uint32_t> machineCodeResults;
         try {
              results = this->translator->translate(tokenInfo.second, x.second);
+             for (auto const& y : results)
+                 machineCodeResults.emplace_back(y.first);
+
         } catch (const TranslatorExceptions::cannotFindRegisterIndexException& ex){
             const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
             cout << TRANSLATOR_ERROR_TAG << " Cannot find register ";
@@ -95,7 +99,7 @@ void Assembler::translate() {
             cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
             this->totalErrorCount++;
         }
-        for (auto const& y : results)
+        for (auto const& y : machineCodeResults)
             machineCodes.emplace_back(y);
         lineCount++;
     }
