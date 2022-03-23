@@ -118,12 +118,15 @@ uint16_t Translator::translateImmediate(const string& immediateString) {
 uint32_t Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
     try{
         if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
-            int16_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex - 1;
-            return relativeAddress;
+            uint32_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex - 1;
+            printf("ADDRESS UNPROCESSED : 0x%08x ", (relativeAddress & 0x0000FFFF));
+            return (relativeAddress & 0x0000FFFF);
         } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
-            uint32_t returnAddr = 0x00400000 + 4 * this->textSectionLabel.at(labelName);
-            // printf("ADDRESS UNPROCESSED : 0x%08x ", returnAddr);
+            uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
+             printf("ADDRESS UNPROCESSED : 0x%08x ", returnAddr);
             returnAddr = returnAddr >> 2;
+            printf("ADDRESS UNPROCESSED : 0x%08x ", returnAddr);
+
             return returnAddr;
         }
         else{
@@ -220,11 +223,11 @@ pair<uint32_t, Expression> Translator::translateExpression(const queue<Tokens>& 
                 curRegisterCount++;
                 // cout << "Register $" << to_string(registerValue) << " ";
             } else if (currentToken == Tokens::tImmediate) {
-                uint16_t immediateValue = this->translateImmediate(currentArgument);
+                uint32_t immediateValue = 0x0000FFFF & this->translateImmediate(currentArgument);
                 machineCode = machineCode | (immediateValue);
                 // cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
-                uint16_t addressValue = this->translateLabel(currentArgument, instructionMnemonic);
+                uint32_t addressValue = this->translateLabel(currentArgument, instructionMnemonic);
                 machineCode = machineCode | (addressValue);
                 // printf("Address Value 0x%08x", addressValue);
             } else {

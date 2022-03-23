@@ -18,7 +18,7 @@
 
 #include "Token.h"
 #include "Errors.h"
-#include "../Expression.h"
+#include "../Connector/Expression.h"
 
 using namespace std;
 
