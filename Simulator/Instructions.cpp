@@ -176,7 +176,8 @@ void Instructions::RType::_subu(uint32_t rs, uint32_t rt, uint32_t* rd) {
  * @param address the address
  */
 void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
-    *pc = address;
+    address = address << 2;
+    *pc = (address - 0x00400000) / 4;
 }
 
 /**
@@ -185,9 +186,10 @@ void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
  * @param ra $31 Register($ra)'s address
  * @param address the address
  */
- void Instructions::JType::_jal(uint32_t* pc, uint32_t* ra, uint32_t address){
+void Instructions::JType::_jal(uint32_t* pc, uint32_t* ra, uint32_t address){
+    address = address << 2;
     *ra = *pc + 8;
-    *pc = address;
+    *pc = (address - 0x00400000) / 4;
 }
 
 /**
