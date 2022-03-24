@@ -119,14 +119,10 @@ uint32_t Translator::translateLabel(const string& labelName, const string& instr
     try{
         if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
             uint32_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex - 1;
-            printf("ADDRESS UNPROCESSED : 0x%08x ", (relativeAddress & 0x0000FFFF));
             return (relativeAddress & 0x0000FFFF);
         } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
             uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
-             printf("ADDRESS UNPROCESSED : 0x%08x ", returnAddr);
             returnAddr = returnAddr >> 2;
-            printf("ADDRESS UNPROCESSED : 0x%08x ", returnAddr);
-
             return returnAddr;
         }
         else{
