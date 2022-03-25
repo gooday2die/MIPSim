@@ -61,12 +61,11 @@ void Assembler::translate() {
     uint32_t lineCount = 0;
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        vector<pair<uint32_t, Expression>> results;
-        vector<uint32_t> machineCodeResults;
+        vector<uint32_t> results;
         try {
              results = this->translator->translate(tokenInfo.second, x.second);
              for (auto const& y : results)
-                 machineCodeResults.emplace_back(y.first);
+                 results.emplace_back(y);
 
         } catch (const TranslatorExceptions::cannotFindRegisterIndexException& ex){
             const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
@@ -99,7 +98,7 @@ void Assembler::translate() {
             cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
             this->totalErrorCount++;
         }
-        for (auto const& y : machineCodeResults)
+        for (auto const& y : results)
             machineCodes.emplace_back(y);
         lineCount++;
     }
@@ -110,7 +109,7 @@ void Assembler::translate() {
     uint32_t curPos = 0;
     for (auto const& x : machineCodes){
         this->textSectionCodes[curPos] = x;
-        printf("Expression %d: 0x%08x\n", curPos, this->textSectionCodes[curPos]);
+        printf("Expression 0x%08x : 0x%08x\n", (0x00400000 + 4 * curPos), this->textSectionCodes[curPos]);
         curPos++;
     }
     this->totalExpressionCount = curPos;

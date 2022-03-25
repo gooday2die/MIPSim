@@ -227,7 +227,10 @@ void Instructions::RType::_srl(uint32_t rt, uint32_t* rd, uint8_t shamt){
  * @param pc the pointer of pc
  */
 void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
-    if (rs == rt) *pc = branchAddr;
+    if (rs == rt){
+        int16_t relativeAddr = branchAddr & 0xFFFF;
+        *pc = branchAddr + relativeAddr;
+    }
 }
 
 /**
@@ -238,5 +241,8 @@ void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, ui
  * @param pc the pointer of pc
  */
 void Instructions::IType::_bne(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
-    if (rs != rt) *pc = branchAddr;
+    if (rs != rt){
+        int16_t relativeAddr = branchAddr & 0xFFFF;
+        *pc = branchAddr + relativeAddr;
+    }
 }

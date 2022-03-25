@@ -187,7 +187,7 @@ uint16_t Translator::getLabelCount() {
     return this->labelAddresses.size();
 }
 
-pair<uint32_t, Expression> Translator::translateExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
+uint32_t Translator::translateExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
     string copiedExpressionString = expressionString;
     queue<Tokens> copiedTokenQueue = tokenQueue;
     uint32_t machineCode;
@@ -237,9 +237,7 @@ pair<uint32_t, Expression> Translator::translateExpression(const queue<Tokens>& 
     // cout << endl;
     this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
 
-    Expression expression = Expression();
-    pair<uint32_t, Expression> returnValue = pair<uint32_t, Expression>(machineCode, expression);
-    return returnValue;
+    return machineCode;
 }
 
 /**
@@ -248,10 +246,10 @@ pair<uint32_t, Expression> Translator::translateExpression(const queue<Tokens>& 
  * @param expressionString the string object that represents current expression
  * @return returns uint32_t type of machine code that was translated from expression.
  */
-vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
+vector<uint32_t> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
     queue<Tokens> copiedTokenQueue = tokenQueue;
     string copiedExpressionString = expressionString;
-    vector<pair<uint32_t, Expression>> returnVector;
+    vector<uint32_t> returnVector;
 
     Tokens instructionToken = copiedTokenQueue.front();
     copiedTokenQueue.pop();
@@ -266,8 +264,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
             break;
         }
         case tInstructionMnemonic:{ // when this was an instruction mnemonic then process as it should be
-            pair<uint32_t, Expression> result;
-            Expression newExpression;
+            uint32_t result;
             result = this->translateExpression(tokenQueue, expressionString);
             returnVector.emplace_back(result);
             break;
@@ -292,7 +289,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
                 tmpTokenQueue.push(Tokens::tRegister);
                 tmpTokenQueue.push(Tokens::tRegister);
 
-                pair<uint32_t, Expression> result = this->translateExpression(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
+                uint32_t result = this->translateExpression(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
                 returnVector.emplace_back(result);
 
             } else if(instruction == "li"){
@@ -303,7 +300,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
                 tmpTokenQueue.push(Tokens::tRegister);
                 tmpTokenQueue.push(Tokens::tImmediate);
 
-                pair<uint32_t, Expression> result = this->translateExpression(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
+                uint32_t result = this->translateExpression(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
                 returnVector.emplace_back(result);
 
             } else if(instruction == "blt"){
@@ -322,7 +319,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
                 tmpTokenQueue2.push(Tokens::tRegister);
                 tmpTokenQueue2.push(Tokens::tDefinedLabel);
 
-                pair<uint32_t, Expression> result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
+                uint32_t result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
                 returnVector.emplace_back(result);
                 result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
@@ -343,7 +340,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
                 tmpTokenQueue2.push(Tokens::tRegister);
                 tmpTokenQueue2.push(Tokens::tDefinedLabel);
 
-                pair<uint32_t, Expression> result = this->translateExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
+                uint32_t result = this->translateExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
                 returnVector.emplace_back(result);
                 result = this->translateExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
@@ -364,7 +361,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
                 tmpTokenQueue2.push(Tokens::tRegister);
                 tmpTokenQueue2.push(Tokens::tDefinedLabel);
 
-                pair<uint32_t, Expression> result = this->translateExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
+                uint32_t result = this->translateExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
                 returnVector.emplace_back(result);
                 result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
@@ -385,7 +382,7 @@ vector<pair<uint32_t, Expression>> Translator::translate(const queue<Tokens>& to
                 tmpTokenQueue2.push(Tokens::tRegister);
                 tmpTokenQueue2.push(Tokens::tDefinedLabel);
 
-                pair<uint32_t, Expression> result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
+                uint32_t result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
                 returnVector.emplace_back(result);
                 result = this->translateExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);

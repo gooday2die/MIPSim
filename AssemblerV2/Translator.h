@@ -18,7 +18,6 @@
 
 #include "Token.h"
 #include "Errors.h"
-#include "../Connector/Expression.h"
 
 using namespace std;
 
@@ -47,12 +46,12 @@ private:
     static uint16_t translateImmediate(const string&);
     uint32_t translateLabel(const string&, const string&);
 
-    pair<uint32_t, Expression> translateExpression(const queue<Tokens>&, const string&);
+    uint32_t translateExpression(const queue<Tokens>&, const string&);
 
 public:
     Translator();
     void scanLabelAddresses(const Tokens&, const string&);
-    vector<pair<uint32_t, Expression>> translate(const queue<Tokens>&, const string&);
+    vector<uint32_t> translate(const queue<Tokens>&, const string&);
     void printLabels();
     uint16_t getLabelCount();
 };
