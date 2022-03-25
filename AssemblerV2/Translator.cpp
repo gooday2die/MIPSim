@@ -184,7 +184,7 @@ void Translator::scanLabelAddresses(const Tokens& token, const string& expressio
  * @return uint16_t type that represents total count of declared labels.
  */
 uint16_t Translator::getLabelCount() {
-    return this->labelAddresses.size();
+    return this->textSectionLabel.size() + this->dataSectionLabel.size();
 }
 
 uint32_t Translator::translateExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
@@ -217,15 +217,15 @@ uint32_t Translator::translateExpression(const queue<Tokens>& tokenQueue, const 
                 uint8_t registerValue = this->translateRegister(currentArgument);
                 machineCode = machineCode | (registerValue << (21 - curRegisterCount * 5));
                 curRegisterCount++;
-                // cout << "Register $" << to_string(registerValue) << " ";
+                //cout << "Register $" << to_string(registerValue) << " ";
             } else if (currentToken == Tokens::tImmediate) {
                 uint32_t immediateValue = 0x0000FFFF & this->translateImmediate(currentArgument);
                 machineCode = machineCode | (immediateValue);
-                // cout << "Immediate Value " << to_string(immediateValue) << " ";
+                //cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
                 uint32_t addressValue = this->translateLabel(currentArgument, instructionMnemonic);
                 machineCode = machineCode | (addressValue);
-                // printf("Address Value 0x%08x", addressValue);
+                //printf("Address Value 0x%08x", addressValue);
             } else {
                 throw TranslatorExceptions::unexpectedInstructionArgumentTokenException();
             }
@@ -234,7 +234,7 @@ uint32_t Translator::translateExpression(const queue<Tokens>& tokenQueue, const 
     catch (const out_of_range& ex) {
         throw TranslatorExceptions::cannotFindInstructionMnemonicException();
     }
-    // cout << endl;
+    //cout << endl;
     this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
 
     return machineCode;

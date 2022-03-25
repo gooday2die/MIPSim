@@ -54,6 +54,7 @@ void Simulator::run() {
 
     while (true){
         uint32_t curMachineCode = this->textSection[*this->registerHandler->getPC()];
+        if (this->textSection[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
         printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", (0x00400000 + 4 * (*this->registerHandler->getPC())), curMachineCode);
         try {
             this->executeMachineCode(curMachineCode);
@@ -61,9 +62,7 @@ void Simulator::run() {
             cout << "Exception : " << ex.what() << endl;
         }
         this->registerHandler->resetZero();
-        if (this->textSection[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
         *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;
-
     }
     clock_t end = clock();
 

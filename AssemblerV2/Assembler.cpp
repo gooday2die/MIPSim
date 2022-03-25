@@ -65,7 +65,7 @@ void Assembler::translate() {
         try {
              results = this->translator->translate(tokenInfo.second, x.second);
              for (auto const& y : results)
-                 results.emplace_back(y);
+                 machineCodes.emplace_back(y);
 
         } catch (const TranslatorExceptions::cannotFindRegisterIndexException& ex){
             const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
@@ -98,8 +98,6 @@ void Assembler::translate() {
             cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
             this->totalErrorCount++;
         }
-        for (auto const& y : results)
-            machineCodes.emplace_back(y);
         lineCount++;
     }
 
