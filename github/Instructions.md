@@ -1,5 +1,6 @@
 ## Supported Instructions
 Following instructions of MIPS assembly are currently supported with `MIPSim`. `MIPSim` is still in development phase, so there might be bugs or lack some important features.
+### Normal Instructions
 |Instruction Name|OPCODE|FUNCT|Type|ETC|
 |--|--|--|--|--|
 |add|0x00|0x20| R | Overflow Detection
@@ -24,3 +25,13 @@ Following instructions of MIPS assembly are currently supported with `MIPSim`. `
 |srl|0x00|0x02| I
 |sub|0x00|0x22| I | Overflow Detection
 |subu|0x00|0x23| I
+
+### Pseudo-Instructions
+|Instruction Name|Translated Instructions|ETC|
+|--|--|--|--|--|
+|li|`ori`|NA|
+|move|`addu`|NA|
+|bgt|`slt`, `bne`|NA|
+|bge|`slt`, `beq`|NA|
+|blt|`slt`, `bne`|NA|
+|ble|`slt`, `beq`|NA|
