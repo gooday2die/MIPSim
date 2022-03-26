@@ -118,7 +118,7 @@ uint16_t Translator::translateImmediate(const string& immediateString) {
 uint32_t Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
     try{
         if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
-            uint32_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex - 1;
+            uint32_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex + 1;
             return (relativeAddress & 0x0000FFFF);
         } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
             uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
@@ -138,8 +138,10 @@ uint32_t Translator::translateLabel(const string& labelName, const string& instr
  * A member function that prints out all labels and its addresses
  */
 void Translator::printLabels() {
-    for (auto const& x : this->labelAddresses)
-        cout << "Label Name : " << x.first << " @ " << to_string(x.second) << endl;
+    for (auto const& x : this->textSectionLabel) {
+        cout << "Branch Name : " << x.first << " @ ";
+        printf("0x%08x\n", (0x00400000 + 4 *x.second));
+    }
 }
 
 /**
@@ -170,6 +172,9 @@ void Translator::scanLabelAddresses(const Tokens& token, const string& expressio
             break;
         case tPseudoInstruction:
             textSectionExpressionCount = textSectionExpressionCount + this->pseudoInstructionExpressionCounts.at(expressionString);
+            break;
+        case tSyscall:
+            textSectionExpressionCount++;
             break;
         case tUnknown:
         case tRegister:
@@ -395,6 +400,10 @@ vector<uint32_t> Translator::translate(const queue<Tokens>& tokenQueue, const st
         case tRegister:
         case tImmediate:
             throw TranslatorExceptions::unexpectedInstructionTokenTypeException();
+        case tSyscall:
+            returnVector.emplace_back(0x0000000C);
+            return returnVector;
+            break;
     }
     return returnVector;
 }

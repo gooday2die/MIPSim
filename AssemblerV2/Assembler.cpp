@@ -103,7 +103,7 @@ void Assembler::translate() {
 
     this->textSectionCodes = (uint32_t*) malloc(sizeof(uint32_t) * machineCodes.size() + 1);
     this->textSectionCodes[machineCodes.size()] = 0xF0F0F0F0;
-
+    this->translator->printLabels();
     uint32_t curPos = 0;
     for (auto const& x : machineCodes){
         this->textSectionCodes[curPos] = x;

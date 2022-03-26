@@ -55,10 +55,13 @@ void Simulator::run() {
     while (true){
         uint32_t curMachineCode = this->textSection[*this->registerHandler->getPC()];
         if (this->textSection[*this->registerHandler->getPC()] == 0xF0F0F0F0) break;
-        printf("CURPC : 0x%08x / MACHINECODE : 0x%08x\n", (0x00400000 + 4 * (*this->registerHandler->getPC())), curMachineCode);
+        printf("Current Address : 0x%08x / MACHINECODE : 0x%08x\n", (0x00400000 + 4 * (*this->registerHandler->getPC())), curMachineCode);
         try {
             this->executeMachineCode(curMachineCode);
-        } catch(const exception& ex) {
+        } catch (const Syscall::Exit& ex){ // when syscall, break
+            break;
+        }
+        catch(const exception& ex) {
             cout << "Exception : " << ex.what() << endl;
         }
         this->registerHandler->resetZero();

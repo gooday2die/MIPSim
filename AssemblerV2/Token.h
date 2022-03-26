@@ -24,6 +24,7 @@ enum Tokens{
     tDefinedLabel = 6,
     tDataDefinition = 7,
     tPseudoInstruction = 8,
+    tSyscall = 9,
 };
 
 #endif //MIPSIM_TOKEN_H

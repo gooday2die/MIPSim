@@ -11,13 +11,14 @@
 
 #include "RegisterHandler.h"
 #include "Instructions.h"
+#include "Signals.h"
 
 
 class MachineCodeSimulator {
 private:
     RegisterHandler* registerHandler;
 public:
-    MachineCodeSimulator(RegisterHandler*);
+    explicit MachineCodeSimulator(RegisterHandler*);
     void executeCode(uint32_t);
 };
 

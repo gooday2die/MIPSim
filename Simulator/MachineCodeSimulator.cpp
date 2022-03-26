@@ -23,6 +23,14 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
     uint8_t opcode = curCode >> 26; // OPCode's length = 6bit < 8bit
     uint8_t codeType;
 
+    if (curCode == 0x0000000C){ // when syscall
+        uint32_t v0_val = *this->registerHandler->getRegister(2); // get v0 value.
+        switch(v0_val){
+            case 10: // v0 with syscall exits program.
+                throw Syscall::Exit();
+        }
+    }
+
     switch(opcode){ // parse CodeType
         case 0x00:
         case 0x10:

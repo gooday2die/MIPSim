@@ -229,7 +229,8 @@ void Instructions::RType::_srl(uint32_t rt, uint32_t* rd, uint8_t shamt){
 void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
     if (rs == rt){
         int16_t relativeAddr = branchAddr & 0xFFFF;
-        *pc = branchAddr + relativeAddr;
+        printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
+        *pc = *pc + relativeAddr;
     }
 }
 
@@ -243,6 +244,7 @@ void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, ui
 void Instructions::IType::_bne(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
     if (rs != rt){
         int16_t relativeAddr = branchAddr & 0xFFFF;
-        *pc = branchAddr + relativeAddr;
+        printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
+        *pc = *pc + relativeAddr;
     }
 }

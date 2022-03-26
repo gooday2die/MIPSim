@@ -199,6 +199,19 @@ bool LexicalAnalyzer::isPseudoInstructionToken(const string& argumentString) {
     return result;
 }
 
+bool LexicalAnalyzer::isStringToken(const string&) {
+    return true;
+}
+
+/**
+ * A member function for LexicalAnalyzer that finds out if current expression is a syscall token
+ * @param expressionString the string object that represents current argument
+ * @return true if it is a syscall token, false if not
+ */
+bool LexicalAnalyzer::isSysCallToken(const string& expressionString) {
+    return expressionString == "syscall";
+}
+
 /**
  * A member function for LexicalAnalyzer that scans through all expressions and look for labels.
  * When each labels were found, it is stored inside allFoundLabels vector.
@@ -275,6 +288,10 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
             resultQueue.push(Tokens::tPseudoInstruction);
             // cout << "PSEUDO_INSTRUCTION_TOKEN ";
         }
+        else if (this->isSysCallToken(x)){
+            resultQueue.push(Tokens::tSyscall);
+            // cout << "SYSCALL_TOKEN ";
+        }
         else{
             resultQueue.push(Tokens::tUnknown);
             // cout << "UNKNOWN ";
@@ -287,6 +304,3 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
     return result;
 }
 
-bool LexicalAnalyzer::isStringToken(const string&) {
-    return true;
-}

@@ -16,6 +16,7 @@
 #include "../defines.h"
 #include "RegisterHandler.h"
 #include "MachineCodeSimulator.h"
+#include "Signals.h"
 
 using namespace std;
 
