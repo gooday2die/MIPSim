@@ -16,7 +16,7 @@
  */
 void Instructions::RType::_add(uint32_t rs, uint32_t rt, uint32_t* rd) {
     if ((rs > 0) && (rt > INT_MAX - rs))
-        throw std::overflow_error("Integer Overflow with instruction add");
+        throw GeneralExceptions::OverflowException();
     else *rd = rs + rt;
 }
 
@@ -49,7 +49,7 @@ void Instructions::RType::_and(uint32_t rs, uint32_t rt, uint32_t* rd) {
  */
 void Instructions::IType::_addi(uint32_t rs, uint32_t* rt, uint16_t imm) {
     if ((rs > 0) && (imm > INT_MAX - rs))
-        throw std::overflow_error("Integer Overflow with instruction add");
+        throw GeneralExceptions::OverflowException();
     else *rt = rs + imm;
 }
 
@@ -156,7 +156,7 @@ void Instructions::RType::_sub(uint32_t rs, uint32_t rt, uint32_t* rd) {
     long rsVal = (signed int)rs;
     long rtVal = (signed int)rt;
     if ((rtVal < 0) && (rsVal > INT_MAX - rtVal))
-        throw std::overflow_error("Integer Overflow with operation sub");
+        throw GeneralExceptions::OverflowException();
     else *rd = rs - rt;
 }
 
@@ -238,6 +238,7 @@ void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, ui
  * A member function for instruction 'beq'
  * @param rs the rs register value
  * @param rt the rt register value
+ * @param branchAddr the branch address to set pc
  * @param branchAddr the branch address to set pc
  * @param pc the pointer of pc
  */

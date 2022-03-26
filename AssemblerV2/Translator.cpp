@@ -192,6 +192,12 @@ uint16_t Translator::getLabelCount() {
     return this->textSectionLabel.size() + this->dataSectionLabel.size();
 }
 
+/**
+ * A member function for class Translator that translates expression into machine codes.
+ * @param tokenQueue the queue of tokens
+ * @param expressionString the string object that represents expression
+ * @return returns uint32_t type machine code.
+ */
 uint32_t Translator::translateExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
     string copiedExpressionString = expressionString;
     queue<Tokens> copiedTokenQueue = tokenQueue;

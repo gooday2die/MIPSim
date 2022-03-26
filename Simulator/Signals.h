@@ -1,9 +1,9 @@
 //
-// @file : Signals.
+// @file : Signals.h
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
-// @date: 2022-03-26
+// @brief : A file that defines all signals within simulator
+//
 
 #ifndef MIPSIM_SIGNALS_H
 #define MIPSIM_SIGNALS_H
@@ -15,6 +15,14 @@
 class Syscall{
 public:
     class Exit : public std::exception {
+    };
+};
+
+class GeneralExceptions{
+public:
+    class OverflowException : public std::exception{
+    };
+    class UnknownInstruction : public std::exception{
     };
 };
 

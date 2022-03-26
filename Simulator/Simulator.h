@@ -20,6 +20,9 @@
 
 using namespace std;
 
+/**
+ * A class for simulating machine codes
+ */
 class Simulator {
 private:
     RegisterHandler* registerHandler = new RegisterHandler();

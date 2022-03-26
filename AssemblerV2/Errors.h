@@ -12,6 +12,9 @@
 #include <exception>
 
 
+/**
+ * A class for defining all grammatical exceptions (includes syntax errors)
+ */
 class GrammarExceptions{
 public:
     class unknownInstructionMnemonicException : public std::exception{
@@ -48,6 +51,9 @@ public:
     };
 };
 
+/**
+ * A class that defines all translator exceptions
+ */
 class TranslatorExceptions{
 public:
     class cannotFindRegisterIndexException : public std::exception {
@@ -64,15 +70,15 @@ public:
     };
 };
 
-
+/**
+ * A class for branch exceptions. Is depreciated
+ */
 class BranchExceptions {
 public:
-
-class whitespaceNameException : public std::exception {
-};
-
-class emptyNameException : public std::exception{
-};
+    class whitespaceNameException : public std::exception {
+    };
+    class emptyNameException : public std::exception{
+    };
 };
 
 

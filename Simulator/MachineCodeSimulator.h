@@ -13,7 +13,9 @@
 #include "Instructions.h"
 #include "Signals.h"
 
-
+/**
+ * A class for simulating each machine code expressions
+ */
 class MachineCodeSimulator {
 private:
     RegisterHandler* registerHandler;

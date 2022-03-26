@@ -49,6 +49,9 @@ enum RegisterNames{
      ra = 31
 };
 
+/**
+ * A class for handling registers including PC
+ */
 class RegisterHandler {
 private:
     uint32_t* registers;

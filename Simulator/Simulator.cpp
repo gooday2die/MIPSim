@@ -59,11 +59,14 @@ void Simulator::run() {
         try {
             this->executeMachineCode(curMachineCode);
         } catch (const Syscall::Exit& ex){ // when syscall, break
-            cout << "[SYSCALL] Exit found : $v0 == 10" << endl;
+            cout << "[SYSCALL] Exit" << endl;
             break;
-        }
-        catch(const exception& ex) {
-            cout << "Exception : " << ex.what() << endl;
+        } catch (const GeneralExceptions::OverflowException& ex){
+            cout << "[EXCEPTION] Overflow exception detected" << endl;
+            break;
+        } catch (const GeneralExceptions::UnknownInstruction& ex){
+            cout << "[EXCEPTION] Unknown instruction found" << endl;
+            break;
         }
         this->registerHandler->resetZero();
         *this->registerHandler->getPC() = *this->registerHandler->getPC() + 1;

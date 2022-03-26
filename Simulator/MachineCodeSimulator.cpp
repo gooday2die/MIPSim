@@ -103,12 +103,12 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
                             Instructions::RType::_srl(*registerHandler->getRegister(rt), registerHandler->getRegister(rd), shamt);
                             break;
                         default:
-                            throw std::range_error("Unknown Operation");
+                            throw GeneralExceptions::UnknownInstruction();
                     }
                 }
                     break;
                 default:
-                    throw std::range_error("Unknown Operation");
+                    throw GeneralExceptions::UnknownInstruction();
             }
             break;
         }
@@ -146,7 +146,7 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
                                               imm, registerHandler->getPC());
                     break;
                 default:
-                    throw std::range_error("Unknown Operation");
+                    throw GeneralExceptions::UnknownInstruction();
             }
             break;
         }
@@ -161,7 +161,7 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
                     Instructions::JType::_jal(registerHandler->getPC(), registerHandler->getRegister(31), address);
                     break;
                 default:
-                    throw std::range_error("Unknown Operation");
+                    throw GeneralExceptions::UnknownInstruction();
             }
             break;
         }

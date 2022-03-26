@@ -14,7 +14,11 @@
 #include <climits>
 #include <iostream>
 
+#include "Signals.h"
 
+/**
+ * A class for defining all instructions.
+ */
 class Instructions {
 public:
     class RType{

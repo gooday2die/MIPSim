@@ -19,6 +19,7 @@
 #include "SyntaxAnalyzer.h"
 #include "SemanticAnalyzer.h"
 #include "Translator.h"
+#include "../defines.h"
 
 using namespace std;
 

@@ -14,6 +14,8 @@
  * @param argFileName the string object that represents file name
  */
 Assembler::Assembler(string argFileName) {
+    cout << "===== MIPSim Assembler Version : " << MIPSIM_VERSION << " by Gooday2die =====" << endl;
+
     this->fileName = move(argFileName);
     this->fileReader = new FileReader(this->fileName);
     this->allExpressionStrings = this->fileReader->getAllExpressions();
@@ -198,7 +200,7 @@ void Assembler::assemble() {
         cout << ASSEMBLE_SUCCESS << endl;
         this->translate();
         cout << "Assembled " << to_string(this->totalExpressionCount) << " expression(s)" << endl;
-        cout << "Generated " << to_string(this->totalLabelCount) << " label(s)" << endl;
+        cout << "Generated " << to_string(this->totalLabelCount) << " label(s)\n" << endl;
     }
 }
 
