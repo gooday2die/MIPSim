@@ -5,9 +5,13 @@ start:
 	bge $t0, $zero, b_a  # 4, 5
 	j tmp  # 6
 exit:
+    li $a1 999
 	syscall # 7
 tmp:
     li $t3 10000 # 8
+    li $v0 1
+    li $a0 1000
+    syscall
     li $v0 10 # 9
     beq $zero, $zero, exit # 10
 b_a:

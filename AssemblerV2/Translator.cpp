@@ -119,7 +119,7 @@ uint32_t Translator::translateLabel(const string& labelName, const string& instr
     try{
         if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
             int16_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex;
-            return (uint32_t) (relativeAddress - (relativeAddress < 0)) & (0xFFFF); // if neg, -1 to the result.
+            return (uint32_t) (relativeAddress - 2 * (relativeAddress < 0)) & (0xFFFF); // if neg, -2 to the result.
         } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
             uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
             returnAddr = returnAddr >> 2;

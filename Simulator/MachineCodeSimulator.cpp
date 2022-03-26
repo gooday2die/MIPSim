@@ -25,7 +25,12 @@ void MachineCodeSimulator::executeCode(uint32_t curCode) {
 
     if (curCode == 0x0000000C){ // when syscall
         uint32_t v0_val = *this->registerHandler->getRegister(2); // get v0 value.
+        uint32_t a0_val = *this->registerHandler->getRegister(4); // get a0 value
         switch(v0_val){
+            case 1: // v0 with syscall prints out int in $a0;
+                printf("[OUTPUT] %d\n", a0_val);
+                return;
+
             case 10: // v0 with syscall exits program.
                 throw Syscall::Exit();
         }
