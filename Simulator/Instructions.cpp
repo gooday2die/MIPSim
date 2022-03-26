@@ -177,7 +177,7 @@ void Instructions::RType::_subu(uint32_t rs, uint32_t rt, uint32_t* rd) {
  */
 void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
     address = address << 2;
-    *pc = (address - 0x00400000) / 4;
+    *pc = ((address - 0x00400000) / 4) - 1;
 }
 
 /**
@@ -189,7 +189,7 @@ void Instructions::JType::_j(uint32_t* pc, uint32_t address) {
 void Instructions::JType::_jal(uint32_t* pc, uint32_t* ra, uint32_t address){
     address = address << 2;
     *ra = *pc + 8;
-    *pc = (address - 0x00400000) / 4;
+    *pc = ((address - 0x00400000) / 4) - 1;
 }
 
 /**
@@ -229,8 +229,8 @@ void Instructions::RType::_srl(uint32_t rt, uint32_t* rd, uint8_t shamt){
 void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
     if (rs == rt){
         int16_t relativeAddr = branchAddr & 0xFFFF;
-        printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
-        *pc = *pc + relativeAddr;
+        // printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
+        *pc = *pc + relativeAddr - 1;
     }
 }
 
@@ -244,7 +244,7 @@ void Instructions::IType::_beq(uint32_t rs, uint32_t rt, uint32_t branchAddr, ui
 void Instructions::IType::_bne(uint32_t rs, uint32_t rt, uint32_t branchAddr, uint32_t* pc) {
     if (rs != rt){
         int16_t relativeAddr = branchAddr & 0xFFFF;
-        printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
-        *pc = *pc + relativeAddr;
+        // printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
+        *pc = *pc + relativeAddr - 1;
     }
 }

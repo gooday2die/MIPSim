@@ -118,8 +118,8 @@ uint16_t Translator::translateImmediate(const string& immediateString) {
 uint32_t Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
     try{
         if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
-            uint32_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex + 1;
-            return (relativeAddress & 0x0000FFFF);
+            int16_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex;
+            return (uint32_t) (relativeAddress - (relativeAddress < 0)) & (0xFFFF); // if neg, -1 to the result.
         } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
             uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
             returnAddr = returnAddr >> 2;

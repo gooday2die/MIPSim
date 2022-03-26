@@ -59,6 +59,7 @@ void Simulator::run() {
         try {
             this->executeMachineCode(curMachineCode);
         } catch (const Syscall::Exit& ex){ // when syscall, break
+            cout << "[SYSCALL] Exit found : $v0 == 10" << endl;
             break;
         }
         catch(const exception& ex) {
