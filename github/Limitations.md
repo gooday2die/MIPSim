@@ -1,11 +1,11 @@
 ## Limitations to Implementations
-I am just a sophomore CS student and I do not have that much knowledge about MIPS or computer architecture. Thus there are some limitations to this program and this might **NOT** work as how computers operate. Those following list is that is **NOT** implemented in this program.
+I am just a sophomore CS student and I do not have that much knowledge about MIPS or computer architecture. Thus there are some limitations to this program and this might **NOT** work as how MIPS system operate. The following list below is a list of limitations of `MIPSim`.
 
 ## Machine Codes
-In this program, the machine codes are just stored as a `uint32_t`. Since MIPS32 architecture just needs 32 bits for its instructions, thus a `uint32_t` will be enough to store each machine codes. Those machine codes are stored in a `uint32_t` array that is inside class `Simulator`. Instead of them having real `address`, they have `index` since they are inside an array.
+`MIPSim` uses each MIPS instructions as `uint32_t` type. Those machine codes are stored as an array of `uint32_t` and stored in `Simulator` class. 
 
 ## PC
-`PC` is the most important feature with MIPS assembly. However in this program `PC` is implemented as a `uint32_t` variable that stores the next `index` of the machine code stored in class `Simulator` instead of `address` of next instruction.
+`PC` is the most important attribute of MIPS system. In `MIPSim`, since machine codes are an array of `uint32_t`,  `PC` directs to the next index of the array element. Also, `PC = PC + 4` rule is applied when the current instruction is over. This is not 100% correct, however for implementation, it is made this way. 
 
 ## Labels
 The most limitations located with labels. There are two types of labels supported by `MIPSim`. 
@@ -28,7 +28,7 @@ With the example above, the branch labels for following expressions would be fol
 
 - `beq $zero, $t0, near_instruction_2` : the `near_instruction_2` will be represented `+1 ` since the branch `near_instruction_2` has `+1` distance from the original. Will be represented as `0x0001`
 - `beq $t1, $t0, near_instruction_1` : the `near_instruction_1` will be represented `-2` since the branch `near_instruction_1` has `-2` distance from the original. Will be represented as `0xFFFD`
-#### Note that the PC adds +1 to the relative address. Thus the calculation between the expressions would be: `destination address - current address - 1`
+- **The relative address counts total expression counts of pseudo instruction**. This means that instructions such as `blt` is counted as `2` since it uses `2` instructions for the pseudo instruction. (`slt` and `bne`)
 
 However, using labels as immediate value is **NOT** enough to cover all addresses. For example, `bne` and `beq` instructions use labels for branch controls. However both instructions are `I type`, which uses LSB **16 bits** as its immediate value. However, since `MIPS` uses **32 bit** address system for its text section from `0x00400000` to `0x10000000`, it is **NOT** possible to cover full **32 bits** using only one single `bne` and `beq` expressions since their limitations for branching and jumping over PC is limited to maximum `0x0FFF`. For example, let's see an example below. 
 ```
@@ -51,3 +51,6 @@ con_2:
 far_away :
 	li $t2 10                  # instruction stored at 0x00500000
 ```
+
+2. **Data Section**
+Working on this...
