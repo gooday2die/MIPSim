@@ -35,6 +35,12 @@ public:
     class bareLabelException : public std::exception{
     };
 
+    class bareStringException : public std::exception{
+    };
+
+    class bareLabelDefinitionException : public std::exception{
+    };
+
     class tokenInWrongSection : public std::exception{
     };
 

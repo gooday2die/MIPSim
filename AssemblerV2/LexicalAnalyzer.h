@@ -43,7 +43,6 @@ private:
     bool isDefinedLabelToken(const string&);
     bool isDataDefinitionToken(const string&);
     bool isPseudoInstructionToken(const string&);
-    bool isStringToken(const string&);
     bool isSysCallToken(const string&);
 
     void scanLabelTokens();

@@ -173,6 +173,16 @@ void Assembler::checkGrammar() {
                 cout << ERROR_TAG << " Unknown pseudo-instruction was found  ";
                 cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
                 this->totalErrorCount++;
+            } catch (const GrammarExceptions::bareStringException& ex){
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+                cout << ERROR_TAG << " String without expression was found  ";
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
+            } catch (const GrammarExceptions::bareLabelDefinitionException& ex){
+                const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+                cout << ERROR_TAG << " Label definition was invalid  ";
+                cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+                this->totalErrorCount++;
             }
             expressionCount++;
         }

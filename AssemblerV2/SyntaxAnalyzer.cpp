@@ -74,8 +74,6 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
     switch (expressionTokens.front()){
         case tUnknown:
             throw GrammarExceptions::unknownTokenException();
-        case tSection:
-            return; // for now. Temp
         case tLabelDeclaration:
             return; // When label was found, it means that we just declared a label.
         case tRegister:
@@ -102,6 +100,11 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
             }
             break;
         }
+        case tSection: // for now just return.
+        case tSyscall:
+            return;
+        case tString:
+            throw GrammarExceptions::bareStringException();
     }
 
     while(!syntax.empty()){

@@ -9,9 +9,19 @@
 
 /**
  * A constructor member function for SemanticAnalyzer.
+ * This sets all available tokens in data section.
  */
 SemanticAnalyzer::SemanticAnalyzer() {
-    1;
+    this->previousToken = Tokens::tUnknown;
+    this->dataSectionTokens.emplace_back(Tokens::tDataDefinition);
+    this->dataSectionTokens.emplace_back(Tokens::tString);
+    this->dataSectionTokens.emplace_back(Tokens::tLabelDeclaration);
+
+    this->textSectionTokens.emplace_back(Tokens::tSyscall);
+    this->textSectionTokens.emplace_back(Tokens::tPseudoInstruction);
+    this->textSectionTokens.emplace_back(Tokens::tInstructionMnemonic);
+    this->textSectionTokens.emplace_back(Tokens::tLabelDeclaration);
+
 }
 
 /**
@@ -45,8 +55,51 @@ void SemanticAnalyzer::getSectionType(const string& sectionString) {
  * @return returns true if expression is in right place, false if not
  */
 bool SemanticAnalyzer::isExpressionInRightSection(const Tokens& token) const{
-    return (((this->sectionType == 1) && (token != Tokens::tDataDefinition))
-            || ((this->sectionType == 2) && (token == Tokens::tDataDefinition)));
+    bool result1 = any_of(this->dataSectionTokens.begin(), this->dataSectionTokens.end(), [&token](auto const &x) {
+        if (x == token) return true; return false;
+    });
+
+    bool result2 = any_of(this->textSectionTokens.begin(), this->textSectionTokens.end(), [&token](auto const &x) {
+        if (x == token) return true; return false;
+    });
+
+    return (((this->sectionType == 1) && (result2))
+            || ((this->sectionType == 2) && (result1)));
+}
+
+void SemanticAnalyzer::checkCorrectLabelDefinition(const queue<Tokens>& tokenQueue, const string& instructionString) {
+    string copiedString = instructionString;
+    queue<Tokens> copiedQueue = tokenQueue;
+    string space_delimiter = " ";
+    vector<string> words{};
+    string labelName;
+
+    size_t pos = 0;
+    while ((pos = copiedString.find(space_delimiter)) != string::npos) { // split expression with whitespace
+        words.push_back(copiedString.substr(0, pos));
+        copiedString.erase(0, pos + space_delimiter.length());
+    }
+
+    if (words.empty()) labelName = instructionString;
+    else labelName = regex_replace(words[0], std::regex(":"), "");
+
+    if(this->isDuplicateLabelName(labelName)) throw GrammarExceptions::duplicateLabelNameException(); // check if duplicate label name
+
+    if (this->sectionType == 1){ // if this was text section
+        if((copiedQueue.size() - 1) == 0) return;
+        else throw GrammarExceptions::invalidArgumentException();
+    } else{ // if this was data section
+        if(copiedQueue.size() != 3) throw GrammarExceptions::invalidArgumentException();
+        else{
+            copiedQueue.pop();
+            Tokens first = copiedQueue.front();
+            copiedQueue.pop();
+            Tokens second = copiedQueue.front();
+
+            if ((first == Tokens::tDataDefinition) && second == Tokens::tString) return;
+            else throw GrammarExceptions::invalidArgumentException();
+        }
+    }
 }
 
 /**
@@ -60,23 +113,17 @@ bool SemanticAnalyzer::isExpressionInRightSection(const Tokens& token) const{
 void SemanticAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) {
     string instructionString = curInstruction.first;
     queue<Tokens> tokenQueue = curInstruction.second;
+    Tokens currentToken = tokenQueue.front();
 
-    while (!tokenQueue.empty()){
-        Tokens currentToken = tokenQueue.front();
-
-        if (currentToken == Tokens::tSection) {
-            this->getSectionType(instructionString);
-        } else{
-            if (this->isExpressionInRightSection(currentToken)){
-                if (currentToken == Tokens::tLabelDeclaration){
-                    instructionString = regex_replace(instructionString, std::regex(":"), "");
-                    if(this->isDuplicateLabelName(instructionString)) throw GrammarExceptions::duplicateLabelNameException();
-                }
-            } else{
-                throw GrammarExceptions::tokenInWrongSection();
+    if (currentToken == Tokens::tSection) { // if this was section definition, get section info.
+        this->getSectionType(instructionString);
+    } else{ // else, do following things
+        if (this->isExpressionInRightSection(currentToken)){ // 1. check if current expression was in correct section
+            if (currentToken == Tokens::tLabelDeclaration) {
+                this->checkCorrectLabelDefinition(tokenQueue, instructionString); // 2. check if label declaration was correct
             }
+        } else{
+            throw GrammarExceptions::tokenInWrongSection();
         }
-
-        tokenQueue.pop();
     }
 }
