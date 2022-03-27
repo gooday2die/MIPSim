@@ -67,6 +67,18 @@ start # label start was used without any context
 [ERROR] Label value without expression was found  @ln 1 -> start
 ```
 
+## String without expression was found
+**Detection Phase** : Semantic Analysis
+**Detection Conditions** : When a bare string token was found without any expression
+**Error Example**:
+```
+"hello!"
+```
+**Assembler Output**:
+```
+[ERROR] String without expression was found  @ln 1 -> "hello!"
+```
+
 ## Duplicate label declaration was found
 **Detection Phase** : Semantic Analysis
 **Detection Conditions** : When there was a label with same name was declared before
