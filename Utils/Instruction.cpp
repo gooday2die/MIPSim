@@ -12,8 +12,6 @@ Instruction::Instruction(const vector<uint32_t*>& argParameters) {
     this->parameters = argParameters;
 }
 
-
-
 void addu_::execute() {
     uint32_t rs = *Instruction::parameters.at(0);
     uint32_t rt = *Instruction::parameters.at(1);
