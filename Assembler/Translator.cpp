@@ -250,15 +250,8 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
             }
         }
         this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
-
-        if (instructionMnemonic == "addu"){
-            addu_ instruction = addu_(instructionArgs);
-            Expression expression = Expression(&instruction, expressionString, machineCode);
-            return expression;
-        } else{
-            Expression expression = Expression(nullptr, "NULL", 0x00000000);
-            return expression;
-        }
+        Expression result = this->generateExpressionObject(instructionArgs, instructionMnemonic, machineCode, expressionString);
+        return result;
 
     } catch (const out_of_range& ex) {
         throw TranslatorExceptions::cannotFindInstructionMnemonicException();
@@ -429,4 +422,16 @@ vector<Expression>  Translator::translate(const queue<Tokens>& tokenQueue, const
         }
     }
     return returnVector;
+}
+
+Expression Translator::generateExpressionObject(const vector<uint32_t*> instructionArgs,
+                                                const string& instructionMnemonic, uint32_t machineCode, const string& expressionString) {
+    if (instructionMnemonic == "addu"){
+        addu_ instruction = addu_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else{
+        Expression expression = Expression(nullptr, "NULL", 0x00000000);
+        return expression;
+    }
 }

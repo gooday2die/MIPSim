@@ -205,10 +205,10 @@ void Assembler::assemble() {
     }
 }
 
+/**
+ * A member function that gets all text section expressions
+ * @return returns vector of Expression objects that has all expressions.
+ */
 vector<Expression> Assembler::getTextSectionExpressions(){
     return this->textSectionExpressions;
-}
-
-uint32_t Assembler::getTextSectionExpressionCount() {
-    return this->totalExpressionCount; /// tmp
 }

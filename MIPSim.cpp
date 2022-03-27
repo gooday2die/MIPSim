@@ -19,7 +19,7 @@ MIPSim::MIPSim(const string& argFileName) {
 void MIPSim::assemble() {
     if (this->assembler) {
         this->textSectionExpressions = this->assembler->getTextSectionExpressions();
-        this->textSectionExpressionCount = this->assembler->getTextSectionExpressionCount();
+        this->textSectionExpressionCount = this->textSectionExpressions.size();
 
         for (uint32_t i = 0 ; i < this->textSectionExpressionCount ; i++){
             printf("[0x%08x] ", (0x00400000 + 4 * i));

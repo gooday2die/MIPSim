@@ -56,7 +56,6 @@ private:
 public:
     explicit Assembler(string, uint32_t*, uint32_t*);
     vector<Expression> getTextSectionExpressions();
-    uint32_t getTextSectionExpressionCount();
 };
 
 
