@@ -1,7 +1,7 @@
 //
 // @file : Assembler.h
 // @author : Gooday2die (Isu Kim)
-// Contacts : edina00@naver.com
+// @Contacts : edina00@naver.com
 // @brief : A file that defines all attributes and member functions for class Assembler
 //
 
@@ -9,39 +9,54 @@
 #define MIPSIM_ASSEMBLER_H
 #pragma once
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "FileReader.h"
-#include "Translator.h"
-#include "../Simulator/Simulator.h"
-#include "Expression.h"
 #include "Messages.h"
-#include "GrammarChecker.h"
+#include "LexicalAnalyzer.h"
+#include "SyntaxAnalyzer.h"
+#include "SemanticAnalyzer.h"
+#include "Translator.h"
 
-#include <tuple>
+#include "../Utils/defines.h"
+#include "../Utils/Expression.h"
 
+using namespace std;
 
+/**
+ * A class that is for implementing and declaring member functions of assembler.
+ */
 class Assembler {
 private:
-    std::map<uint32_t, std::string> allExpressions;
-    std::map<std::string, uint32_t> allBranches;
-    std::map<std::string, uint8_t> registerNames;
-    std::map<uint32_t , std::string> processedExpressions;
-    uint32_t* allMachineCodes;
-    uint32_t totalErrorCount = 0;
-    uint32_t totalLineCount = 0;
-    GrammarChecker grammarChecker = GrammarChecker(&this->allBranches);
+    string fileName;
+    map<uint32_t, string> allExpressionStrings;
 
-    std::string replaceRegisterName(const std::string&);
-    void setRegisterNames();
+    uint32_t totalExpressionCount = 0;
+    uint32_t totalLabelCount = 0;
+
+    vector<Expression> textSectionExpressions;
+
+    FileReader* fileReader = nullptr;
+    LexicalAnalyzer* lexicalAnalyzer = nullptr;
+    SyntaxAnalyzer* syntaxAnalyzer = nullptr;
+    SemanticAnalyzer* semanticAnalyzer = nullptr;
+    Translator* translator = nullptr;
+
+    uint32_t totalErrorCount = 0 ;
+
+    uint32_t* registers;
+    uint32_t* pc;
+
+    void checkExpressionGrammar(const string&);
     void checkGrammar();
-    uint8_t getBranchAddress(const std::string&);
-    void getAllBranches();
-public:
-    Assembler(const char*);
-    void translateAll();
-    std::string replaceBranch(std::string);
-    static bool replaceString(std::string&, const std::string&, const std::string&);
-    uint32_t translateLine(std::string);
+    void translate();
     void assemble();
+public:
+    explicit Assembler(string, uint32_t*, uint32_t*);
+    vector<Expression> getTextSectionExpressions();
+    uint32_t getTextSectionExpressionCount();
 };
 
 

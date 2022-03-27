@@ -1,7 +1,7 @@
 //
 // @file : FileReader.h
 // @author : Gooday2die (Isu Kim)
-// Contacts : edina00@naver.com
+// @Contacts : edina00@naver.com
 // @brief : A file that defines all attributes and member functions for class FileReader
 //
 
@@ -16,19 +16,29 @@
 #include <map>
 #include <regex>
 #include <tuple>
+#include <algorithm>
 
-#include "Expression.h"
-#include "Messages.h"
-#include "AssemblerErrors.h"
+using namespace std;
 
+
+/**
+ * A class for reading, preprocessing and generating expressions
+ */
 class FileReader {
 private:
-    std::map<uint32_t, std::string> allExpressions;
-    std::ifstream fileObject;
+    map<uint32_t, string> allExpressions;
+    ifstream fileObject;
+    static string getCurrentDirectory(const string&);
+    static string preProcess(const string&);
+    static string removeTabs(const string&);
+    static string removeComments(const string&);
+    static string removeDuplicateWhitespaces(const string&);
+    static string addWhiteSpace(const string&);
+    static string replaceTabToWhitespaces(const string&);
+    static string removeCommas(const string&);
 public:
-    FileReader(const char*);
-    std::map<uint32_t, std::string> getAllExpressions();
-    static std::string getCurrentDirectory(std::string);
+    explicit FileReader(const string&);
+    map<uint32_t, string> getAllExpressions();
 };
 
 

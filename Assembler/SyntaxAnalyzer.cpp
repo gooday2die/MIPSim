@@ -39,6 +39,9 @@ SyntaxAnalyzer::SyntaxAnalyzer() {
     this->allSyntax.insert(pair<string, queue<Tokens>>("j", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tDefinedLabel})));
     this->allSyntax.insert(pair<string, queue<Tokens>>("jal", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tDefinedLabel})));
 
+    // lui can have immediate or label expression as its arguments.
+    this->allSyntax.insert(pair<string, queue<Tokens>>("lui", generateTokenQueue({Tokens::tInstructionMnemonic, Tokens::tRegister, Tokens::tImmediate})));
+
     this->allSyntax.insert(pair<string, queue<Tokens>>("move", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister})));
     this->allSyntax.insert(pair<string, queue<Tokens>>("li", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tImmediate})));
     this->allSyntax.insert(pair<string, queue<Tokens>>("blt", generateTokenQueue({Tokens::tPseudoInstruction, Tokens::tRegister, Tokens::tRegister, Tokens::tDefinedLabel})));
@@ -106,7 +109,6 @@ void SyntaxAnalyzer::analyze(const pair<string, queue<Tokens>>& curInstruction) 
         case tString:
             throw GrammarExceptions::bareStringException();
     }
-
     while(!syntax.empty()){
         Tokens syntaxToken = syntax.front();
         Tokens expressionToken = expressionTokens.front();

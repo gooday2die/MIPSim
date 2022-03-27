@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
-project(MIPSim)
+project(MIPSim2)
 
 set(CMAKE_CXX_STANDARD 14)
 
-#add_executable(MIPSim main.cpp Simulator/RegisterHandler.cpp Simulator/RegisterHandler.h Simulator/Instructions.cpp Simulator/Instructions.h Simulator/Simulator.cpp Simulator/Simulator.h Simulator/MachineCodeSimulator.cpp Simulator/MachineCodeSimulator.cpp Simulator/MachineCodeSimulator.h defines.h Assembler/Translator.cpp Assembler/Translator.h Assembler/FileReader.cpp Assembler/FileReader.h main.h Assembler/Assembler.cpp Assembler/Assembler.h Assembler/GrammarChecker.cpp Assembler/GrammarChecker.h Assembler/Expression.cpp Assembler/Expression.h Assembler/Messages.h Assembler/AssemblerErrors.h AssemblerV2/FileReader.cpp AssemblerV2/FileReader.h AssemblerV2/Section.cpp AssemblerV2/Section.h AssemblerV2/Label.cpp AssemblerV2/Label.h AssemblerV2/Assembler.cpp AssemblerV2/Assembler.h)
-add_executable(MIPSim main.cpp Simulator/RegisterHandler.cpp Simulator/RegisterHandler.h Simulator/Instructions.cpp Simulator/Instructions.h Simulator/Simulator.cpp Simulator/Simulator.h Simulator/MachineCodeSimulator.cpp Simulator/MachineCodeSimulator.cpp Simulator/MachineCodeSimulator.h defines.h AssemblerV2/FileReader.cpp AssemblerV2/FileReader.h AssemblerV2/Assembler.cpp AssemblerV2/Assembler.h AssemblerV2/LexicalAnalyzer.cpp AssemblerV2/LexicalAnalyzer.h AssemblerV2/Token.h AssemblerV2/SyntaxAnalyzer.cpp AssemblerV2/SyntaxAnalyzer.h AssemblerV2/SemanticAnalyzer.cpp AssemblerV2/SemanticAnalyzer.h AssemblerV2/Translator.cpp AssemblerV2/Translator.h)
+add_executable(MIPSim2 main.cpp Utils/Instruction.cpp Utils/Instruction.h Utils/Expression.cpp Utils/Expression.h MIPSim.cpp MIPSim.h Assembler/Assembler.cpp Assembler/Assembler.h
+        Assembler/Errors.h Assembler/FileReader.h Assembler/FileReader.cpp Assembler/LexicalAnalyzer.h Assembler/LexicalAnalyzer.cpp Assembler/Messages.h Assembler/SemanticAnalyzer.h
+        Assembler/SemanticAnalyzer.cpp Assembler/Token.h Assembler/SyntaxAnalyzer.h/ Assembler/SyntaxAnalyzer.cpp Assembler/Translator.h Assembler/Translator.cpp)

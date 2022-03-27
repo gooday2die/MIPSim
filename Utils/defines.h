@@ -1,7 +1,7 @@
 //
 // @file : defines.h
 // @author : Gooday2die (Isu Kim)
-// Contacts : edina00@naver.com
+// @Contacts : edina00@naver.com
 // @brief : A file for storing all defines
 //
 

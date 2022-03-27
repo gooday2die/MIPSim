@@ -1,7 +1,7 @@
 //
 // @file : AssemblerErrors.h
 // @author : Gooday2die (Isu Kim)
-// Contacts : edina00@naver.com
+// @Contacts : edina00@naver.com
 // @brief : A header file that defines all exception classes
 //
 

@@ -75,6 +75,7 @@ LexicalAnalyzer::LexicalAnalyzer(map<uint32_t, string> argAllExpressions) {
     this->instructionTokens.emplace_back("srl");
     this->instructionTokens.emplace_back("j");
     this->instructionTokens.emplace_back("jal");
+    this->instructionTokens.emplace_back("lui");
 
     this->dataDefinitionTokens.emplace_back(".word");
     this->dataDefinitionTokens.emplace_back(".asciiz");
@@ -246,63 +247,63 @@ pair<string, queue<Tokens>> LexicalAnalyzer::analyze(const string& expressionStr
         copied.erase(0, pos + space_delimiter.length());
     }
 
-    cout << expressionString << " ";
+    //cout << expressionString << " ";
 
     uint8_t totalQuotationCount = 0;
     for (auto const &x: words) {
         if (this->isSectionToken(x)) {
             resultQueue.push(Tokens::tSection);
-            cout << "SECTION_TOKEN ";
+      //      cout << "SECTION_TOKEN ";
         }
         else if (this->isLabelToken(x)) {
             resultQueue.push(Tokens::tLabelDeclaration);
-            cout << "LABEL_DECLARATION_TOKEN ";
+        //    cout << "LABEL_DECLARATION_TOKEN ";
         }
         else if (this->isRegisterToken(x)) {
             resultQueue.push(Tokens::tRegister);
-            cout << "REGISTER_TOKEN ";
+        //    cout << "REGISTER_TOKEN ";
         }
         else if (this->isImmediateToken(x)) {
             resultQueue.push(Tokens::tImmediate);
-            cout << "IMMEDIATE_TOKEN ";
+        //    cout << "IMMEDIATE_TOKEN ";
         }
         else if (this->isMnemonicInstructionToken(x)) {
             resultQueue.push(Tokens::tInstructionMnemonic);
-            cout << "INSTRUCTION_TOKEN ";
+        //    cout << "INSTRUCTION_TOKEN ";
         }
         else if (this->isDefinedLabelToken(x)) {
             resultQueue.push(Tokens::tDefinedLabel);
-            cout << "LABEL_TOKEN ";
+        //    cout << "LABEL_TOKEN ";
         }
         else if (this->isDataDefinitionToken(x)) {
             resultQueue.push(Tokens::tDataDefinition);
-            cout << "DATA_DEFINITION_TOKEN ";
+        //    cout << "DATA_DEFINITION_TOKEN ";
         }
         else if (this->isPseudoInstructionToken(x)){
             resultQueue.push(Tokens::tPseudoInstruction);
-            cout << "PSEUDO_INSTRUCTION_TOKEN ";
+        //    cout << "PSEUDO_INSTRUCTION_TOKEN ";
         }
         else if (this->isSysCallToken(x)){
             resultQueue.push(Tokens::tSyscall);
-            cout << "SYSCALL_TOKEN ";
+        //    cout << "SYSCALL_TOKEN ";
         }
         /// parse string token.
         else if ((totalQuotationCount == 1) || (x.c_str()[0] == '"') || (x.c_str()[x.size() - 1] == '"')){
             totalQuotationCount += count(x.begin(), x.end(), '"');
             if (totalQuotationCount == 2){
                 resultQueue.push(Tokens::tString);
-                cout << "STRING_TOKEN ";
+        //        cout << "STRING_TOKEN ";
             }
         }
         else{
             resultQueue.push(Tokens::tUnknown);
-            cout << "UNKNOWN ";
+        //    cout << "UNKNOWN ";
         }
     }
 
     result.first = words[0];
     result.second = resultQueue;
-    cout << endl;
+    //cout << endl;
     return result;
 }
 
