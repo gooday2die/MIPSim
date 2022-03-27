@@ -12,7 +12,6 @@
  * This sets all available tokens in data section.
  */
 SemanticAnalyzer::SemanticAnalyzer() {
-    this->previousToken = Tokens::tUnknown;
     this->dataSectionTokens.emplace_back(Tokens::tDataDefinition);
     this->dataSectionTokens.emplace_back(Tokens::tString);
     this->dataSectionTokens.emplace_back(Tokens::tLabelDeclaration);
@@ -67,6 +66,14 @@ bool SemanticAnalyzer::isExpressionInRightSection(const Tokens& token) const{
             || ((this->sectionType == 2) && (result1)));
 }
 
+/**
+ * A member function that checks if current label definition was correct expression.
+ * This member function checks following things.
+ * 1. If this was in text segment, check if the branch expression was correct
+ * 2. If this was in data segment, check if data definition was correct.
+ * @param tokenQueue the queue of tokens
+ * @param instructionString the string that represents instruction.
+ */
 void SemanticAnalyzer::checkCorrectLabelDefinition(const queue<Tokens>& tokenQueue, const string& instructionString) {
     string copiedString = instructionString;
     queue<Tokens> copiedQueue = tokenQueue;

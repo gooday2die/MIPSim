@@ -26,7 +26,6 @@ private:
     vector<Tokens> dataSectionTokens;
     vector<Tokens> textSectionTokens;
     uint8_t sectionType = 1; // section type defaults to 1 when not specified.
-    Tokens previousToken;
 
     void getSectionType(const string&);
     bool isExpressionInRightSection(const Tokens&) const;
