@@ -11,7 +11,7 @@
 Expression::Expression(const vector<uint32_t*>& instructionArgs, const string& argExpressionString, const string& instructionMnemonic, uint32_t argMachineCode) {
     this->expressionString = argExpressionString;
     this->machineCode = argMachineCode;
-    
+
     if (instructionMnemonic == "add"){
         this->instruction = new add_(instructionArgs);
     } else if (instructionMnemonic == "addu"){
@@ -67,8 +67,5 @@ void Expression::execute() {
 
 void Expression::print(){
     cout << "Expression : " << this->expressionString;
-    //if (this->instruction != nullptr)
-    //    for (uint32_t* x: this->instruction->parameters)
-    //        printf("%d ", *x);
     printf("-> Machine Code : 0x%08x \n", this->machineCode);
 }

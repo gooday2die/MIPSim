@@ -316,7 +316,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 tmpTokenQueue.push(Tokens::tRegister);
                 tmpTokenQueue.push(Tokens::tRegister);
 
-                Expression result = this->translateExpression(tokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
+                Expression result = this->translateExpression(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
                 returnVector.emplace_back(result);
             } else if(instruction == "li"){
                 /// li pseudo-instruction: ori $s0, $zero, immediate
@@ -326,7 +326,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 tmpTokenQueue.push(Tokens::tRegister);
                 tmpTokenQueue.push(Tokens::tImmediate);
 
-                Expression result = this->translateExpression(tokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
+                Expression result = this->translateExpression(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
                 returnVector.emplace_back(result);
             } else if(instruction == "blt"){
                 /// blt pseudo-instruction:
@@ -344,7 +344,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 tmpTokenQueue2.push(Tokens::tRegister);
                 tmpTokenQueue2.push(Tokens::tDefinedLabel);
 
-                Expression result = this->translateExpression(tokenQueue, "slt " + words[1] + " " + words[2] + " $at ");
+                Expression result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
                 returnVector.emplace_back(result);
                 result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
