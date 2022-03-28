@@ -63,7 +63,7 @@ void Assembler::translate() {
         vector<Expression> results;
         try {
              results = this->translator->translate(tokenInfo.second, x.second);
-             for (Expression y : results)
+             for (const Expression& y : results)
                  allExpressions.emplace_back(y);
         } catch (const TranslatorExceptions::cannotFindRegisterIndexException& ex){
             const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;

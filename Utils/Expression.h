@@ -23,7 +23,7 @@ private:
     Instruction* instruction;
     uint32_t machineCode;
 public:
-    Expression(Instruction*, const string&, uint32_t);
+    Expression(const vector<uint32_t*>&, const string&, const string&, uint32_t);
     void execute();
     void print();
 };

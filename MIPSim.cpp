@@ -12,8 +12,9 @@ MIPSim::MIPSim(const string& argFileName) {
     this->pc = 0;
     this->fileName = argFileName;
     this->textSectionExpressions;
-    this->assembler = new Assembler(argFileName, this->registers, &pc);
-    for (uint8_t i = 0 ; i < 32 ; i++) this->registers[i] = 0;
+    for (uint8_t i = 0 ; i < 32 ; i++) this->registers[i] = i ;
+
+    this->assembler = new Assembler(argFileName, &this->registers, &this->pc);
 }
 
 void MIPSim::assemble() {

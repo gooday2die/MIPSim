@@ -9,11 +9,9 @@
 
 
 Instruction::Instruction(const vector<uint32_t*>& argParameters) {
-    vector<uint32_t*> tmpParameters;
-    tmpParameters.reserve(argParameters.size());
-    for (auto const& x : argParameters)
-            tmpParameters.emplace_back(x);
-    this->parameters = tmpParameters;
+    for (uint8_t i = 0 ; i < argParameters.size() ; i++){
+        this->parameters.emplace_back(argParameters.at(i));
+    }
 }
 
 void add_::execute() {
@@ -173,9 +171,9 @@ void beq_::execute() {
     uint32_t branchAddr = *Instruction::parameters.at(2);
     uint32_t* pc = Instruction::parameters.at(3);
     if (rs == rt){
-        int16_t relativeAddr = branchAddr & 0xFFFF;
-        // printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
-        *pc = *pc + relativeAddr - 1;
+        int16_t reativeAddr = branchAddr & 0xFFFF;
+        // printf("NEW PC.at : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + re.ativeAddr), (re.ativeAddr), re.ativeAddr, *pc);
+        *pc = *pc + reativeAddr - 1;
     }
 }
 
@@ -185,9 +183,9 @@ void bne_::execute() {
     uint32_t branchAddr = *Instruction::parameters.at(2);
     uint32_t* pc = Instruction::parameters.at(3);
     if (rs != rt){
-        int16_t relativeAddr = branchAddr & 0xFFFF;
-        // printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
-        *pc = *pc + relativeAddr - 1;
+        int16_t reativeAddr = branchAddr & 0xFFFF;
+        // printf("NEW PC.at : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + re.ativeAddr), (re.ativeAddr), re.ativeAddr, *pc);
+        *pc = *pc + reativeAddr - 1;
     }
 }
 

@@ -22,9 +22,10 @@ using namespace std;
 class MIPSim {
 private:
     uint32_t* registers = nullptr;
+    uint32_t pc;
+
     Assembler* assembler = nullptr;
 
-    uint32_t pc;
     string fileName;
     vector<Expression> textSectionExpressions;
     uint32_t textSectionExpressionCount = 0;
