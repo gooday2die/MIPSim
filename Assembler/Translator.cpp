@@ -253,12 +253,12 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
         }
         this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
         instructionArgs.emplace_back(this->pc);
-        cout << "Expression : " << expressionString;
+        //cout << "Expression : " << expressionString;
 
-        for (auto const& x : instructionArgs){
-            printf(" ARG : %x, ", *x);
-        }
-        printf(" / Machine Code : 0x%08x\n", machineCode);
+        //for (auto const& x : instructionArgs){
+        //    printf(" ARG : %x, ", *x);
+        //}
+        //printf(" / Machine Code : 0x%08x\n", machineCode);
 
         Expression result = Expression(instructionArgs, expressionString, instructionMnemonic, machineCode);
         return result;
