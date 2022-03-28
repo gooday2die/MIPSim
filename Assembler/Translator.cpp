@@ -426,8 +426,92 @@ vector<Expression>  Translator::translate(const queue<Tokens>& tokenQueue, const
 
 Expression Translator::generateExpressionObject(const vector<uint32_t*> instructionArgs,
                                                 const string& instructionMnemonic, uint32_t machineCode, const string& expressionString) {
-    if (instructionMnemonic == "addu"){
+    if (instructionMnemonic == "add"){
+        add_ instruction = add_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "addu"){
         addu_ instruction = addu_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "and"){
+        and_ instruction = and_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "addi"){
+        addi_ instruction = addi_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "addiu"){
+        addiu_ instruction = addiu_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "andi"){
+        andi_ instruction = andi_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "nor"){
+        nor_ instruction = nor_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "or"){
+        or_ instruction = or_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "ori"){
+        ori_ instruction = ori_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "slt"){
+        slt_ instruction = slt_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "slti"){
+        slti_ instruction = slti_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "sltiu"){
+        sltiu_ instruction = sltiu_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "sltu"){
+        sltu_ instruction = sltu_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "sub") {
+        sub_ instruction = sub_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "subu"){
+        subu_ instruction = subu_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "j"){
+        j_ instruction = j_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "jal"){
+        jal_ instruction = jal_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "jr"){
+        jr_ instruction = jr_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "sll"){
+        sll_ instruction = sll_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "srl"){
+        srl_ instruction = srl_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "beq"){
+        beq_ instruction = beq_(instructionArgs);
+        Expression expression = Expression(&instruction, expressionString, machineCode);
+        return expression;
+    } else if (instructionMnemonic == "bne") {
+        bne_ instruction = bne_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else{
