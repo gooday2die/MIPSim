@@ -11,7 +11,7 @@
  * A constructor member function for class Assembler
  * @param argFileName the string object that represents file name
  */
-Assembler::Assembler(string argFileName, uint32_t* argRegisters, uint32_t* argPc) {
+Assembler::Assembler(string argFileName, uint32_t** argRegisters, uint32_t* argPc) {
     cout << "===== MIPSim Assembler Version : " << MIPSIM_VERSION << " by Gooday2die =====" << endl;
     this->fileName = move(argFileName);
     this->fileReader = new FileReader(this->fileName);

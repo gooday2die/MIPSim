@@ -20,5 +20,9 @@ void Expression::execute() {
 
 void Expression::print(){
     cout << "Expression : " << this->expressionString;
+    printf("SIZE : %d\n", this->instruction->parameters.size());
+    //for (uint32_t* x: this->instruction->parameters)
+    //    printf("%d ", *x);
+
     printf("-> Machine Code : 0x%08x \n", this->machineCode);
 }

@@ -9,7 +9,11 @@
 
 
 Instruction::Instruction(const vector<uint32_t*>& argParameters) {
-    this->parameters = argParameters;
+    vector<uint32_t*> tmpParameters;
+    tmpParameters.reserve(argParameters.size());
+    for (auto const& x : argParameters)
+            tmpParameters.emplace_back(x);
+    this->parameters = tmpParameters;
 }
 
 void add_::execute() {

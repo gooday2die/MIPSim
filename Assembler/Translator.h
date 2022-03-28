@@ -31,7 +31,7 @@ private:
     map<string, uint32_t> dataSectionLabel;
     map<string, uint32_t> textSectionLabel;
 
-    uint32_t* registers;
+    uint32_t** registers;
     uint32_t* pc;
 
     /// Pseudo instructions are going to be translated into normal instructions.
@@ -51,9 +51,9 @@ private:
     pair<uint32_t, uint32_t> translateLabel(const string&, const string&);
 
     Expression translateExpression(const queue<Tokens>&, const string&);
-    Expression generateExpressionObject(const vector<uint32_t*>, const string&, uint32_t, const string&);
+    Expression generateExpressionObject(const vector<uint32_t*>&, const string&, uint32_t, const string&);
 public:
-    Translator(uint32_t*, uint32_t*);
+    Translator(uint32_t**, uint32_t*);
     void scanLabelAddresses(const Tokens&, const string&);
     vector<Expression> translate(const queue<Tokens>&, const string&);
     void printLabels();

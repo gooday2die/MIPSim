@@ -46,7 +46,7 @@ private:
 
     uint32_t totalErrorCount = 0 ;
 
-    uint32_t* registers;
+    uint32_t** registers;
     uint32_t* pc;
 
     void checkExpressionGrammar(const string&);
@@ -54,7 +54,7 @@ private:
     void translate();
     void assemble();
 public:
-    explicit Assembler(string, uint32_t*, uint32_t*);
+    explicit Assembler(string, uint32_t**, uint32_t*);
     vector<Expression> getTextSectionExpressions();
 };
 

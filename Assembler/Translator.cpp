@@ -11,7 +11,7 @@
  * A constructor member function for class Translator.
  * This member function initializes this class by inserting all values into maps for future translation.
  */
-Translator::Translator(uint32_t* argRegisters, uint32_t* argPc) {
+Translator::Translator(uint32_t** argRegisters, uint32_t* argPc) {
     this->registers = argRegisters;
     this->pc = argPc;
 
@@ -231,7 +231,8 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
 
             if (currentToken == Tokens::tRegister) {
                 uint8_t registerValue = this->translateRegister(currentArgument);
-                instructionArgs.emplace_back(this->registers + registerValue);
+                instructionArgs.emplace_back((*this->registers) + registerValue);
+                //printf("Register : %d", this->registers[registerValue]);
                 machineCode = machineCode | (registerValue << (21 - curRegisterCount * 5));
                 curRegisterCount++;
                 //cout << "Register $" << to_string(registerValue) << " ";
@@ -251,6 +252,14 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
             }
         }
         this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
+        instructionArgs.emplace_back(this->pc);
+        cout << "Expression : " << expressionString;
+
+        for (auto const& x : instructionArgs){
+            printf(" ARG : %x, ", *x);
+        }
+        printf(" / Machine Code : 0x%08x\n", machineCode);
+
         Expression result = this->generateExpressionObject(instructionArgs, instructionMnemonic, machineCode, expressionString);
         return result;
 
@@ -414,8 +423,8 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
             throw TranslatorExceptions::unexpectedInstructionTokenTypeException();
         case tSyscall:{
             vector<uint32_t*> argVector;
-            argVector.emplace_back(this->registers + 2); // get $v0
-            argVector.emplace_back(this->registers + 4); // get $a0
+            argVector.emplace_back(*this->registers + 2); // get $v0
+            argVector.emplace_back(*this->registers + 4); // get $a0
 
             syscall_ instruction = syscall_(argVector);
             Expression expression = Expression(&instruction, "Syscall", 0x0000000C);
@@ -425,7 +434,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
     return returnVector;
 }
 
-Expression Translator::generateExpressionObject(vector<uint32_t*> instructionArgs,
+Expression Translator::generateExpressionObject(const vector<uint32_t*>& instructionArgs,
                                                 const string& instructionMnemonic, uint32_t machineCode, const string& expressionString) {
     if (instructionMnemonic == "add"){
         add_ instruction = add_(instructionArgs);
@@ -488,17 +497,14 @@ Expression Translator::generateExpressionObject(vector<uint32_t*> instructionArg
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "j"){
-        instructionArgs.emplace_back(this->pc);
         j_ instruction = j_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "jal"){
-        instructionArgs.emplace_back(this->pc);
         jal_ instruction = jal_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "jr"){
-        instructionArgs.emplace_back(this->pc);
         jr_ instruction = jr_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
@@ -511,12 +517,10 @@ Expression Translator::generateExpressionObject(vector<uint32_t*> instructionArg
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "beq"){
-        instructionArgs.emplace_back(this->pc);
         beq_ instruction = beq_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "bne") {
-        instructionArgs.emplace_back(this->pc);
         bne_ instruction = bne_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
