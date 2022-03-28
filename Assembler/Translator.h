@@ -48,7 +48,7 @@ private:
 
     uint8_t translateRegister(const string&);
     static uint16_t translateImmediate(const string&);
-    uint32_t translateLabel(const string&, const string&);
+    pair<uint32_t, uint32_t> translateLabel(const string&, const string&);
 
     Expression translateExpression(const queue<Tokens>&, const string&);
     Expression generateExpressionObject(const vector<uint32_t*>, const string&, uint32_t, const string&);

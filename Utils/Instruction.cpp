@@ -93,6 +93,13 @@ void slti_::execute() {
     uint32_t rs = *Instruction::parameters.at(0);
     uint32_t* rt = Instruction::parameters.at(1);
     uint32_t imm = *Instruction::parameters.at(2);
+    *rt = (signed int)rs < (signed int) imm;
+}
+
+void sltiu_::execute() {
+    uint32_t rs = *Instruction::parameters.at(0);
+    uint32_t* rt = Instruction::parameters.at(1);
+    uint32_t imm = *Instruction::parameters.at(2);
     *rt = rs < imm;
 }
 
@@ -123,22 +130,22 @@ void subu_::execute() {
 }
 
 void j_::execute() {
-    uint32_t* pc = Instruction::parameters.at(0);
-    uint32_t address = *Instruction::parameters.at(1);
+    uint32_t* pc = Instruction::parameters.at(1);
+    uint32_t address = *Instruction::parameters.at(0);
     *pc = address;
 }
 
 void jal_::execute() {
-    uint32_t* pc = Instruction::parameters.at(0);
-    uint32_t* ra = Instruction::parameters.at(1);
-    uint32_t address = *Instruction::parameters.at(2);
+    uint32_t* pc = Instruction::parameters.at(2);
+    uint32_t* ra = Instruction::parameters.at(0);
+    uint32_t address = *Instruction::parameters.at(1);
     *ra = *pc + 8;
     *pc = address;
 }
 
 void jr_::execute() {
-    uint32_t* pc = Instruction::parameters.at(0);
-    uint32_t rs = *Instruction::parameters.at(1);
+    uint32_t* pc = Instruction::parameters.at(1);
+    uint32_t rs = *Instruction::parameters.at(0);
     *pc = rs;
 }
 

@@ -119,19 +119,19 @@ uint16_t Translator::translateImmediate(const string& immediateString) {
  * @param labelName the string object that represents label name
  * @return returns uint16_t type of expression's index.
  */
-uint32_t Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
+pair<uint32_t, uint32_t>Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
     try{
         if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
             int16_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex;
-            return (uint32_t) (relativeAddress - 2 * (relativeAddress < 0)) & (0xFFFF); // if neg, -2 to the result.
+            return pair<uint32_t, uint32_t>(this->textSectionLabel.at(labelName), (relativeAddress - 2 * (relativeAddress < 0)) & (0xFFFF)); // if neg, -2 to the result.
         } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
             uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
             returnAddr = returnAddr >> 2;
-            return returnAddr;
+            return pair<uint32_t, uint32_t>(this->textSectionLabel.at(labelName), returnAddr);
         }
         else{
             cout << "CANNOT PROCESS LABEL " << endl;
-            return 0;
+            return pair<uint32_t, uint32_t>(0, 0);
         }
     } catch (const range_error& ex){
         throw TranslatorExceptions::cannotFindLabelNameException();
@@ -241,8 +241,9 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
                 machineCode = machineCode | (immediateValue);
                 //cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
-                uint32_t addressValue = this->translateLabel(currentArgument, instructionMnemonic);
-                instructionArgs.emplace_back(&addressValue);
+                uint32_t addressValue = this->translateLabel(currentArgument, instructionMnemonic).second;
+                uint32_t instructionIndex = this->translateLabel(currentArgument, instructionMnemonic).first;
+                instructionArgs.emplace_back(&instructionIndex);
                 machineCode = machineCode | (addressValue);
                 //printf("Address Value 0x%08x", addressValue);
             } else {
@@ -265,7 +266,7 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
  * @param expressionString the string object that represents current expression
  * @return returns uint32_t type of machine code that was translated from expression.
  */
-vector<Expression>  Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
+vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
     queue<Tokens> copiedTokenQueue = tokenQueue;
     string copiedExpressionString = expressionString;
     vector<Expression> returnVector;
@@ -424,7 +425,7 @@ vector<Expression>  Translator::translate(const queue<Tokens>& tokenQueue, const
     return returnVector;
 }
 
-Expression Translator::generateExpressionObject(const vector<uint32_t*> instructionArgs,
+Expression Translator::generateExpressionObject(vector<uint32_t*> instructionArgs,
                                                 const string& instructionMnemonic, uint32_t machineCode, const string& expressionString) {
     if (instructionMnemonic == "add"){
         add_ instruction = add_(instructionArgs);
@@ -487,14 +488,17 @@ Expression Translator::generateExpressionObject(const vector<uint32_t*> instruct
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "j"){
+        instructionArgs.emplace_back(this->pc);
         j_ instruction = j_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "jal"){
+        instructionArgs.emplace_back(this->pc);
         jal_ instruction = jal_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "jr"){
+        instructionArgs.emplace_back(this->pc);
         jr_ instruction = jr_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
@@ -507,10 +511,12 @@ Expression Translator::generateExpressionObject(const vector<uint32_t*> instruct
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "beq"){
+        instructionArgs.emplace_back(this->pc);
         beq_ instruction = beq_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
     } else if (instructionMnemonic == "bne") {
+        instructionArgs.emplace_back(this->pc);
         bne_ instruction = bne_(instructionArgs);
         Expression expression = Expression(&instruction, expressionString, machineCode);
         return expression;
