@@ -82,7 +82,103 @@ void ori_::execute() {
     *rt = rs | imm;
 }
 
+void slt_::execute() {
+    uint32_t rs = *Instruction::parameters.at(0);
+    uint32_t rt = *Instruction::parameters.at(1);
+    uint32_t* rd = Instruction::parameters.at(2);
+    *rd = (signed int)rs < (signed int)rt;
+}
 
+void slti_::execute() {
+    uint32_t rs = *Instruction::parameters.at(0);
+    uint32_t* rt = Instruction::parameters.at(1);
+    uint32_t imm = *Instruction::parameters.at(2);
+    *rt = rs < imm;
+}
+
+void sltu_::execute() {
+    uint32_t rs = *Instruction::parameters.at(0);
+    uint32_t rt = *Instruction::parameters.at(1);
+    uint32_t* rd = Instruction::parameters.at(2);
+    *rd = rs < rt;
+}
+
+void sub_::execute() {
+    uint32_t rs = *Instruction::parameters.at(0);
+    uint32_t rt = *Instruction::parameters.at(1);
+    uint32_t* rd = Instruction::parameters.at(2);
+
+    long rsVal = (signed int)rs;
+    long rtVal = (signed int)rt;
+    if ((rtVal < 0) && (rsVal > INT_MAX - rtVal))
+        throw GeneralExceptions::OverflowException();
+    else *rd = rs - rt;
+}
+
+void subu_::execute() {
+    uint32_t rs = *Instruction::parameters.at(0);
+    uint32_t rt = *Instruction::parameters.at(1);
+    uint32_t* rd = Instruction::parameters.at(2);
+    *rd = rs - rt;
+}
+
+void j_::execute() {
+    uint32_t* pc = Instruction::parameters.at(0);
+    uint32_t address = *Instruction::parameters.at(1);
+    *pc = address;
+}
+
+void jal_::execute() {
+    uint32_t* pc = Instruction::parameters.at(0);
+    uint32_t* ra = Instruction::parameters.at(1);
+    uint32_t address = *Instruction::parameters.at(2);
+    *ra = *pc + 8;
+    *pc = address;
+}
+
+void jr_::execute() {
+    uint32_t* pc = Instruction::parameters.at(0);
+    uint32_t rs = *Instruction::parameters.at(1);
+    *pc = rs;
+}
+
+void sll_::execute() {
+    uint32_t rt = *Instruction::parameters.at(0);
+    uint32_t* rd = Instruction::parameters.at(1);
+    uint32_t shamt = *Instruction::parameters.at(2);
+    *rd = rt << shamt;
+}
+
+void srl_::execute() {
+    uint32_t rt = *Instruction::parameters.at(0);
+    uint32_t* rd = Instruction::parameters.at(1);
+    uint32_t shamt = *Instruction::parameters.at(2);
+    *rd = rt >> shamt;
+}
+
+void beq_::execute() {
+    uint32_t rt = *Instruction::parameters.at(0);
+    uint32_t rs = *Instruction::parameters.at(1);
+    uint32_t branchAddr = *Instruction::parameters.at(2);
+    uint32_t* pc = Instruction::parameters.at(3);
+    if (rs == rt){
+        int16_t relativeAddr = branchAddr & 0xFFFF;
+        // printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
+        *pc = *pc + relativeAddr - 1;
+    }
+}
+
+void bne_::execute() {
+    uint32_t rt = *Instruction::parameters.at(0);
+    uint32_t rs = *Instruction::parameters.at(1);
+    uint32_t branchAddr = *Instruction::parameters.at(2);
+    uint32_t* pc = Instruction::parameters.at(3);
+    if (rs != rt){
+        int16_t relativeAddr = branchAddr & 0xFFFF;
+        // printf("NEW PC AT : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + relativeAddr), (relativeAddr), relativeAddr, *pc);
+        *pc = *pc + relativeAddr - 1;
+    }
+}
 
 void syscall_::execute() {
     uint32_t v0_val = *Instruction::parameters.at(0);
