@@ -198,12 +198,14 @@ uint16_t Translator::getLabelCount() {
 }
 
 /**
- * A member function for class Translator that translates expression string and token queue into a Expression object
+ * A member function for class Translator that translates expression string and token queue into a Expression object.
+ * This member function translates expressions with only tInstructionMnemonic. Syscall and pseudo instruction must be
+ * translated using translate member function.
  * @param tokenQueue the queue of tokens for this expression
  * @param expressionString the string object that represents expression
  * @return returns Expression object that represents current expression.
  */
-Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
+Expression Translator::translateNormalExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
     string copiedExpressionString = expressionString;
     queue<Tokens> copiedTokenQueue = tokenQueue;
     vector<uint32_t*> instructionArgs;
@@ -261,14 +263,154 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
 }
 
 /**
- * A member function for class Translator that translates the current expression with tokens into machine code
+ * A member function for class Translator that translates pseudo instructions into normal expressions.
+ * @param tokenQueue the queue of tokens
+ * @param expressionString the string object that represents expression.
+ * @return returns a vector of Expressions that corresponds to pseudo instructions translated into normal expressions.
+ */
+vector<Expression> Translator::translatePseudoInstruction(const queue<Tokens>& tokenQueue, const string& expressionString) {
+    string space_delimiter = " ";
+    vector<string> words{};
+    vector<Expression> returnVector;
+    string copiedExpressionString = expressionString;
+    size_t pos;
+
+    while ((pos = copiedExpressionString.find(space_delimiter)) != string::npos) { // split expression with whitespace
+        words.push_back(copiedExpressionString.substr(0, pos));
+        copiedExpressionString.erase(0, pos + space_delimiter.length());
+    }
+    if (words[0] == "move") {
+        /// move pseudo-instruction: addu $t0, $zero, $s0
+        queue<Tokens> tmpTokenQueue;
+        tmpTokenQueue.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue.push(Tokens::tRegister);
+        tmpTokenQueue.push(Tokens::tRegister);
+        tmpTokenQueue.push(Tokens::tRegister);
+
+        Expression result = this->translateNormalExpression(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
+        returnVector.emplace_back(result);
+    } else if(words[0] == "li") {
+        /// li pseudo-instruction: ori $s0, $zero, immediate
+        queue<Tokens> tmpTokenQueue;
+        tmpTokenQueue.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue.push(Tokens::tRegister);
+        tmpTokenQueue.push(Tokens::tRegister);
+        tmpTokenQueue.push(Tokens::tImmediate);
+
+        Expression result = this->translateNormalExpression(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
+        returnVector.emplace_back(result);
+    } else if(words[0] == "blt") {
+        /// blt pseudo-instruction:
+        /// slt $t0, $t1, $at
+        /// bne $at, $zero, branch
+        queue<Tokens> tmpTokenQueue1;
+        queue<Tokens> tmpTokenQueue2;
+        tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+
+        tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+        Expression result = this->translateNormalExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
+        returnVector.emplace_back(result);
+        result = this->translateNormalExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
+        returnVector.emplace_back(result);
+    } else if(words[0] == "ble") {
+        /// ble pseudo-instruction:
+        /// slt $t1, $t0, $at
+        /// beq $at, $zero, branch
+        queue<Tokens> tmpTokenQueue1;
+        queue<Tokens> tmpTokenQueue2;
+        tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+
+        tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+        Expression result = this->translateNormalExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
+        returnVector.emplace_back(result);
+        result = this->translateNormalExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
+        returnVector.emplace_back(result);
+    } else if(words[0] == "bgt") {
+        /// bgt pseudo-instruction:
+        /// slt $t1, $t0, $at
+        /// bne $at, $zero, branch
+        queue<Tokens> tmpTokenQueue1;
+        queue<Tokens> tmpTokenQueue2;
+        tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+
+        tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+        Expression result = this->translateNormalExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
+        returnVector.emplace_back(result);
+        result = this->translateNormalExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
+        returnVector.emplace_back(result);
+    } else if(words[0] == "bge") {
+        /// bge pseudo-instruction:
+        /// slt $t1, $t0, $at
+        /// beq $at, $zero, branch
+        queue<Tokens> tmpTokenQueue1;
+        queue<Tokens> tmpTokenQueue2;
+        tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+        tmpTokenQueue1.push(Tokens::tRegister);
+
+        tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tRegister);
+        tmpTokenQueue2.push(Tokens::tDefinedLabel);
+
+        Expression result = this->translateNormalExpression(tmpTokenQueue1,
+                                                            "slt " + words[1] + " " + words[2] + " $at ");
+        returnVector.emplace_back(result);
+        result = this->translateNormalExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
+        returnVector.emplace_back(result);
+    } else {
+        throw TranslatorExceptions::unknownPseudoInstruction();
+    }
+    return returnVector;
+}
+
+/**
+ * A member function for class Translator that translates syscall expressions
+ * @param tokenQueue the queue of tokens
+ * @param expressionString the string that represent expression
+ * @return returns Expression object that represents syscall.
+ */
+Expression Translator::translateSyscall(const queue<Tokens>& tokenQueue, const string& expressionString) {
+    vector<uint32_t*> argVector;
+    argVector.emplace_back(*this->registers + 2); // get $v0
+    argVector.emplace_back(*this->registers + 4); // get $a0
+
+    syscall_ instruction = syscall_(argVector);
+    Expression expression = Expression(argVector, "syscall", "syscall", 0x0000000C);
+    return expression;
+}
+
+/**
+ * A member function for class Translator that translates each expression and expression strings into vector of expressions.
+ * This member function returns vector of expressions since some pseudo instructions need multiple instructions.
  * @param tokenQueue queue of tokens
  * @param expressionString the string object that represents current expression
- * @return returns uint32_t type of machine code that was translated from expression.
+ * @return returns vector of Expression objects for current expression.
  */
 vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
     queue<Tokens> copiedTokenQueue = tokenQueue;
-    string copiedExpressionString = expressionString;
     vector<Expression> returnVector;
 
     Tokens instructionToken = copiedTokenQueue.front();
@@ -284,124 +426,14 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
             break;
         }
         case tInstructionMnemonic:{ // when this was an instruction mnemonic then process as it should be
-            returnVector.emplace_back(this->translateExpression(tokenQueue, expressionString));
+            returnVector.emplace_back(this->translateNormalExpression(tokenQueue, expressionString));
             break;
         }
         case tPseudoInstruction: {
-            string space_delimiter = " ";
-            vector<string> words{};
-            vector<string> translatedPseudoInstruction;
-
-            size_t pos;
-            while ((pos = copiedExpressionString.find(space_delimiter)) != string::npos) { // split expression with whitespace
-                words.push_back(copiedExpressionString.substr(0, pos));
-                copiedExpressionString.erase(0, pos + space_delimiter.length());
-            }
-            string instruction = words[0];
-            if (instruction == "move") {
-                /// move pseudo-instruction: addu $t0, $zero, $s0
-                queue<Tokens> tmpTokenQueue;
-                tmpTokenQueue.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue.push(Tokens::tRegister);
-                tmpTokenQueue.push(Tokens::tRegister);
-                tmpTokenQueue.push(Tokens::tRegister);
-
-                Expression result = this->translateExpression(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
-                returnVector.emplace_back(result);
-            } else if(instruction == "li") {
-                /// li pseudo-instruction: ori $s0, $zero, immediate
-                queue<Tokens> tmpTokenQueue;
-                tmpTokenQueue.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue.push(Tokens::tRegister);
-                tmpTokenQueue.push(Tokens::tRegister);
-                tmpTokenQueue.push(Tokens::tImmediate);
-
-                Expression result = this->translateExpression(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
-                returnVector.emplace_back(result);
-            } else if(instruction == "blt") {
-                /// blt pseudo-instruction:
-                /// slt $t0, $t1, $at
-                /// bne $at, $zero, branch
-                queue<Tokens> tmpTokenQueue1;
-                queue<Tokens> tmpTokenQueue2;
-                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-
-                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tDefinedLabel);
-
-                Expression result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
-                returnVector.emplace_back(result);
-                result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
-                returnVector.emplace_back(result);
-
-            } else if(instruction == "ble") {
-                /// ble pseudo-instruction:
-                /// slt $t1, $t0, $at
-                /// beq $at, $zero, branch
-                queue<Tokens> tmpTokenQueue1;
-                queue<Tokens> tmpTokenQueue2;
-                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-
-                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tDefinedLabel);
-
-                Expression result = this->translateExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
-                returnVector.emplace_back(result);
-                result = this->translateExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
-                returnVector.emplace_back(result);
-
-            } else if(instruction == "bgt") {
-                /// bgt pseudo-instruction:
-                /// slt $t1, $t0, $at
-                /// bne $at, $zero, branch
-                queue<Tokens> tmpTokenQueue1;
-                queue<Tokens> tmpTokenQueue2;
-                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-
-                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tDefinedLabel);
-
-                Expression result = this->translateExpression(tmpTokenQueue1, "slt " + words[2] + " " + words[1] + " $at ");
-                returnVector.emplace_back(result);
-                result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
-                returnVector.emplace_back(result);
-
-            } else if(instruction == "bge") {
-                /// bge pseudo-instruction:
-                /// slt $t1, $t0, $at
-                /// beq $at, $zero, branch
-                queue<Tokens> tmpTokenQueue1;
-                queue<Tokens> tmpTokenQueue2;
-                tmpTokenQueue1.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-                tmpTokenQueue1.push(Tokens::tRegister);
-
-                tmpTokenQueue2.push(Tokens::tInstructionMnemonic);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tRegister);
-                tmpTokenQueue2.push(Tokens::tDefinedLabel);
-
-                Expression result = this->translateExpression(tmpTokenQueue1, "slt " + words[1] + " " + words[2] + " $at ");
-                returnVector.emplace_back(result);
-                result = this->translateExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
-                returnVector.emplace_back(result);
-            }
+            return this->translatePseudoInstruction(tokenQueue, expressionString);
+        }
+        case tSyscall:{
+            returnVector.emplace_back(this->translateSyscall(tokenQueue, expressionString));
             break;
         }
         case tUnknown:
@@ -411,15 +443,6 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
         case tString:
         case tImmediate:
             throw TranslatorExceptions::unexpectedInstructionTokenTypeException();
-        case tSyscall:{
-            vector<uint32_t*> argVector;
-            argVector.emplace_back(*this->registers + 2); // get $v0
-            argVector.emplace_back(*this->registers + 4); // get $a0
-
-            syscall_ instruction = syscall_(argVector);
-            Expression expression = Expression(argVector, "Syscall", "Syscall", 0x0000000C);
-            returnVector.emplace_back(expression);
-        }
     }
     return returnVector;
 }

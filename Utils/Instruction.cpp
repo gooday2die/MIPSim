@@ -9,8 +9,8 @@
 
 
 Instruction::Instruction(const vector<uint32_t*>& argParameters) {
-    for (uint8_t i = 0 ; i < argParameters.size() ; i++){
-        this->parameters.emplace_back(argParameters.at(i));
+    for (auto argParameter : argParameters){
+        this->parameters.emplace_back(argParameter);
     }
 }
 

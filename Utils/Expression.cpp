@@ -56,6 +56,8 @@ Expression::Expression(const vector<uint32_t*>& instructionArgs, const string& a
         this->instruction = new beq_(instructionArgs);
     } else if (instructionMnemonic == "bne") {
         this->instruction = new bne_(instructionArgs);
+    } else if (instructionMnemonic == "syscall") {
+        this->instruction = new syscall_(instructionArgs);
     } else{
         this->instruction = nullptr;
     }

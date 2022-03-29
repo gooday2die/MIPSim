@@ -48,7 +48,9 @@ private:
     static uint16_t translateImmediate(const string&);
     pair<uint32_t, uint32_t> translateLabel(const string&, const string&);
 
-    Expression translateExpression(const queue<Tokens>&, const string&);
+    Expression translateNormalExpression(const queue<Tokens>&, const string&);
+    vector<Expression> translatePseudoInstruction(const queue<Tokens>&, const string&);
+    Expression translateSyscall(const queue<Tokens>&, const string&);
 
 public:
     Translator(uint32_t**, uint32_t*);

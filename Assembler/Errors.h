@@ -74,6 +74,8 @@ public:
     };
     class cannotFindLabelNameException : public std::exception{
     };
+    class unknownPseudoInstruction : public std::exception{
+    };
 };
 
 /**
