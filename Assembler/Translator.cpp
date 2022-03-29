@@ -87,14 +87,14 @@ Translator::Translator(uint32_t** argRegisters, uint32_t* argPc) {
  */
 uint8_t Translator::translateRegister(const string& registerString) {
     string copied = registerString;
-    copied = regex_replace(copied, regex("\\$"), ""); // need to have \\$ as regex since $ is a regex
+    copied = regex_replace(copied, regex("\\$"), "");
     uint8_t registerIndex;
     try{
         registerIndex = stoi(copied);
-    } catch (const invalid_argument& ex){
+    } catch (const invalid_argument& ex) {
         try{
             registerIndex = this->registerMnemonics.at(copied);
-        } catch (const out_of_range& ex){
+        } catch (const out_of_range& ex) {
             throw TranslatorExceptions::cannotFindRegisterIndexException();
         }
     }
@@ -109,31 +109,33 @@ uint8_t Translator::translateRegister(const string& registerString) {
 uint16_t Translator::translateImmediate(const string& immediateString) {
     try{
         return stoi(immediateString);
-    } catch (const invalid_argument& ex){
+    } catch (const invalid_argument& ex) {
         throw TranslatorExceptions::cannotTranslateImmediateException();
     }
 }
 
 /**
- * A member function that translates label into address
+ * A member function for class Translator that translates label string into address value.
+ * This member function returns a pair of two uint32_t addresses that represent the address of label.
+ * pair<uint32_t, uint32_t>(Index of instruction, relative address or shifted address for jumps and bne operations)
  * @param labelName the string object that represents label name
- * @return returns uint16_t type of expression's index.
+ * @return return pair of uint32_t that represent addresses.
  */
 pair<uint32_t, uint32_t>Translator::translateLabel(const string& labelName, const string& instructionMnemonic) {
     try{
-        if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")){
+        if ((instructionMnemonic == "beq") || (instructionMnemonic == "bne")) {
             int16_t relativeAddress = this->textSectionLabel.at(labelName) - this->curTextSectionExpressionIndex;
-            return pair<uint32_t, uint32_t>(this->textSectionLabel.at(labelName), (relativeAddress - 2 * (relativeAddress < 0)) & (0xFFFF)); // if neg, -2 to the result.
-        } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")){
+            return {this->textSectionLabel.at(labelName), (relativeAddress - 2 * (relativeAddress < 0)) & (0xFFFF)}; // if neg, -2 to the result.
+        } else if ((instructionMnemonic == "j") || (instructionMnemonic == "jal")) {
             uint32_t returnAddr = 0x00400000 + (4 * this->textSectionLabel.at(labelName));
             returnAddr = returnAddr >> 2;
-            return pair<uint32_t, uint32_t>(this->textSectionLabel.at(labelName), returnAddr);
+            return {this->textSectionLabel.at(labelName), returnAddr};
         }
         else{
             cout << "CANNOT PROCESS LABEL " << endl;
-            return pair<uint32_t, uint32_t>(0, 0);
+            return {0, 0};
         }
-    } catch (const range_error& ex){
+    } catch (const range_error& ex) {
         throw TranslatorExceptions::cannotFindLabelNameException();
     }
 }
@@ -154,7 +156,7 @@ void Translator::printLabels() {
  * @param expressionString the string object that represents current expression.
  */
 void Translator::scanLabelAddresses(const Tokens& token, const string& expressionString) {
-    switch(token){
+    switch(token) {
         case tSection: {
             if ("text." == expressionString) this->currentSectionType = 1;
             else if ("data." == expressionString) this->currentSectionType = 2;
@@ -163,27 +165,26 @@ void Translator::scanLabelAddresses(const Tokens& token, const string& expressio
         case tLabelDeclaration:{
             string labelName = regex_replace(expressionString, regex(":"), "");
             if (this->currentSectionType == 1)
-                this->textSectionLabel.insert(pair<string, uint32_t>(labelName, this->textSectionExpressionCount));
+                this->textSectionLabel.insert({labelName, this->textSectionExpressionCount});
             else
-                this->dataSectionLabel.insert(pair<string, uint32_t>(labelName, this->dataSectionExpressionCount));
+                this->dataSectionLabel.insert({labelName, this->dataSectionExpressionCount});
             break;
         }
         case tInstructionMnemonic:
+        case tSyscall:
             textSectionExpressionCount++;
             break;
         case tDataDefinition:
             dataSectionExpressionCount++;
             break;
         case tPseudoInstruction:
-            textSectionExpressionCount = textSectionExpressionCount + this->pseudoInstructionExpressionCounts.at(expressionString);
-            break;
-        case tSyscall:
-            textSectionExpressionCount++;
+            textSectionExpressionCount += this->pseudoInstructionExpressionCounts.at(expressionString);
             break;
         case tUnknown:
         case tRegister:
         case tImmediate:
         case tDefinedLabel:
+        case tString:
             break;
     }
 }
@@ -197,10 +198,10 @@ uint16_t Translator::getLabelCount() {
 }
 
 /**
- * A member function for class Translator that translates expression into machine codes.
- * @param tokenQueue the queue of tokens
+ * A member function for class Translator that translates expression string and token queue into a Expression object
+ * @param tokenQueue the queue of tokens for this expression
  * @param expressionString the string object that represents expression
- * @return returns uint32_t type machine code.
+ * @return returns Expression object that represents current expression.
  */
 Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, const string& expressionString) {
     string copiedExpressionString = expressionString;
@@ -219,16 +220,15 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
     string instructionMnemonic = words[0]; // parse instruction mnemonic
     try {
         machineCode = this->instructionMnemonics.at(instructionMnemonic);
-        uint8_t nthArgument = 1;
-        uint8_t curRegisterCount = 0;
+        uint8_t curArgumentCount = 1; // for index of current argument
+        uint8_t curRegisterCount = 0; // for index of current register
         copiedTokenQueue.pop();
 
         while (!copiedTokenQueue.empty()) { // pop and translate each argument strings.
             Tokens currentToken = copiedTokenQueue.front();
-            string currentArgument = words[nthArgument];
+            string currentArgument = words[curArgumentCount];
             copiedTokenQueue.pop();
-            nthArgument++;
-
+            curArgumentCount++;
             if (currentToken == Tokens::tRegister) {
                 uint8_t registerValue = this->translateRegister(currentArgument);
                 instructionArgs.emplace_back((*this->registers) + registerValue);
@@ -253,20 +253,11 @@ Expression Translator::translateExpression(const queue<Tokens>& tokenQueue, cons
         }
         this->curTextSectionExpressionIndex = this->curTextSectionExpressionIndex + 1;
         instructionArgs.emplace_back(this->pc);
-        //cout << "Expression : " << expressionString;
-
-        //for (auto const& x : instructionArgs){
-        //    printf(" ARG : %x, ", *x);
-        //}
-        //printf(" / Machine Code : 0x%08x\n", machineCode);
-
         Expression result = Expression(instructionArgs, expressionString, instructionMnemonic, machineCode);
         return result;
-
     } catch (const out_of_range& ex) {
         throw TranslatorExceptions::cannotFindInstructionMnemonicException();
     }
-    //cout << endl;
 }
 
 /**
@@ -306,9 +297,8 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 words.push_back(copiedExpressionString.substr(0, pos));
                 copiedExpressionString.erase(0, pos + space_delimiter.length());
             }
-
             string instruction = words[0];
-            if (instruction == "move"){
+            if (instruction == "move") {
                 /// move pseudo-instruction: addu $t0, $zero, $s0
                 queue<Tokens> tmpTokenQueue;
                 tmpTokenQueue.push(Tokens::tInstructionMnemonic);
@@ -318,7 +308,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
 
                 Expression result = this->translateExpression(tmpTokenQueue, "addu " + words[1] + " $0 " + words[2] + " ");
                 returnVector.emplace_back(result);
-            } else if(instruction == "li"){
+            } else if(instruction == "li") {
                 /// li pseudo-instruction: ori $s0, $zero, immediate
                 queue<Tokens> tmpTokenQueue;
                 tmpTokenQueue.push(Tokens::tInstructionMnemonic);
@@ -328,7 +318,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
 
                 Expression result = this->translateExpression(tmpTokenQueue, "ori $0 " + words[1] + " " + words[2] + " ");
                 returnVector.emplace_back(result);
-            } else if(instruction == "blt"){
+            } else if(instruction == "blt") {
                 /// blt pseudo-instruction:
                 /// slt $t0, $t1, $at
                 /// bne $at, $zero, branch
@@ -349,7 +339,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
 
-            } else if(instruction == "ble"){
+            } else if(instruction == "ble") {
                 /// ble pseudo-instruction:
                 /// slt $t1, $t0, $at
                 /// beq $at, $zero, branch
@@ -370,7 +360,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 result = this->translateExpression(tmpTokenQueue2, "beq $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
 
-            } else if(instruction == "bgt"){
+            } else if(instruction == "bgt") {
                 /// bgt pseudo-instruction:
                 /// slt $t1, $t0, $at
                 /// bne $at, $zero, branch
@@ -391,7 +381,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
                 result = this->translateExpression(tmpTokenQueue2, "bne $at $zero " + words[3] + " ");
                 returnVector.emplace_back(result);
 
-            } else if(instruction == "bge"){
+            } else if(instruction == "bge") {
                 /// bge pseudo-instruction:
                 /// slt $t1, $t0, $at
                 /// beq $at, $zero, branch
@@ -418,6 +408,7 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
         case tDefinedLabel:
         case tDataDefinition:
         case tRegister:
+        case tString:
         case tImmediate:
             throw TranslatorExceptions::unexpectedInstructionTokenTypeException();
         case tSyscall:{

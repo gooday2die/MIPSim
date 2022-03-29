@@ -25,7 +25,6 @@ using namespace std;
 
 class Translator {
 private:
-    map<string, uint32_t> labelAddresses;
     map<string, uint32_t> registerMnemonics;
     map<string, uint32_t> instructionMnemonics;
     map<string, uint32_t> dataSectionLabel;
@@ -40,7 +39,6 @@ private:
     map<string, uint8_t> pseudoInstructionExpressionCounts;
 
     uint8_t currentSectionType = 1; // 1 text, 2 data. Defaults to text
-
     uint32_t dataSectionExpressionCount = 0;
     uint32_t textSectionExpressionCount = 0;
 
@@ -51,7 +49,7 @@ private:
     pair<uint32_t, uint32_t> translateLabel(const string&, const string&);
 
     Expression translateExpression(const queue<Tokens>&, const string&);
-    Expression generateExpressionObject(const vector<uint32_t*>&, const string&, uint32_t, const string&);
+
 public:
     Translator(uint32_t**, uint32_t*);
     void scanLabelAddresses(const Tokens&, const string&);
