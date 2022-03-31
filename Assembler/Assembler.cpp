@@ -101,7 +101,7 @@ void Assembler::translate() {
 
     uint32_t curPos = 0;
     this->textSectionExpressions = allExpressions;
-    this->translator->printLabels();
+    //this->translator->printLabels();
 
     this->totalExpressionCount = allExpressions.size();
     this->totalLabelCount = this->translator->getLabelCount();

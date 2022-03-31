@@ -7,6 +7,10 @@
 
 #include "MIPSim.h"
 
+/**
+ * A constructor member function for class MIPSim
+ * @param argFileName the string object that represents file name and directory
+ */
 MIPSim::MIPSim(const string& argFileName) {
     this->registers = (uint32_t*) malloc(sizeof(uint32_t) * 32);
     this->pc = 0;
@@ -17,6 +21,10 @@ MIPSim::MIPSim(const string& argFileName) {
     this->assembler = new Assembler(argFileName, &this->registers, &this->pc);
 }
 
+/**
+ * A member function for class MIPSim that assembles all the expressions.
+ * This member function prints out the result as well.
+ */
 void MIPSim::assemble() {
     if (this->assembler) {
         this->textSectionExpressions = this->assembler->getTextSectionExpressions();

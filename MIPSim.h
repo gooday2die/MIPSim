@@ -19,6 +19,9 @@
 
 using namespace std;
 
+/**
+ * A class for MIPSim
+ */
 class MIPSim {
 private:
     uint32_t* registers = nullptr;
