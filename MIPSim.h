@@ -29,7 +29,6 @@ private:
 
     Assembler* assembler = nullptr;
 
-    string fileName;
     vector<Expression> textSectionExpressions;
     uint32_t textSectionExpressionCount = 0;
 

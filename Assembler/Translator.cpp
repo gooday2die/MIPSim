@@ -409,7 +409,7 @@ Expression Translator::translateSyscall(const queue<Tokens>& tokenQueue, const s
  * @param expressionString the string object that represents current expression
  * @return returns vector of Expression objects for current expression.
  */
-vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
+pair<uint8_t, vector<Expression>> Translator::translate(const queue<Tokens>& tokenQueue, const string& expressionString) {
     queue<Tokens> copiedTokenQueue = tokenQueue;
     vector<Expression> returnVector;
 
@@ -423,18 +423,19 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
             break;
         }
         case tLabelDeclaration:{ // we have already set all label's addresses using scanLabelAddresses. So skip
+            return {1, returnVector};
             break;
         }
         case tInstructionMnemonic:{ // when this was an instruction mnemonic then process as it should be
             returnVector.emplace_back(this->translateNormalExpression(tokenQueue, expressionString));
-            break;
+            return {1, returnVector};
         }
         case tPseudoInstruction: {
-            return this->translatePseudoInstruction(tokenQueue, expressionString);
+            return {1, this->translatePseudoInstruction(tokenQueue, expressionString)};
         }
         case tSyscall:{
             returnVector.emplace_back(this->translateSyscall(tokenQueue, expressionString));
-            break;
+            return {1, returnVector};
         }
         case tUnknown:
         case tDefinedLabel:
@@ -444,5 +445,5 @@ vector<Expression> Translator::translate(const queue<Tokens>& tokenQueue, const 
         case tImmediate:
             throw TranslatorExceptions::unexpectedInstructionTokenTypeException();
     }
-    return returnVector;
+    return {-1, returnVector};
 }

@@ -41,7 +41,6 @@ void Assembler::checkExpressionGrammar(const string& expressionString){
  * When it is done translating, this will automatically load machine codes into allMachineCodes attribute.
  */
 void Assembler::translate() {
-    vector<Expression> allExpressions;
     for (auto const& x: this->allExpressionStrings){
         string space_delimiter = " ";
         vector<string> words{};
@@ -52,7 +51,6 @@ void Assembler::translate() {
             words.push_back(copied.substr(0, pos));
             copied.erase(0, pos + space_delimiter.length());
         }
-
         queue<Tokens> tokenQueue = this->lexicalAnalyzer->analyze(x.second).second;
         this->translator->scanLabelAddresses(tokenQueue.front(), words[0]);
     }
@@ -60,11 +58,20 @@ void Assembler::translate() {
     uint32_t lineCount = 0;
     for (auto const& x: this->allExpressionStrings){
         pair<string, queue<Tokens>> tokenInfo = this->lexicalAnalyzer->analyze(x.second);
-        vector<Expression> results;
+        pair<uint8_t, vector<Expression>> results;
         try {
              results = this->translator->translate(tokenInfo.second, x.second);
-             for (const Expression& y : results)
-                 allExpressions.emplace_back(y);
+             vector<Expression> expressions = results.second;
+             uint8_t sectionType = results.first;
+             if (sectionType == 1) {
+                 for (const Expression& y : expressions)
+                     this->textSectionExpressions.emplace_back(y);
+             } else if (sectionType == 2){
+                 for (const Expression& y : expressions)
+                     this->dataSectionExpressions.emplace_back(y);
+             } else {
+                 throw TranslatorExceptions::unknownSection();
+             }
         } catch (const TranslatorExceptions::cannotFindRegisterIndexException& ex){
             const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
             cout << TRANSLATOR_ERROR_TAG << " Cannot find register ";
@@ -95,15 +102,15 @@ void Assembler::translate() {
             cout << TRANSLATOR_ERROR_TAG << " Cannot find label name ";
             cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
             this->totalErrorCount++;
+        } catch (const TranslatorExceptions::unknownSection& ex){
+            const string& errorExpression = this->allExpressionStrings.find(lineCount)->second;
+            cout << TRANSLATOR_ERROR_TAG << " Unknown section type ";
+            cout << "@ln " << to_string(lineCount) << " -> " << ERROR_EXPRESSION << std::endl;
+            this->totalErrorCount++;
         }
         lineCount++;
     }
-
-    uint32_t curPos = 0;
-    this->textSectionExpressions = allExpressions;
-    //this->translator->printLabels();
-
-    this->totalExpressionCount = allExpressions.size();
+    this->totalExpressionCount = this->dataSectionExpressions.size() + this->textSectionExpressions.size();
     this->totalLabelCount = this->translator->getLabelCount();
 }
 
@@ -207,8 +214,16 @@ void Assembler::assemble() {
 
 /**
  * A member function that gets all text section expressions
- * @return returns vector of Expression objects that has all expressions.
+ * @return returns vector of Expression objects that has all text section expressions.
  */
 vector<Expression> Assembler::getTextSectionExpressions(){
     return this->textSectionExpressions;
+}
+
+/**
+ * A member function that gets all data section expressions
+ * @return returns vector of Expression objects that has all data section expressions.
+ */
+vector<Expression> Assembler::getDataSectionExpressions(){
+    return this->dataSectionExpressions;
 }

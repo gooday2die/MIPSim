@@ -37,6 +37,7 @@ private:
     uint32_t totalLabelCount = 0;
 
     vector<Expression> textSectionExpressions;
+    vector<Expression> dataSectionExpressions;
 
     FileReader* fileReader = nullptr;
     LexicalAnalyzer* lexicalAnalyzer = nullptr;
@@ -56,6 +57,7 @@ private:
 public:
     explicit Assembler(string, uint32_t**, uint32_t*);
     vector<Expression> getTextSectionExpressions();
+    vector<Expression> getDataSectionExpressions();
 };
 
 

@@ -76,6 +76,8 @@ public:
     };
     class unknownPseudoInstruction : public std::exception{
     };
+    class unknownSection : public std::exception{
+    };
 };
 
 /**

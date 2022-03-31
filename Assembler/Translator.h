@@ -55,7 +55,7 @@ private:
 public:
     Translator(uint32_t**, uint32_t*);
     void scanLabelAddresses(const Tokens&, const string&);
-    vector<Expression> translate(const queue<Tokens>&, const string&);
+    pair<uint8_t, vector<Expression>> translate(const queue<Tokens>&, const string&);
     void printLabels();
     uint16_t getLabelCount();
 };

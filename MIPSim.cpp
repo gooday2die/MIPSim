@@ -14,7 +14,6 @@
 MIPSim::MIPSim(const string& argFileName) {
     this->registers = (uint32_t*) malloc(sizeof(uint32_t) * 32);
     this->pc = 0;
-    this->fileName = argFileName;
     this->textSectionExpressions;
     for (uint8_t i = 0 ; i < 32 ; i++) this->registers[i] = i ;
 
