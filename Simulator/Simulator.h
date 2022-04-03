@@ -14,11 +14,19 @@
 #include <vector>
 
 #include "../Utils/Expression.h"
+#include "../Utils/Signals.h"
+
+using namespace std;
 
 class Simulator {
 private:
     vector<Expression> textSectionExpressions;
-    
+    uint32_t** registers = nullptr;
+    uint32_t* pc;
+
+public:
+    Simulator(uint32_t**, uint32_t*, const vector<Expression>&);
+    void run();
 };
 
 

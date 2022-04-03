@@ -2,7 +2,7 @@
 // @file : MIPSim.h
 // @author : Gooday2die (Isu Kim)
 // @Contacts : edina00@naver.com
-// @brief : 
+// @brief :
 // 
 
 #ifndef MIPSIM2_MIPSIM_H
@@ -16,6 +16,7 @@
 
 #include "./Utils/Expression.h"
 #include "./Assembler/Assembler.h"
+#include "./Simulator/Simulator.h"
 
 using namespace std;
 
@@ -28,6 +29,7 @@ private:
     uint32_t pc;
 
     Assembler* assembler = nullptr;
+    Simulator* simulator = nullptr;
 
     vector<Expression> textSectionExpressions;
     uint32_t textSectionExpressionCount = 0;
@@ -35,6 +37,8 @@ private:
 public:
     explicit MIPSim(const string&);
     void assemble();
+    void simulate();
+    void printRegisters();
 };
 
 

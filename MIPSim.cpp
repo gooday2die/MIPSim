@@ -14,8 +14,7 @@
 MIPSim::MIPSim(const string& argFileName) {
     this->registers = (uint32_t*) malloc(sizeof(uint32_t) * 32);
     this->pc = 0;
-    this->textSectionExpressions;
-    for (uint8_t i = 0 ; i < 32 ; i++) this->registers[i] = i ;
+    for (uint8_t i = 0 ; i < 32 ; i++) this->registers[i] = 0;
 
     this->assembler = new Assembler(argFileName, &this->registers, &this->pc);
 }
@@ -33,5 +32,23 @@ void MIPSim::assemble() {
             printf("[0x%08x] ", (0x00400000 + 4 * i));
             this->textSectionExpressions.at(i).print();
         }
+    }
+}
+
+/**
+ * A member function for class MIPSim that simulates all expressions.
+ */
+void MIPSim::simulate() {
+    this->simulator = new Simulator(&this->registers, &this->pc, this->textSectionExpressions);
+    this->simulator->run();
+}
+
+/**
+ * A member function for class MIPSim that prints all registers
+ */
+void MIPSim::printRegisters() {
+    printf("===== [ Registers ] =====\n");
+    for (uint8_t i = 0 ; i < 32 ; i++) {
+        printf("$%02d : Hex 0x%08x / Int %d\n", i, this->registers[i], this->registers[i]);
     }
 }
