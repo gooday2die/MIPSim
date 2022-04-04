@@ -6,11 +6,12 @@
 #include <vector>
 using namespace std;
 int main() {
-    //MIPSim mipSim = MIPSim("test.txt");
-    //mipSim.assemble();
-    //mipSim.printRegisters();
-    //mipSim.simulate();
-    //mipSim.printRegisters();
+    MIPSim mipSim = MIPSim("test.txt");
+    mipSim.assemble();
+    mipSim.printRegisters();
+    mipSim.simulate();
+    mipSim.printRegisters();
+    /**
     uint32_t* registers;
     uint32_t pc;
 
@@ -28,7 +29,5 @@ int main() {
     exp.execute();
     printf("\n");
     for (uint8_t i = 0 ; i < 32 ; i++) printf("%d\n", registers[i]);
-
-
-
+    **/
 }

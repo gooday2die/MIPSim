@@ -240,8 +240,9 @@ Expression Translator::translateNormalExpression(const queue<Tokens>& tokenQueue
                 //cout << "Register $" << to_string(registerValue) << " ";
             } else if (currentToken == Tokens::tImmediate) {
                 uint32_t immediateValue = 0x0000FFFF & this->translateImmediate(currentArgument);
-                instructionArgs.emplace_back(&immediateValue);
                 machineCode = machineCode | (immediateValue);
+                auto* immediateAddress = new uint32_t(immediateValue);
+                instructionArgs.emplace_back(immediateAddress);
                 //cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
                 uint32_t addressValue = this->translateLabel(currentArgument, instructionMnemonic).second;
