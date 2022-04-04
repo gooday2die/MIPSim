@@ -7,7 +7,13 @@
 
 #include "Expression.h"
 
-
+/**
+ * A constructor member function for class Expression
+ * @param instructionArgs the vector of arguments of registers
+ * @param argExpressionString the string that represents expressions
+ * @param instructionMnemonic the string that represents instruction mnemonic
+ * @param argMachineCode the uint32_t type of machine Code.
+ */
 Expression::Expression(const vector<uint32_t*>& instructionArgs, const string& argExpressionString, const string& instructionMnemonic, uint32_t argMachineCode) {
     this->expressionString = argExpressionString;
     this->machineCode = argMachineCode;
@@ -63,10 +69,16 @@ Expression::Expression(const vector<uint32_t*>& instructionArgs, const string& a
     }
 }
 
+/**
+ * A member function for class Expression that executes the expression
+ */
 void Expression::execute() {
     this->instruction->execute();
 }
 
+/**
+ * A member function for class Expression that prints out the expression.
+ */
 void Expression::print(){
     cout << "Expression : " << this->expressionString;
     printf("-> Machine Code : 0x%08x \n", this->machineCode);

@@ -7,4 +7,6 @@ int main() {
     MIPSim mipSim = MIPSim("test.txt");
     mipSim.assemble();
     mipSim.printRegisters();
+    mipSim.simulate();
+    mipSim.printRegisters();
 }
