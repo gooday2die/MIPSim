@@ -49,6 +49,6 @@ void MIPSim::simulate() {
 void MIPSim::printRegisters() {
     printf("===== [ Registers ] =====\n");
     for (uint8_t i = 0 ; i < 32 ; i++) {
-        printf("$%02d : Hex 0x%08x / Int %d\n", i, *(this->registers + i), *(this->registers + i));
+        printf("$%02d : Hex 0x%08x / Int %d\n", i, this->registers[i], this->registers[i]);
     }
 }
