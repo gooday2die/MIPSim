@@ -80,6 +80,7 @@ void Expression::execute() {
  * A member function for class Expression that prints out the expression.
  */
 void Expression::print(){
-    cout << "Expression : " << this->expressionString;
-    printf("-> Machine Code : 0x%08x \n", this->machineCode);
+    cout << this->expressionString;
+    if (this->expressionString == "syscall")  printf(" ");
+    printf("(0x%08x)\n", this->machineCode);
 }

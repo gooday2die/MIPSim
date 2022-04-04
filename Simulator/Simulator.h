@@ -24,6 +24,7 @@ private:
     uint32_t** registers = nullptr;
     uint32_t* pc;
 
+    void execute(Expression);
 public:
     Simulator(uint32_t**, uint32_t*, const vector<Expression>&);
     void run();
