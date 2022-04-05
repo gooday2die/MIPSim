@@ -246,8 +246,8 @@ Expression Translator::translateNormalExpression(const queue<Tokens>& tokenQueue
                 //cout << "Immediate Value " << to_string(immediateValue) << " ";
             } else if (currentToken == Tokens::tDefinedLabel) {
                 uint32_t addressValue = this->translateLabel(currentArgument, instructionMnemonic).second;
-                uint32_t instructionIndex = this->translateLabel(currentArgument, instructionMnemonic).first;
-                instructionArgs.emplace_back(&instructionIndex);
+                auto* instructionIndex = new uint32_t(this->translateLabel(currentArgument, instructionMnemonic).first);
+                instructionArgs.emplace_back(instructionIndex);
                 machineCode = machineCode | (addressValue);
                 //printf("Address Value 0x%08x", addressValue);
             } else {

@@ -24,7 +24,7 @@ Simulator::Simulator(uint32_t** argRegisters, uint32_t* argPc, const vector<Expr
  * @param argExpression The Expression argument to execute.
  */
 void Simulator::execute(Expression argExpression) {
-    printf("[PC : 0x%08x] ", *this->pc);
+    printf("[PC : %d] ", *this->pc);
     argExpression.print();
     argExpression.execute();
 }
@@ -33,9 +33,11 @@ void Simulator::execute(Expression argExpression) {
  * A member function for class Simulator that runs all expressions.
  */
 void Simulator::run() {
-    for (Expression x : this->textSectionExpressions) {
+    *this->pc = 0;
+    while (*this->pc != this->textSectionExpressions.size()){
         try {
-            this->execute(x);
+            this->execute(this->textSectionExpressions[*this->pc]);
+            *this->pc = *this->pc + 1;
         } catch (const GeneralExceptions::OverflowException& ex){
             cout << "[EXCEPTION] Overflow exception detected" << endl;
             break;

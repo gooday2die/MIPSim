@@ -173,7 +173,8 @@ void beq_::execute() {
     if (rs == rt){
         int16_t reativeAddr = branchAddr & 0xFFFF;
         // printf("NEW PC.at : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + re.ativeAddr), (re.ativeAddr), re.ativeAddr, *pc);
-        *pc = *pc + reativeAddr - 1;
+        //*pc = *pc + reativeAddr - 1;
+        *pc = reativeAddr - 1;
     }
 }
 
@@ -185,7 +186,8 @@ void bne_::execute() {
     if (rs != rt){
         int16_t reativeAddr = branchAddr & 0xFFFF;
         // printf("NEW PC.at : 0x%08x : %d / RELADDR : %d / CURPC : %d\n", 0x00400000 + 4 * (*pc + re.ativeAddr), (re.ativeAddr), re.ativeAddr, *pc);
-        *pc = *pc + reativeAddr - 1;
+        //*pc = *pc + reativeAddr - 1;
+        *pc = reativeAddr - 1;
     }
 }
 
