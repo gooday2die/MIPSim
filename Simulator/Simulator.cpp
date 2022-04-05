@@ -24,7 +24,7 @@ Simulator::Simulator(uint32_t** argRegisters, uint32_t* argPc, const vector<Expr
  * @param argExpression The Expression argument to execute.
  */
 void Simulator::execute(Expression argExpression) {
-    printf("[PC : %d] ", *this->pc);
+    printf("[0x%08x] ", (0x00400000 + 4 * *this->pc));
     argExpression.print();
     argExpression.execute();
 }
