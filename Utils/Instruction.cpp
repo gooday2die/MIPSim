@@ -1,8 +1,8 @@
 //
-// @file : Instruction.
+// @file : Instruction.cpp
 // @author : Gooday2die (Isu Kim)
 // Contacts : edina00@naver.com
-// @brief : 
+// @brief : A file that implements all member functions for class Instruction
 //
 
 #include "Instruction.h"

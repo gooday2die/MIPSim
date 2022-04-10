@@ -1,8 +1,8 @@
 //
-// @file : Instruction.
+// @file : Instruction.h
 // @author : Gooday2die (Isu Kim)
 // @Contacts : edina00@naver.com
-// @brief : 
+// @brief : A file that defines all attributes and member functions for class Instruction
 //
 
 #ifndef MIPSIM2_INSTRUCTION_H

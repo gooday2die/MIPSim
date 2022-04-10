@@ -2,7 +2,7 @@
 // @file : MIPSim.h
 // @author : Gooday2die (Isu Kim)
 // @Contacts : edina00@naver.com
-// @brief :
+// @brief : A file that defines all attributes and member functions for class MIPSim
 // 
 
 #ifndef MIPSIM2_MIPSIM_H

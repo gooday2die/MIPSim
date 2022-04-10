@@ -2,7 +2,7 @@
 // @file : Simulator.h
 // @author : Gooday2die (Isu Kim)
 // @Contacts : edina00@naver.com
-// @brief : 
+// @brief : A file that defines all attributes and member functions for class Simulator
 // 
 
 #ifndef MIPSIM2_SIMULATOR_H
