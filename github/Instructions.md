@@ -28,7 +28,7 @@ Following instructions of MIPS assembly are currently supported with `MIPSim`. `
 
 ### Pseudo-Instructions
 |Instruction Name|Translated Instructions|ETC|
-|--|--|--|--|--|
+|--|--|--|
 |li|`ori`|NA|
 |move|`addu`|NA|
 |bgt|`slt`, `bne`|NA|
